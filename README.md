@@ -26,3 +26,5 @@ benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols)
 ## 1 fastcosim::cosine(x)          100   0.404    1.000
 ## 2       lsa::cosine(x)          100  62.877  155.636
 ```
+
+The test was performed with openblas with 4 threads.
