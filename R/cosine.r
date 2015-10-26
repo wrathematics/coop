@@ -21,9 +21,9 @@ NULL
 #' @export
 cosine <- function(x)
 {
-  cp <- crossprod(x)
-  dg <- diag(cp)
+  if (!is.double(x))
+    storage.mode(x) <- "double"
   
-  .Call(cosine_fill_loop, cp, dg)
+  .Call(cosine_fill_loop, x)
 }
 
