@@ -8,6 +8,8 @@ A micro-package for computing cosine similarity of a matrix quickly.
 
 Only need this for a homework, so don't expect much more than you see.
 
+
+
 ## Benchmarks
 
 Compare to the version in the lsa package (as of 26-Oct-2015):
@@ -28,3 +30,12 @@ benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols)
 ```
 
 The test was performed with openblas with 4 threads.
+
+
+
+## Installation
+
+```r
+devtools::install_github("wrathematics/fastcosim")
+```
+
