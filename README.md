@@ -25,12 +25,14 @@ x <- matrix(rnorm(m*n), m, n)
 benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols)
 
 ##                   test replications elapsed relative
-## 1 fastcosim::cosine(x)          100   0.404    1.000
-## 2       lsa::cosine(x)          100  62.877  155.636
+## 1 fastcosim::cosine(x)          100   0.120     1.00
+## 2       lsa::cosine(x)          100  67.026   558.55
 ```
 
-The test was performed with openblas with 4 threads.
-
+* R 3.2.2
+* OpenBLAS
+* gcc 5.2.1
+* 4 cores of a Core i5-2500K CPU @ 3.30GHz
 
 
 ## Installation
