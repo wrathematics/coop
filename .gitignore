@@ -1,0 +1,8 @@
+*~
+*.pdf
+*.html
+*.swp
+
+
+src/*.o
+src/*.so
