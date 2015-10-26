@@ -18,17 +18,18 @@ Compare to the version in the lsa package (as of 26-Oct-2015):
 
 ```r
 library(rbenchmark)
+reps <- 100
 cols <- c("test", "replications", "elapsed", "relative")
 
-m <- 1000
+m <- 2000
 n <- 200
 x <- matrix(rnorm(m*n), m, n)
 
-benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols)
+benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
 
 ##                   test replications elapsed relative
-## 1 fastcosim::cosine(x)          100   0.120     1.00
-## 2       lsa::cosine(x)          100  67.026   558.55
+## 1 fastcosim::cosine(x)          100   0.178    1.000
+## 2       lsa::cosine(x)          100 113.268  636.337
 ```
 
 * R 3.2.2
