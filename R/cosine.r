@@ -40,18 +40,31 @@ NULL
 #' x <- matrix(rnorm(10*3), 10, 3)
 #' cosine(x)
 #' 
+#' cosine(x[, 1], x[, 2])
+#' 
 #' @export
 cosine <- function(x, y)
 {
-  if (!is.double(x))
-    storage.mode(x) <- "double"
+  if (!is.numeric(x))
+    stop("argument 'x' must be numeric")
   
   if (missing(y))
   {
+    if (!is.matrix(x))
+      stop("argument 'x' must be a matrix")
+    
+    if (!is.double(x))
+      storage.mode(x) <- "double"
+    
     .Call(R_cosine_mat, x)
   }
   else
   {
+    if (!is.numeric(y))
+      stop("argument 'y' must be numeric")
+    
+    if (!is.double(x))
+      storage.mode(x) <- "double"
     if (!is.double(y))
       storage.mode(y) <- "double"
     

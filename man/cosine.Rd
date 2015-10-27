@@ -33,5 +33,7 @@ vectors of the numeric input matrix
 library(fastcosim)
 x <- matrix(rnorm(10*3), 10, 3)
 cosine(x)
+
+cosine(x[, 1], x[, 2])
 }
 
