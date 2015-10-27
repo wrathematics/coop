@@ -28,8 +28,8 @@ x <- matrix(rnorm(m*n), m, n)
 benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
 
 ##                   test replications elapsed relative
-## 1 fastcosim::cosine(x)          100   0.178    1.000
-## 2       lsa::cosine(x)          100 113.268  636.337
+## 1 fastcosim::cosine(x)          100   0.177    1.000
+## 2       lsa::cosine(x)          100 113.543  641.486
 ```
 
 * R 3.2.2

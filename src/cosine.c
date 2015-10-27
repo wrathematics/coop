@@ -55,22 +55,17 @@ static void fill(const unsigned int n, double *restrict crossprod)
   double *diag = malloc(n * sizeof(*diag));
   double diagj;
   
-  // store the diagonal to avoid cache thrashing
-  SAFE_FOR_SIMD
-  for (i=0; i<n; i++)
-    diag[i] = crossprod[i + n*i];
-  
   // Fill lower triangle and diagonal
-  #pragma omp parallel for private(i,j) default(shared) if(n>OMP_MIN_SIZE) schedule(dynamic)
+  #pragma omp parallel for private(i,j,diagj) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
-    diagj = diag[j];
+    diagj = crossprod[j + n*j];
     
     crossprod[j + n*j] = 1.0;
     
     SAFE_SIMD
     for (i=j+1; i<n; i++)
-      crossprod[i + n*j] /= sqrt(diag[i] * diagj);
+      crossprod[i + n*j] /= sqrt(crossprod[i + n*i] * diagj);
   }
   
   free(diag);
@@ -83,9 +78,10 @@ static inline void symmetrize(const int n, double *restrict x)
 {
   int i, j;
   
-  SAFE_FOR_SIMD
+  #pragma omp parallel for private(i) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
+    SAFE_SIMD
     for (i=j+1; i<n; i++)
       x[j + n*i] = x[i + n*j];
   }

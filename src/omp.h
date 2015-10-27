@@ -47,7 +47,7 @@
 #define SAFE_FOR_SIMD _Pragma("omp for simd")
 #else
 #define SAFE_SIMD 
-#define SAFE_FOR_SIMD
+#define SAFE_FOR_SIMD 
 #endif
 
 
