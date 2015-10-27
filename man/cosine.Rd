@@ -9,7 +9,23 @@ cosine(x)
 \arguments{
 \item{x}{A numeric matrix.}
 }
+\value{
+The \eqn{n\times n} matrix of all pair-wise vector cosine
+similarities of the columns.  The implementation is dominated
+by a symmetric rank-k update via the BLAS function dsyrk(); see
+the package \code{README.md} file for a discussion of the
+algorithm implementation and complexity.
+}
 \description{
-Compute cosine similarity efficiently.
+Compute the cosine similarity matrix efficiently.
+}
+\details{
+The function computes the cosine similarity between all column
+vectors of the numeric input matrix
+}
+\examples{
+library(fastcosim)
+x <- matrix(rnorm(10*3), 10, 3)
+cosine(x)
 }
 
