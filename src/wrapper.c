@@ -30,16 +30,31 @@
 #include "cosine.h"
 
 
-SEXP cosine_fill_loop(SEXP x)
+SEXP R_cosine_mat(SEXP x)
 {
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
   SEXP ret;
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
-  cosim(m, n, REAL(x), REAL(ret));
+  cosine_mat(m, n, REAL(x), REAL(ret));
   
   UNPROTECT(1);
   return ret;
 }
+
+
+
+SEXP R_cosine_vecvec(SEXP x, SEXP y)
+{
+  const unsigned int n = LENGTH(x);
+  SEXP ret;
+  PROTECT(ret = allocVector(REALSXP, 1));
+  
+  REAL(ret)[0] = cosine_vecvec(n, REAL(x), REAL(y));
+  
+  UNPROTECT(1);
+  return ret;
+}
+
 

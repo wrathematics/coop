@@ -4,10 +4,13 @@
 \alias{cosine}
 \title{Cosine Similarity}
 \usage{
-cosine(x)
+cosine(x, y)
 }
 \arguments{
-\item{x}{A numeric matrix.}
+\item{x}{A numeric matrix or vector.}
+
+\item{y}{A vector (when \code{x} is a vector) or missing (blank) when
+\code{x} is a matrix.}
 }
 \value{
 The \eqn{n\times n} matrix of all pair-wise vector cosine
@@ -17,7 +20,10 @@ the package \code{README.md} file for a discussion of the
 algorithm implementation and complexity.
 }
 \description{
-Compute the cosine similarity matrix efficiently.
+Compute the cosine similarity matrix efficiently.  The function
+syntax and behavior is largely modeled after that of the
+\code{cosine()} function from the \code{lsa} package, although
+with a very different implementation.
 }
 \details{
 The function computes the cosine similarity between all column

@@ -31,6 +31,33 @@
 #include "omp.h"
 
 
+void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
+            const int *k, const double *restrict alpha, const double *restrict a, 
+            const int *lda, const double *restrict b, const int *ldb, 
+            const double *beta, double *restrict c, const int *ldc);
+
+
+static inline double ddot(const int n, double *restrict x, double *restrict y)
+{
+/*  int i;*/
+/*  double dot = 0;*/
+/*  */
+/*  SAFE_FOR_SIMD*/
+/*  for (i=0; i<n; i++)*/
+/*    dot += x[i] * y[i];*/
+/*  */
+/*  return dot;*/
+  
+  int one = 1;
+  double dot;
+  
+  dgemm_(&(char){'t'}, &(char){'n'}, &one, &one, &n, 
+    &(double){1.0}, x, &n, y, &n, &(double){0.0}, &dot, &one);
+  
+  return dot;
+}
+
+
 void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k, 
             const double *restrict alpha, const double *restrict a, const int *lda, 
             const double *restrict beta, double *restrict c, const int *ldc);
@@ -107,10 +134,26 @@ static inline void symmetrize(const int n, double *restrict x)
  * @param cos
  * The output nxn matrix.
 */
-void cosim(const int m, const int n, double *restrict x, double *restrict cos)
+void cosine_mat(const int m, const int n, double *restrict x, double *restrict cos)
 {
   crossprod(m, n, x, 1.0, cos);
   fill(n, cos);
   symmetrize(n, cos);
 }
+
+
+
+double cosine_vecvec(const int n, double *restrict x, double *restrict y)
+{
+  double normx, normy;
+  
+  double cp = ddot(n, x, y);
+  
+  crossprod(n, 1, x, 1.0, &normx);
+  crossprod(n, 1, y, 1.0, &normy);
+  
+  return cp / sqrt(normx * normy);
+}
+
+
 
