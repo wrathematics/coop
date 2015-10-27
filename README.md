@@ -39,7 +39,7 @@ The total number of floating point operations is:
 1. `m*n*(n+1)` for the symmetric rank-k update.
 2. `3/2*(n+1)*n` for the rescaling operation.
 
-The algorithm is `O(mn^2)`, and is dominated by the symmetric rank-k update.
+The algorithm complexity is `O(mn^2)`, and is dominated by the symmetric rank-k update.
 
 
 
