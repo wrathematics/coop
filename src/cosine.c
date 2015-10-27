@@ -36,6 +36,7 @@ void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
             const double *restrict beta, double *restrict c, const int *ldc);
 
 
+
 // upper triangle of t(x) %*% x
 static inline int crossprod(const int m, const int n, const double *restrict x, const double alpha, double *restrict c)
 {
@@ -48,25 +49,26 @@ static inline int crossprod(const int m, const int n, const double *restrict x, 
 
 
 
-// replaces the crossproduct of a matrix with its cosine similarity
-static void fill(const unsigned int n, double *restrict crossprod)
+// replaces upper triangle of the crossproduct of a matrix with its cosine similarity
+static inline void fill(const unsigned int n, double *restrict crossprod)
 {
   int i, j;
   double *diag = malloc(n * sizeof(*diag));
   double diagj;
   
-  // Fill lower triangle and diagonal
   #pragma omp parallel for private(i,j,diagj) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
     diagj = crossprod[j + n*j];
     
-    crossprod[j + n*j] = 1.0;
-    
     SAFE_SIMD
     for (i=j+1; i<n; i++)
       crossprod[i + n*j] /= sqrt(crossprod[i + n*i] * diagj);
   }
+  
+  SAFE_FOR_SIMD
+  for (i=0; i<n; i++)
+    crossprod[i + n*i] = 1.0;
   
   free(diag);
 }
@@ -89,7 +91,22 @@ static inline void symmetrize(const int n, double *restrict x)
 
 
 
-// x is mxn, cos is nxn
+/**
+ * @brief 
+ * Compute the cosine similarity matrix of a matrix.  This is
+ * all pair-wise vector cosine similarities of the columns.
+ * 
+ * @details
+ * The implementation is dominated by a symmetric rank-k update
+ * via the BLAS function dsyrk().
+ * 
+ * @param m,n
+ * The number of rows/columns of the input matrix x.
+ * @param x
+ * The input mxn matrix.
+ * @param cos
+ * The output nxn matrix.
+*/
 void cosim(const int m, const int n, double *restrict x, double *restrict cos)
 {
   crossprod(m, n, x, 1.0, cos);
