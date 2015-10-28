@@ -2,6 +2,20 @@
 #'
 #' @name fastcosim-package
 #' 
+#' @description
+#' A micro-package for computing cosine similarity.  This is
+#' commonly needed in, for example, natural language processing,
+#' where the cosine similarity coefficients of all columns of a
+#' term-document or document-term matrix is needed.
+#' 
+#' @section Implementation Details:
+#' The only exported function of this package, \code{cosine()},
+#' takes two forms.  If supplied with two vectors, then the cosine
+#' similarity of the two vectors will be computed.  On the other
+#' hand, if supplied a single matrix, then all pair-wise vector
+#' cosine similarities of the columns are computed.
+#' 
+#' 
 #' @useDynLib fastcosim, R_cosine_mat, R_cosine_vecvec
 #' 
 #' @docType package
@@ -20,7 +34,19 @@ NULL
 #' 
 #' @details
 #' The function computes the cosine similarity between all column
-#' vectors of the numeric input matrix
+#' vectors of the numeric input matrix, or of two vectors, depending
+#' on the input argument(s).
+#' 
+#' The implementation for matrix inputs is dominated
+#' by a symmetric rank-k update via the BLAS subroutine \code{dsyrk};
+#' see the package \code{README.md} file for a discussion of the 
+#' algorithm implementation and complexity.
+#' 
+#' The implementation for two vector inputs is the product
+#' \code{t(x) \%*\% y} via the BLAS subroutine \code{dgemm} divided
+#' by the square root of the product of the crossproducts
+#' \code{t(x) \%*\% x} and \code{t(y) \%*\% y} each computed via the
+#' BLAS function \code{dsyrk()}.
 #' 
 #' @param x
 #' A numeric matrix or vector.
@@ -30,10 +56,7 @@ NULL
 #' 
 #' @return
 #' The \eqn{n\times n} matrix of all pair-wise vector cosine
-#' similarities of the columns.  The implementation is dominated
-#' by a symmetric rank-k update via the BLAS function dsyrk(); see
-#' the package \code{README.md} file for a discussion of the 
-#' algorithm implementation and complexity.
+#' similarities of the columns.
 #' 
 #' @examples
 #' library(fastcosim)
@@ -62,6 +85,9 @@ cosine <- function(x, y)
   {
     if (!is.numeric(y))
       stop("argument 'y' must be numeric")
+    
+    if (length(x) != length(y))
+      stop("vectors 'x' and 'y' must have the same length")
     
     if (!is.double(x))
       storage.mode(x) <- "double"

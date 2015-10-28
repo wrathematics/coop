@@ -14,10 +14,7 @@ cosine(x, y)
 }
 \value{
 The \eqn{n\times n} matrix of all pair-wise vector cosine
-similarities of the columns.  The implementation is dominated
-by a symmetric rank-k update via the BLAS function dsyrk(); see
-the package \code{README.md} file for a discussion of the
-algorithm implementation and complexity.
+similarities of the columns.
 }
 \description{
 Compute the cosine similarity matrix efficiently.  The function
@@ -27,7 +24,19 @@ with a very different implementation.
 }
 \details{
 The function computes the cosine similarity between all column
-vectors of the numeric input matrix
+vectors of the numeric input matrix, or of two vectors, depending
+on the input argument(s).
+
+The implementation for matrix inputs is dominated
+by a symmetric rank-k update via the BLAS subroutine \code{dsyrk};
+see the package \code{README.md} file for a discussion of the
+algorithm implementation and complexity.
+
+The implementation for two vector inputs is the product
+\code{t(x) \%*\% y} via the BLAS subroutine \code{dgemm} divided
+by the square root of the product of the crossproducts
+\code{t(x) \%*\% x} and \code{t(y) \%*\% y} each computed via the
+BLAS function \code{dsyrk()}.
 }
 \examples{
 library(fastcosim)

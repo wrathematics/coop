@@ -5,7 +5,16 @@
 \alias{fastcosim-package}
 \title{fastcosim}
 \description{
-fastcosim
+A micro-package for computing cosine similarity.
+}
+\section{Implementation Details}{
+
+The only
+exported function of this package, \code{cosine()}, takes two
+forms.  If supplied with two vectors, then the cosine similarity
+of the two vectors will be computed.  On the other hand, if
+supplied a single matrix, then all pair-wise vector cosine
+similarities of the columns are computed.
 }
 \author{
 Drew Schmidt and Wei-Chen Chen
