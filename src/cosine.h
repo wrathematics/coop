@@ -28,8 +28,8 @@
 #define FASTCOSIM_H
 
 
-void cosine_mat(const int m, const int n, double *restrict x, double *restrict cos);
-double cosine_vecvec(const int n, double *restrict x, double *restrict y);
+void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
+double cosine_vecvec(const int n, const double *restrict x, const double *restrict y);
 
 
 #endif

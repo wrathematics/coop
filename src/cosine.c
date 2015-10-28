@@ -37,17 +37,8 @@ void dgemm_(const char *transa, const char *transb, const int *m, const int *n,
             const double *beta, double *restrict c, const int *ldc);
 
 
-static inline double ddot(const int n, double *restrict x, double *restrict y)
+static inline double ddot(const int n, const double *restrict x, const double *restrict y)
 {
-/*  int i;*/
-/*  double dot = 0;*/
-/*  */
-/*  SAFE_FOR_SIMD*/
-/*  for (i=0; i<n; i++)*/
-/*    dot += x[i] * y[i];*/
-/*  */
-/*  return dot;*/
-  
   int one = 1;
   double dot;
   
@@ -134,7 +125,7 @@ static inline void symmetrize(const int n, double *restrict x)
  * @param cos
  * The output nxn matrix.
 */
-void cosine_mat(const int m, const int n, double *restrict x, double *restrict cos)
+void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
 {
   crossprod(m, n, x, 1.0, cos);
   fill(n, cos);
@@ -143,7 +134,7 @@ void cosine_mat(const int m, const int n, double *restrict x, double *restrict c
 
 
 
-double cosine_vecvec(const int n, double *restrict x, double *restrict y)
+double cosine_vecvec(const int n, const double *restrict x, const double *restrict y)
 {
   double normx, normy;
   
