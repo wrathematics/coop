@@ -23,7 +23,9 @@ ships with Intel MKL.
 
 
 
-## The Algorithm
+## The Algorithms with Notes on Implementation
+
+#### Matrix Input
 
 Given an `m`x`n` matrix `x` (input) and an `n`x`n` matrix `cos`
 (preallocated output):
@@ -39,11 +41,37 @@ The total number of floating point operations is:
 1. `m*n*(n+1)` for the symmetric rank-k update.
 2. `3/2*(n+1)*n` for the rescaling operation.
 
-The algorithm complexity is `O(mn^2)`, and is dominated by the symmetric rank-k update.
+The algorithmic complexity is `O(mn^2)`, and is dominated by the symmetric rank-k update.
+
+#### Vector-Vector Input
+
+Given two `n`-length vectors `x` and `y` (inputs):
+
+1. Compute `crossprod = t(x) %*% y` (using the `_gemm` BLAS function).
+2. Compute the square of the Euclidean norms of `x` and `y` (using the `_syrk` BLAS function).
+3. Divide `crossprod` from 1 by the square root of the product of the norms from 2.
+
+The total number of floating point operations is:
+
+1. `2n-1` for the crossproduct.
+2. `4*n-2` for the two (square) norms.
+3. `3` for the division and square root/product.
+
+The algorithmic complexity is `O(n)`.
 
 
 
 ## Benchmarks
+
+All benchmarks were performed using:
+
+* R 3.2.2
+* OpenBLAS
+* gcc 5.2.1
+* 4 cores of a Core i5-2500K CPU @ 3.30GHz
+* Linux kernel 4.2.0-16
+
+#### Matrix Input
 
 Compared to the version in the lsa package (as of 27-Oct-2015),
 this implementation performs quite well:
@@ -64,12 +92,25 @@ benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
 ## 2       lsa::cosine(x)          100 113.543  641.486
 ```
 
-All benchmarks were performed using:
+#### Vector-Vector Input
 
-* R 3.2.2
-* OpenBLAS
-* gcc 5.2.1
-* 4 cores of a Core i5-2500K CPU @ 3.30GHz
+Here the two perform identically:
+
+```r
+library(rbenchmark)
+reps <- 100
+cols <- c("test", "replications", "elapsed", "relative")
+
+n <- 1000000
+x <- rnorm(n)
+y <- rnorm(n)
+
+benchmark(fastcosim::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)
+
+##                      test replications elapsed relative
+## 1 fastcosim::cosine(x, y)          100   0.757    1.000
+## 2       lsa::cosine(x, y)          100   0.768    1.015
+```
 
 
 
