@@ -67,11 +67,21 @@ static inline int crossprod(const int m, const int n, const double *restrict x, 
 
 
 
+static inline void diag2one(const unsigned int n, double *restrict x)
+{
+  int i;
+  
+  SAFE_FOR_SIMD
+  for (i=0; i<n; i++)
+    x[i + n*i] = 1.0;
+}
+
+
+
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
 static inline void fill(const unsigned int n, double *restrict crossprod)
 {
   int i, j;
-  double *diag = malloc(n * sizeof(*diag));
   double diagj;
   
   #pragma omp parallel for private(i,j,diagj) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
@@ -84,11 +94,7 @@ static inline void fill(const unsigned int n, double *restrict crossprod)
       crossprod[i + n*j] /= sqrt(crossprod[i + n*i] * diagj);
   }
   
-  SAFE_FOR_SIMD
-  for (i=0; i<n; i++)
-    crossprod[i + n*i] = 1.0;
-  
-  free(diag);
+  diag2one(n, crossprod);
 }
 
 
@@ -134,6 +140,23 @@ void cosine_mat(const int m, const int n, const double *restrict x, double *rest
 
 
 
+/**
+ * @brief 
+ * Compute the cosine similarity between two vectors.
+ * 
+ * @details
+ * The implementation uses a dgemm() to compute the dot product
+ * of x and y, and then two dsyrk() calls to compute the (square of)
+ * the norms of x and y.
+ * 
+ * @param n
+ * The length of the x and y vectors.
+ * @param x,y
+ * The input vectors.
+ * 
+ * @return
+ * The cosine similarity between the two vectors.
+*/
 double cosine_vecvec(const int n, const double *restrict x, const double *restrict y)
 {
   double normx, normy;
@@ -145,6 +168,4 @@ double cosine_vecvec(const int n, const double *restrict x, const double *restri
   
   return cp / sqrt(normx * normy);
 }
-
-
 
