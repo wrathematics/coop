@@ -6,10 +6,15 @@
 * **Author:** Drew Schmidt
 
 
-A micro-package for computing cosine similarity of a dense matrix
-quickly.  If you can do this faster, I'd love to know how.
+A micro-package for computing cosine similarity quickly.
+If you can do this faster, I'd love to know how.
 
-The performance should scale fairly well, and will use multiple
+The package has separate routines for dense matrices/vectors and
+for a sparse matrix (like a term-document/document-term matrix).
+The use of each is seamless to the user by way of R's S3 methods.
+
+For dense implementations, 
+the performance should scale fairly well, and will use multiple
 threads (if your compiler supports OpenMP) when the matrix has 
 more than 2500 columns.  You will see the biggest performance
 improvements, in decreasing order of value, by using:
@@ -25,7 +30,7 @@ ships with Intel MKL.
 
 ## The Algorithms with Notes on Implementation
 
-#### Matrix Input
+#### Dense Matrix Input
 
 Given an `m`x`n` matrix `x` (input) and an `n`x`n` matrix `cos`
 (preallocated output):
@@ -43,7 +48,7 @@ The total number of floating point operations is:
 
 The algorithmic complexity is `O(mn^2)`, and is dominated by the symmetric rank-k update.
 
-#### Vector-Vector Input
+#### Dense Vector-Vector Input
 
 Given two `n`-length vectors `x` and `y` (inputs):
 
@@ -60,6 +65,24 @@ The total number of floating point operations is:
 The algorithmic complexity is `O(n)`.
 
 
+#### Sparse Matrix Input
+
+Given a matrix stored as a COO with row/column indices `i` and `j`
+**where they are sorted by columns first, then rows**, and
+corresponding data `a` and number of columns `n` (inputs), and a
+preallocated `n`x`n` dense matrix `cos` (output):
+
+1. Initialize `cos` to 0.
+2. For each column `j` of `a` (call it `x`), find its first and final position in the COO storage.
+    i. If `x` is missing (its entries are all 0), set the `j`'th row and column of the lower triangle of `cos` to 0.  Go to 2.
+    ii. Otherwise, for each column `i>j` of `a` (call it `y`), find its first and final position  in the COO storage.
+    iii. Compute the dot product of `x` and `y`, `xy`.
+    iv. If the dot product is greater than epsilon (`1e-10` for us):
+        - Compute the dot products of `x` with itself `xx` and `y` with itself `yy`.
+        - Set the `(i, j)`'th entry of `cos` to `xy`/`sqrt(xx*yy)`.
+3. Copy the lower triangle to the upper and set the diagonal to 1.
+
+
 
 ## Benchmarks
 
@@ -71,7 +94,7 @@ All benchmarks were performed using:
 * 4 cores of a Core i5-2500K CPU @ 3.30GHz
 * Linux kernel 4.2.0-16
 
-#### Matrix Input
+#### Dense Matrix Input
 
 Compared to the version in the lsa package (as of 27-Oct-2015),
 this implementation performs quite well:
@@ -92,7 +115,7 @@ benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
 ## 2       lsa::cosine(x)          100 113.543  641.486
 ```
 
-#### Vector-Vector Input
+#### Dense Vector-Vector Input
 
 Here the two perform identically:
 
@@ -111,6 +134,11 @@ benchmark(fastcosim::cosine(x, y), lsa::cosine(x, y), columns=cols, replications
 ## 1 fastcosim::cosine(x, y)          100   0.757    1.000
 ## 2       lsa::cosine(x, y)          100   0.768    1.015
 ```
+
+
+#### Sparse Matrix Input
+
+TODO
 
 
 
