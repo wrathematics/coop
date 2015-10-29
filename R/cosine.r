@@ -39,35 +39,56 @@
 #' cosine(x[, 1], x[, 2])
 #' 
 #' @export
-cosine <- function(x, y)
+cosine <- function(x, y) UseMethod("cosine")
+
+
+
+#' @export
+cosine.matrix <- function(x, y)
 {
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
+  if (!missing(y))
+    stop("argument 'y' can not be used with a matrix 'x'")
   
-  if (missing(y))
-  {
-    if (!is.matrix(x))
-      stop("argument 'x' must be a matrix")
-    
-    if (!is.double(x))
-      storage.mode(x) <- "double"
-    
-    .Call(R_cosine_mat, x)
-  }
-  else
-  {
-    if (!is.numeric(y))
-      stop("argument 'y' must be numeric")
-    
-    if (length(x) != length(y))
-      stop("vectors 'x' and 'y' must have the same length")
-    
-    if (!is.double(x))
-      storage.mode(x) <- "double"
-    if (!is.double(y))
-      storage.mode(y) <- "double"
-    
-    .Call(R_cosine_vecvec, x, y)
-  }
+  if (!is.double(x))
+    storage.mode(x) <- "double"
+  
+  .Call(R_cosine_mat, x)
+}
+
+
+
+
+#' @export
+cosine.default <- function(x, y)
+{
+  if (!is.numeric(x))
+    stop("argument 'x' must be numeric")
+  if (!is.numeric(y))
+    stop("argument 'y' must be numeric")
+  
+  if (length(x) != length(y))
+    stop("vectors 'x' and 'y' must have the same length")
+  
+  if (!is.double(x))
+    storage.mode(x) <- "double"
+  if (!is.double(y))
+    storage.mode(y) <- "double"
+  
+  .Call(R_cosine_vecvec, x, y)
+}
+
+
+
+#' @export
+cosine.simple_triplet_matrix <- function(x, y)
+{
+  a <- x$v
+  i <- x$i - 1L
+  j <- x$j - 1L
+  n <- x$ncol
+  
+  .Call(R_cosine_sparse_coo, n, as.double(a), i, j)
 }
 

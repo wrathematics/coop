@@ -16,7 +16,7 @@
 #' cosine similarities of the columns are computed.
 #' 
 #' 
-#' @useDynLib fastcosim, R_cosine_mat, R_cosine_vecvec
+#' @useDynLib fastcosim, R_cosine_mat, R_cosine_vecvec, R_cosine_sparse_coo
 #' 
 #' @docType package
 #' @author Drew Schmidt and Wei-Chen Chen

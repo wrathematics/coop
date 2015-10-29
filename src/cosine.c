@@ -101,7 +101,7 @@ static inline void fill(const unsigned int n, double *restrict crossprod)
 
 
 
-// Copy upper triangle to lower
+// Copy lower triangle to upper
 static inline void symmetrize(const int n, double *restrict x)
 {
   int i, j;
@@ -227,10 +227,14 @@ static inline void get_startend(int i, int *col, int *vecstart, int *vecend, con
 {
   // FIXME 0/1 indexing
   *vecstart = *col;
+  
   while (cols[*col] == i)
     (*col)++;
+  
   *vecend = *col - 1;
 }
+
+
 
 /**
  * @brief 
@@ -277,8 +281,19 @@ void cosine_sparse_coo(const int n, const int len, const double *restrict a, con
     col = vec1end;
     get_startend(j, &col, &vec1start, &vec1end, cols);
     
-    if (vec1end - vec1start == 0)
+    // NaN-out row and column if col is 0
+    if (vec1end < vec1start)
+    {
+      vec1end++;
+      
+      for (i=j; i<n; i++)
+        cos[i + n*j] = NAN;
+      
+      for (i=0; i<j; i++)
+        cos[j + n*i] = NAN;
+      
       continue;
+    }
     
     for (i=j+1; i<n; i++)
     {
