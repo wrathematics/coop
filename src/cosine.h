@@ -28,9 +28,21 @@
 #define FASTCOSIM_H
 
 
+#define MIN(x,y) (((x)<(y))?(x):(y))
+#define MAX(x,y) (((x)>(y))?(x):(y))
+
+void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
+            const int *k, const double *restrict alpha, const double *restrict a, 
+            const int *lda, const double *restrict b, const int *ldb, 
+            const double *beta, double *restrict c, const int *ldc);
+
+void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k, 
+            const double *restrict alpha, const double *restrict a, const int *lda, 
+            const double *restrict beta, double *restrict c, const int *ldc);
+
+
 void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
 double cosine_vecvec(const int n, const double *restrict x, const double *restrict y);
-
 void cosine_sparse_coo(const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
 
 

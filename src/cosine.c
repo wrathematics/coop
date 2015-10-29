@@ -26,17 +26,17 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "cosine.h"
 #include "omp.h"
 
 
-void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
-            const int *k, const double *restrict alpha, const double *restrict a, 
-            const int *lda, const double *restrict b, const int *ldb, 
-            const double *beta, double *restrict c, const int *ldc);
+// ---------------------------------------------
+//  Dense
+// ---------------------------------------------
 
-
+// ddot replica using dgemm
 static inline double ddot(const int n, const double *restrict x, const double *restrict y)
 {
   int one = 1;
@@ -47,11 +47,6 @@ static inline double ddot(const int n, const double *restrict x, const double *r
   
   return dot;
 }
-
-
-void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k, 
-            const double *restrict alpha, const double *restrict a, const int *lda, 
-            const double *restrict beta, double *restrict c, const int *ldc);
 
 
 
@@ -74,6 +69,13 @@ static inline void diag2one(const unsigned int n, double *restrict x)
   SAFE_FOR_SIMD
   for (i=0; i<n; i++)
     x[i + n*i] = 1.0;
+}
+
+
+
+static inline void set2zero(const unsigned int n, double *restrict x)
+{
+  memset(x, 0.0, n*sizeof(*x));
 }
 
 
@@ -172,50 +174,63 @@ double cosine_vecvec(const int n, const double *restrict x, const double *restri
 
 
 
-#define MIN(x,y) (((x)<(y))?(x):(y))
-#define MAX(x,y) (((x)>(y))?(x):(y))
 
+// ---------------------------------------------
+//  Sparse
+// ---------------------------------------------
 
 static double sparsedot(const int vec1start, const int vec1end, 
                         const int vec2start, const int vec2end,
                         const int *rows, const double *a)
 {
-  const int len = MIN(vec1end-vec1start, vec2end-vec2start);
-  int col1 = 0;
-  int col2 = 0;
+  int vec1 = vec1start;
+  int vec2 = vec2start;
   
   double dot = 0.0;
   
-  while (col1 < len && col2 < len)
+  
+  while (vec1 <= vec1end && vec2 <= vec2end)
   {
-    while (rows[col1] < rows[col2])
-      col1++;
+    while (rows[vec1] < rows[vec2] && vec1 <= vec1end)
+      vec1++;
     
-    while (rows[col1] == rows[col2])
+    while (rows[vec1] == rows[vec2] && vec1 <= vec1end)
     {
-      dot += a[col1] * a[col2];
-      col1++;
-      col2++;
+      dot += a[vec1] * a[vec2];
+      vec1++;
+      vec2++;
     }
     
-    while (rows[col1] > rows[col2])
-      col2++;
+    while (rows[vec1] > rows[vec2] && vec2 <= vec2end)
+      vec2++;
   }
+  
+  return dot;
 }
 
 
 
 static inline double sparsedot_self(const int vecstart, const int vecend, const int *rows, const double *a)
 {
-  int i = vecstart;
+  int i;
   double dot = 0.0;
   
-  while (i <= vecend)
+  for (i=vecstart; i<=vecend; i++)
     dot += a[i]*a[i];
   
   return dot;
 }
 
+
+
+static inline void get_startend(int i, int *col, int *vecstart, int *vecend, const int *cols)
+{
+  // FIXME 0/1 indexing
+  *vecstart = *col;
+  while (cols[*col] == i)
+    (*col)++;
+  *vecend = *col - 1;
+}
 
 /**
  * @brief 
@@ -248,41 +263,43 @@ void cosine_sparse_coo(const int n, const int len, const double *restrict a, con
   int i, j;
   int row, col;
   double xy, xx, yy;
+  double tmp;
   
   int vec1start, vec1end;
   int vec2start, vec2end;
   
-  col = 0;
+  vec1end = 0;
   
-  for (j=0; j<len; j++)
+  set2zero(n*n, cos);
+  
+  for (j=0; j<n; j++)
   {
-    vec1start = col;
-    while (cols[col] == j) //FIXME 0/1 indexing
-      col++;
-    vec1end = col - 1;
+    col = vec1end;
+    get_startend(j, &col, &vec1start, &vec1end, cols);
     
     if (vec1end - vec1start == 0)
       continue;
     
-    for (i=0; i<len; i++)
+    for (i=j+1; i<n; i++)
     {
-      vec2start = col;
-      while (cols[col] == i)
-        col++;
-      vec2end = col - 1;
+      get_startend(i, &col, &vec2start, &vec2end, cols);
       
       xy = sparsedot(vec1start, vec1end, vec2start, vec2end, rows, a);
-      if (xy > 1e-8)
+      
+      if (xy > 1e-10)
       {
         xx = sparsedot_self(vec1start, vec1end, rows, a);
         yy = sparsedot_self(vec2start, vec2end, rows, a);
         
-        xy /= sqrt(xx * yy);
+        tmp = sqrt(xx * yy);
+        if (tmp > 0)
+          cos[i + n*j] = xy/tmp;
       }
-      
-      cos[i + n*j] = xy;
     }
+    
+    vec1end++;
   }
+  
   
   diag2one(n, cos);
   symmetrize(n, cos);
