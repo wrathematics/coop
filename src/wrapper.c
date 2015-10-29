@@ -58,3 +58,19 @@ SEXP R_cosine_vecvec(SEXP x, SEXP y)
 }
 
 
+
+SEXP R_cosine_sparse_coo(SEXP n_, SEXP a, SEXP i, SEXP j)
+{
+  const int n = INTEGER(n_)[0];
+  SEXP ret;
+  PROTECT(ret = allocMatrix(REALSXP, n, n));
+  
+  cosine_sparse_coo(n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
+  
+  UNPROTECT(1);
+  return ret;
+}
+
+
+
+

@@ -169,3 +169,123 @@ double cosine_vecvec(const int n, const double *restrict x, const double *restri
   return cp / sqrt(normx * normy);
 }
 
+
+
+
+#define MIN(x,y) (((x)<(y))?(x):(y))
+#define MAX(x,y) (((x)>(y))?(x):(y))
+
+
+static double sparsedot(const int vec1start, const int vec1end, 
+                        const int vec2start, const int vec2end,
+                        const int *rows, const double *a)
+{
+  const int len = MIN(vec1end-vec1start, vec2end-vec2start);
+  int col1 = 0;
+  int col2 = 0;
+  
+  double dot = 0.0;
+  
+  while (col1 < len && col2 < len)
+  {
+    while (rows[col1] < rows[col2])
+      col1++;
+    
+    while (rows[col1] == rows[col2])
+    {
+      dot += a[col1] * a[col2];
+      col1++;
+      col2++;
+    }
+    
+    while (rows[col1] > rows[col2])
+      col2++;
+  }
+}
+
+
+
+static inline double sparsedot_self(const int vecstart, const int vecend, const int *rows, const double *a)
+{
+  int i = vecstart;
+  double dot = 0.0;
+  
+  while (i <= vecend)
+    dot += a[i]*a[i];
+  
+  return dot;
+}
+
+
+/**
+ * @brief 
+ * Compute the cosine similarity matrix of a sparse, COO-stored
+ * matrix.
+ * 
+ * @details
+ * TODO
+ * 
+ * Note that if the number of rows times the number of columns of
+ * the sparse matrix is equal to len, then your matrix is actually
+ * dense, but stored in a stupid way.
+ * 
+ * @param n
+ * The total number of columns of sparsely-stored input matrix x, 
+ * i.e., the number of columns of the matrix if it were densely
+ * stored.
+ * @param len
+ * The length of the a/rows/cols vectors.
+ * @param a
+ * The input matrix, in COO (row, column, value) format.
+ * @param rows/cols
+ * The row/column index vectors.
+ * @param cos
+ * The output nxn matrix.
+*/
+void cosine_sparse_coo(const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos)
+{
+  // TODO note, assuming sorted by column index, then row
+  int i, j;
+  int row, col;
+  double xy, xx, yy;
+  
+  int vec1start, vec1end;
+  int vec2start, vec2end;
+  
+  col = 0;
+  
+  for (j=0; j<len; j++)
+  {
+    vec1start = col;
+    while (cols[col] == j) //FIXME 0/1 indexing
+      col++;
+    vec1end = col - 1;
+    
+    if (vec1end - vec1start == 0)
+      continue;
+    
+    for (i=0; i<len; i++)
+    {
+      vec2start = col;
+      while (cols[col] == i)
+        col++;
+      vec2end = col - 1;
+      
+      xy = sparsedot(vec1start, vec1end, vec2start, vec2end, rows, a);
+      if (xy > 1e-8)
+      {
+        xx = sparsedot_self(vec1start, vec1end, rows, a);
+        yy = sparsedot_self(vec2start, vec2end, rows, a);
+        
+        xy /= sqrt(xx * yy);
+      }
+      
+      cos[i + n*j] = xy;
+    }
+  }
+  
+  diag2one(n, cos);
+  symmetrize(n, cos);
+}
+
+

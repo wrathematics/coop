@@ -31,5 +31,7 @@
 void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
 double cosine_vecvec(const int n, const double *restrict x, const double *restrict y);
 
+void cosine_sparse_coo(const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
+
 
 #endif
