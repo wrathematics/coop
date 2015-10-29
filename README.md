@@ -74,10 +74,10 @@ preallocated `n`x`n` dense matrix `cos` (output):
 
 1. Initialize `cos` to 0.
 2. For each column `j` of `a` (call it `x`), find its first and final position in the COO storage.
-    i. If `x` is missing (its entries are all 0), set the `j`'th row and column of the lower triangle of `cos` to 0.  Go to 2.
-    ii. Otherwise, for each column `i>j` of `a` (call it `y`), find its first and final position  in the COO storage.
-    iii. Compute the dot product of `x` and `y`, `xy`.
-    iv. If the dot product is greater than epsilon (`1e-10` for us):
+    1. If `x` is missing (its entries are all 0), set the `j`'th row and column of the lower triangle of `cos` to 0.  Go to 2.
+    2. Otherwise, for each column `i>j` of `a` (call it `y`), find its first and final position  in the COO storage.
+    3. Compute the dot product of `x` and `y`, `xy`.
+    4. If the dot product is greater than epsilon (`1e-10` for us):
         - Compute the dot products of `x` with itself `xx` and `y` with itself `yy`.
         - Set the `(i, j)`'th entry of `cos` to `xy`/`sqrt(xx*yy)`.
 3. Copy the lower triangle to the upper and set the diagonal to 1.
