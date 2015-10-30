@@ -13,22 +13,55 @@ The package has separate routines for dense matrices/vectors and
 for a sparse matrix (like a term-document/document-term matrix).
 The use of each is seamless to the user by way of R's S3 methods.
 
-For dense implementations, 
-the performance should scale fairly well, and will use multiple
-threads (if your compiler supports OpenMP) when the matrix has 
-more than 2500 columns.  You will see the biggest performance
+Both the dense and sparse routines are written in C and should be
+very efficient.  The dense implementations here have been ruthlessly
+optimized; there's not much you can do for sparse matrices, but
+they should be fast enough if your data is very sparse.
+
+When building/using this package, you will see the biggest performance
 improvements, in decreasing order of value, by using:
 
-1. Good BLAS.
+1. A good BLAS library (MKL, OpenBLAS, ACML, ...).
 2. A compiler supporting OpenMP (preferably version 4 or better).
 
-If you're on Linux, you can very easily use OpenBLAS with R.  Users
-on other platforms might consider using Revolution R Open, which
-ships with Intel MKL.
+If you're on Linux, you can very easily use OpenBLAS with R.  For
+example, on Ubuntu you can simply run:
+
+```
+sudo apt-get install libopenblas-dev
+sudo update-alternatives --config libblas.so.3
+```
+
+Users on other platforms (which I know considerably less about) might
+consider using Revolution R Open, which ships with Intel MKL.
+
+
+
+## Installation
+
+To install the R package:
+
+```r
+devtools::install_github("wrathematics/fastcosim")
+```
+
+The source code is also separated from the necessary R wrapper
+code.  So it easily builds as a shared library after removing
+`src/wrapper.c`.
 
 
 
 ## The Algorithms with Notes on Implementation
+
+For dense implementations, the performance should scale well, and
+the non-BLAS components will use multiple threads (if your compiler 
+supports OpenMP) when the matrix has more than 2500 columns.
+Additionally, we try to use vector operations (using OpenMP's new
+`simd` construct) for additional performance; but you need a compiler
+that supports a relatively modern OpenMP standard for this.
+
+For each function, the storage complexity, ignoring the required 
+allocation of outputs (such as the `cos` matrix), is `O(1)`.
 
 #### Dense Matrix Input
 
@@ -67,20 +100,25 @@ The algorithmic complexity is `O(n)`.
 
 #### Sparse Matrix Input
 
-Given a matrix stored as a COO with row/column indices `i` and `j`
+Given an `m`x`n` sparse matrix stored as a COO with row/column 
+indices `i` and `j`
 **where they are sorted by columns first, then rows**, and
-corresponding data `a` and number of columns `n` (inputs), and a
+corresponding data `a` (inputs), and given a
 preallocated `n`x`n` dense matrix `cos` (output):
 
 1. Initialize `cos` to 0.
 2. For each column `j` of `a` (call it `x`), find its first and final position in the COO storage.
-    1. If `x` is missing (its entries are all 0), set the `j`'th row and column of the lower triangle of `cos` to 0.  Go to 2.
+    1. If `x` is missing (its entries are all 0), set the `j`'th row and column of the lower triangle of `cos` to `NaN` (for compatibility with dense routines).  Go to 2.
     2. Otherwise, for each column `i>j` of `a` (call it `y`), find its first and final position  in the COO storage.
-    3. Compute the dot product of `x` and `y`, `xy`.
-    4. If the dot product is greater than epsilon (`1e-10` for us):
+    3. Compute the dot product of `x` and `y`, and call it `xy`.
+    4. If `xy > epsilon` (`epsilon=1e-10` for us):
         - Compute the dot products of `x` with itself `xx` and `y` with itself `yy`.
-        - Set the `(i, j)`'th entry of `cos` to `xy`/`sqrt(xx*yy)`.
+        - Set the `(i, j)`'th entry of `cos` to `xy / sqrt(xx*yy)`.
 3. Copy the lower triangle to the upper and set the diagonal to 1.
+
+The worst case run-time complexity occurs when the matrix is dense but stored
+as a sparse matrix, and is `O(mn^2)`, the same as in the dense case.  However,
+this will cause serious cache thrashing, and the performace will be abysmal.
 
 
 
@@ -140,11 +178,4 @@ benchmark(fastcosim::cosine(x, y), lsa::cosine(x, y), columns=cols, replications
 
 TODO
 
-
-
-## Installation
-
-```r
-devtools::install_github("wrathematics/fastcosim")
-```
 
