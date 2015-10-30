@@ -130,7 +130,7 @@ The function stores the `j`'th column data and its row indices
 in temporary storage for better cache access patterns.
 Best case, this requires 12 KiB of additional storage, with 8 for 
 the data and 4 for the indices.  Worse case (an all-dense column),
-this balloons up to `m`.
+this balloons up to `12m`.
 The storage complexity is best case `O(1)`, and worst case `O(m)`.
 
 
