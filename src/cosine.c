@@ -73,13 +73,6 @@ static inline void diag2one(const unsigned int n, double *restrict x)
 
 
 
-static inline void set2zero(const unsigned int n, double *restrict x)
-{
-  memset(x, 0.0, n*sizeof(*x));
-}
-
-
-
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
 static inline void fill(const unsigned int n, double *restrict crossprod)
 {
@@ -179,9 +172,17 @@ double cosine_vecvec(const int n, const double *restrict x, const double *restri
 //  Sparse
 // ---------------------------------------------
 
+static inline void set2zero(const unsigned int n, double *restrict x)
+{
+  memset(x, 0.0, n*sizeof(*x));
+}
+
+
+
 static double sparsedot(const int vec1start, const int vec1end, 
+                        const int *restrict rows1, const double *restrict a1,
                         const int vec2start, const int vec2end,
-                        const int *rows, const double *a)
+                        const int *restrict rows2, const double *restrict a2)
 {
   int vec1 = vec1start;
   int vec2 = vec2start;
@@ -191,17 +192,17 @@ static double sparsedot(const int vec1start, const int vec1end,
   
   while (vec1 <= vec1end && vec2 <= vec2end)
   {
-    while (rows[vec1] < rows[vec2] && vec1 <= vec1end)
+    while (rows1[vec1] < rows2[vec2] && vec1 <= vec1end)
       vec1++;
     
-    while (rows[vec1] == rows[vec2] && vec1 <= vec1end)
+    while (rows1[vec1] == rows2[vec2] && vec1 <= vec1end && vec2 <= vec2end)
     {
-      dot += a[vec1] * a[vec2];
+      dot += a1[vec1] * a2[vec2];
       vec1++;
       vec2++;
     }
     
-    while (rows[vec1] > rows[vec2] && vec2 <= vec2end)
+    while (rows1[vec1] > rows2[vec2] && vec2 <= vec2end)
       vec2++;
   }
   
@@ -223,6 +224,7 @@ static inline double sparsedot_self(const int vecstart, const int vecend, const 
 
 
 
+// get the first and last indices in the COO for column i
 static inline void get_startend(int i, int *col, int *vecstart, int *vecend, const int *cols)
 {
   // FIXME 0/1 indexing
@@ -260,19 +262,30 @@ static inline void get_startend(int i, int *col, int *vecstart, int *vecend, con
  * The row/column index vectors.
  * @param cos
  * The output nxn matrix.
+ * 
+ * @return
+ * The function returns -1 if needed memory cannot be allocated, and
+ * 0 otherwise.
 */
-void cosine_sparse_coo(const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos)
+int cosine_sparse_coo(const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos)
 {
   // TODO note, assuming sorted by column index, then row
-  int i, j;
+  int i, j, k;
   int row, col;
   double xy, xx, yy;
   double tmp;
   
   int vec1start, vec1end;
   int vec2start, vec2end;
-  
   vec1end = 0;
+  
+  int tmpend;
+  int current_tmp_size = TMP_VEC_SIZE;
+  double *tmpa = malloc(current_tmp_size * sizeof(*tmpa));
+  checkmalloc(tmpa);
+  int *tmprows = malloc(current_tmp_size * sizeof(*tmprows));
+  checkmalloc(tmprows);
+  
   
   set2zero(n*n, cos);
   
@@ -295,15 +308,35 @@ void cosine_sparse_coo(const int n, const int len, const double *restrict a, con
       continue;
     }
     
+    // store j't column of data/rows for better cache access
+    tmpend = vec1end - vec1start;
+    
+    if (tmpend > current_tmp_size)
+    {
+      //TODO check
+      tmpa = realloc(tmpa, tmpend * sizeof(*tmpa));
+      checkmalloc(tmpa);
+      tmprows = realloc(tmprows, tmpend * sizeof(*tmprows));
+      checkmalloc(tmprows);
+    }
+    
+    for (k=0; k<=tmpend; k++)
+    {
+      tmpa[k] = a[k + vec1start];
+      tmprows[k] = rows[k + vec1start];
+    }
+    
+    
+    // i'th column, etc.
     for (i=j+1; i<n; i++)
     {
       get_startend(i, &col, &vec2start, &vec2end, cols);
       
-      xy = sparsedot(vec1start, vec1end, vec2start, vec2end, rows, a);
+      xy = sparsedot(0, tmpend, tmprows, tmpa, vec2start, vec2end, rows, a);
       
       if (xy > 1e-10)
       {
-        xx = sparsedot_self(vec1start, vec1end, rows, a);
+        xx = sparsedot_self(0, tmpend, tmprows, tmpa);
         yy = sparsedot_self(vec2start, vec2end, rows, a);
         
         tmp = sqrt(xx * yy);
@@ -316,8 +349,14 @@ void cosine_sparse_coo(const int n, const int len, const double *restrict a, con
   }
   
   
+  free(tmpa);
+  free(tmprows);
+  
+  
   diag2one(n, cos);
   symmetrize(n, cos);
+  
+  return 0;
 }
 
 

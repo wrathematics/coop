@@ -61,13 +61,17 @@ SEXP R_cosine_vecvec(SEXP x, SEXP y)
 
 SEXP R_cosine_sparse_coo(SEXP n_, SEXP a, SEXP i, SEXP j)
 {
+  int check;
   const int n = INTEGER(n_)[0];
   SEXP ret;
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
-  cosine_sparse_coo(n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
+  check = cosine_sparse_coo(n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
+  if (check)
+    error("unable to allocate necessary memory");
   
   UNPROTECT(1);
+  
   return ret;
 }
 
