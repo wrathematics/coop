@@ -37,6 +37,8 @@ consider using Revolution R Open, which ships with Intel MKL.
 
 
 
+
+
 ## Installation
 
 To install the R package:
@@ -51,6 +53,8 @@ code.  So it easily builds as a shared library after removing
 
 
 
+
+
 ## The Algorithms with Notes on Implementation
 
 For dense implementations, the performance should scale well, and
@@ -60,8 +64,6 @@ Additionally, we try to use vector operations (using OpenMP's new
 `simd` construct) for additional performance; but you need a compiler
 that supports a relatively modern OpenMP standard for this.
 
-For each function, the storage complexity, ignoring the required 
-allocation of outputs (such as the `cos` matrix), is `O(1)`.
 
 #### Dense Matrix Input
 
@@ -80,6 +82,9 @@ The total number of floating point operations is:
 2. `3/2*(n+1)*n` for the rescaling operation.
 
 The algorithmic complexity is `O(mn^2)`, and is dominated by the symmetric rank-k update.
+The storage complexity, ignoring the required 
+allocation of outputs (such as the `cos` matrix), is `O(1)`.
+
 
 #### Dense Vector-Vector Input
 
@@ -96,6 +101,7 @@ The total number of floating point operations is:
 3. `3` for the division and square root/product.
 
 The algorithmic complexity is `O(n)`.
+The storage complexity is `O(1)`.
 
 
 #### Sparse Matrix Input
@@ -120,6 +126,13 @@ The worst case run-time complexity occurs when the matrix is dense but stored
 as a sparse matrix, and is `O(mn^2)`, the same as in the dense case.  However,
 this will cause serious cache thrashing, and the performace will be abysmal.
 
+The function stores the `j`'th column data and its row indices
+in temporary storage for better cache access patterns.
+Best case, this requires 12 KiB of additional storage, with 8 for 
+the data and 4 for the indices.  Worse case (an all-dense column),
+this balloons up to `m`.
+The storage complexity is best case `O(1)`, and worst case `O(m)`.
+
 
 
 ## Benchmarks
@@ -131,6 +144,7 @@ All benchmarks were performed using:
 * gcc 5.2.1
 * 4 cores of a Core i5-2500K CPU @ 3.30GHz
 * Linux kernel 4.2.0-16
+
 
 #### Dense Matrix Input
 
@@ -152,6 +166,7 @@ benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
 ## 1 fastcosim::cosine(x)          100   0.177    1.000
 ## 2       lsa::cosine(x)          100 113.543  641.486
 ```
+
 
 #### Dense Vector-Vector Input
 
