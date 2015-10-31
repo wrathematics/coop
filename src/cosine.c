@@ -279,7 +279,7 @@ int cosine_sparse_coo(const int n, const int len, const double *restrict a, cons
   int vec2start, vec2end;
   vec1end = 0;
   
-  int tmpend;
+  int tmplen;
   int current_tmp_size = TMP_VEC_SIZE;
   double *tmpa = malloc(current_tmp_size * sizeof(*tmpa));
   checkmalloc(tmpa);
@@ -309,18 +309,20 @@ int cosine_sparse_coo(const int n, const int len, const double *restrict a, cons
     }
     
     // store j't column of data/rows for better cache access
-    tmpend = vec1end - vec1start;
+    tmplen = vec1end - vec1start;
     
-    if (tmpend > current_tmp_size)
+    if (tmplen > current_tmp_size)
     {
-      //TODO check
-      tmpa = realloc(tmpa, tmpend * sizeof(*tmpa));
+      current_tmp_size = tmplen;
+      
+      tmpa = realloc(tmpa, tmplen * sizeof(*tmpa));
       checkmalloc(tmpa);
-      tmprows = realloc(tmprows, tmpend * sizeof(*tmprows));
+      
+      tmprows = realloc(tmprows, tmplen * sizeof(*tmprows));
       checkmalloc(tmprows);
     }
     
-    for (k=0; k<=tmpend; k++)
+    for (k=0; k<=tmplen; k++)
     {
       tmpa[k] = a[k + vec1start];
       tmprows[k] = rows[k + vec1start];
@@ -332,11 +334,11 @@ int cosine_sparse_coo(const int n, const int len, const double *restrict a, cons
     {
       get_startend(i, &col, &vec2start, &vec2end, cols);
       
-      xy = sparsedot(0, tmpend, tmprows, tmpa, vec2start, vec2end, rows, a);
+      xy = sparsedot(0, tmplen, tmprows, tmpa, vec2start, vec2end, rows, a);
       
       if (xy > 1e-10)
       {
-        xx = sparsedot_self(0, tmpend, tmprows, tmpa);
+        xx = sparsedot_self(0, tmplen, tmprows, tmpa);
         yy = sparsedot_self(vec2start, vec2end, rows, a);
         
         tmp = sqrt(xx * yy);
