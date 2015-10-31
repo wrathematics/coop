@@ -137,6 +137,10 @@ The storage complexity is best case `O(1)`, and worst case `O(m)`.
 
 ## Benchmarks
 
+The source code for all benchmarks presented here can be found
+in the source tree of this package under `inst/benchmarks/`, or
+in the binary installation under `benchmarks/`.
+
 All benchmarks were performed using:
 
 * R 3.2.2
@@ -191,6 +195,63 @@ benchmark(fastcosim::cosine(x, y), lsa::cosine(x, y), columns=cols, replications
 
 #### Sparse Matrix Input
 
-TODO
+Benchmarking sparse matrix methods can be more challenging than
+with dense for a variety of reasons, chief among them being that
+the level of sparsity can make an enormous impact in performance.
 
+We present two cases here of varying levels of sparsity.  First,
+we will examine the performance for a 0.1% dense / 99.9% sparse
+matrix:
+
+```r
+size <- .001*m*n
+
+dense <- generate(m, n, size)
+sparse <- as.simple_triplet_matrix(dense)
+
+memuse(dense)
+## 30.518 MiB
+memuse(sparse)
+## 63.508 KiB
+
+benchmark(cosine(dense), cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
+##                test replications elapsed relative
+## 3 as.matrix(sparse)           30   1.416    1.000
+## 1     cosine(dense)           30   4.146    2.928
+## 2    cosine(sparse)           30   1.770    1.250
+```
+
+The performance is quite good for the sparse case, especially
+considering it uses one thread while the dense one uses 4.
+However, as the matris becomes more dense (and it doesn't take
+much), dense methods begin to perform better:
+
+
+```r
+size <- .01*m*n
+
+dense <- generate(m, n, size)
+sparse <- as.simple_triplet_matrix(dense)
+
+memuse(dense)
+## 30.518 MiB
+memuse(sparse)
+## 626.008 KiB
+
+benchmark(cosine(dense), cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
+##                test replications elapsed relative
+## 3 as.matrix(sparse)           30   1.370    1.000
+## 1     cosine(dense)           30   4.126    3.012
+## 2    cosine(sparse)           30  12.348    9.013
+```
+
+So the total time here for the dense matrix (including the cast)
+is about 5.5 seconds, less than half of the 12.3 seconsd for the
+sparse case.  However, the memory usage for the dense case is 
+greater by a factor of 50.
+
+It is hard to give perfect advice for when to use a dense or sparse
+method, but a general rule of thumb is that if you have more than
+5% non-zero data, don't even bother with sparse methods unless
+you absolutely must for storage purposes.
 
