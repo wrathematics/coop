@@ -26,7 +26,7 @@
 
 #include <R.h>
 #include <Rinternals.h>
-
+#include <math.h>
 #include "cosine.h"
 
 
@@ -79,4 +79,57 @@ SEXP R_cosine_sparse_coo(SEXP n_, SEXP a, SEXP i, SEXP j)
 
 
 
+SEXP R_sparsity_int(SEXP x)
+{
+  int i, j, count = 0;
+  const int m = nrows(x), n = ncols(x);
+  const double eps = 1.1 * DBL_EPSILON * DBL_MIN;
+  int *x_pt = INTEGER(x);
+  SEXP ret;
+  
+  
+  for (j=0; j<n; j++)
+  {
+    for (i=0; i<m; i++)
+    {
+      if (x_pt[i + m*j] == 0)
+        count++;
+    }
+  }
+  
+  
+  PROTECT(ret = allocVector(INTSXP, 1));
+  INTEGER(ret)[0] = count;
+  UNPROTECT(1);
+  
+  return ret;
+}
+
+
+
+SEXP R_sparsity_dbl(SEXP x, SEXP tol)
+{
+  int i, j, count = 0;
+  const int m = nrows(x), n = ncols(x);
+  const double eps = REAL(tol)[0];
+  double *x_pt = REAL(x);
+  SEXP ret;
+  
+  
+  for (j=0; j<n; j++)
+  {
+    for (i=0; i<m; i++)
+    {
+      if (fabs(x_pt[i + m*j]) < eps)
+        count++;
+    }
+  }
+  
+  
+  PROTECT(ret = allocVector(INTSXP, 1));
+  INTEGER(ret)[0] = count;
+  UNPROTECT(1);
+  
+  return ret;
+}
 
