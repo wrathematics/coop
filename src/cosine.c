@@ -225,12 +225,11 @@ static inline double sparsedot_self(const int vecstart, const int vecend, const 
 
 
 // get the first and last indices in the COO for column i
-static inline void get_startend(int i, int *col, int *vecstart, int *vecend, const int *cols)
+static inline void get_startend(const int ind, int *col, int *vecstart, int *vecend, const int *cols)
 {
-  // FIXME 0/1 indexing
   *vecstart = *col;
   
-  while (cols[*col] == i)
+  while (cols[*col] == ind)
     (*col)++;
   
   *vecend = *col - 1;
@@ -250,6 +249,8 @@ static inline void get_startend(int i, int *col, int *vecstart, int *vecend, con
  * the sparse matrix is equal to len, then your matrix is actually
  * dense, but stored in a stupid way.
  * 
+ * @param index
+ * 0 or 1 indexing from 0 or 1, respectively.
  * @param n
  * The total number of columns of sparsely-stored input matrix x, 
  * i.e., the number of columns of the matrix if it were densely
@@ -267,7 +268,7 @@ static inline void get_startend(int i, int *col, int *vecstart, int *vecend, con
  * The function returns -1 if needed memory cannot be allocated, and
  * 0 otherwise.
 */
-int cosine_sparse_coo(const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos)
+int cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos)
 {
   // TODO note, assuming sorted by column index, then row
   int i, j, k;
@@ -286,13 +287,12 @@ int cosine_sparse_coo(const int n, const int len, const double *restrict a, cons
   int *tmprows = malloc(current_tmp_size * sizeof(*tmprows));
   checkmalloc(tmprows);
   
-  
   set2zero(n*n, cos);
   
   for (j=0; j<n; j++)
   {
     col = vec1end;
-    get_startend(j, &col, &vec1start, &vec1end, cols);
+    get_startend(j+index, &col, &vec1start, &vec1end, cols);
     
     // NaN-out row and column if col is 0
     if (vec1end < vec1start)
@@ -332,11 +332,11 @@ int cosine_sparse_coo(const int n, const int len, const double *restrict a, cons
     // i'th column, etc.
     for (i=j+1; i<n; i++)
     {
-      get_startend(i, &col, &vec2start, &vec2end, cols);
+      get_startend(i+index, &col, &vec2start, &vec2end, cols);
       
       xy = sparsedot(0, tmplen, tmprows, tmpa, vec2start, vec2end, rows, a);
       
-      if (xy > 1e-10)
+      if (xy > EPSILON)
       {
         xx = sparsedot_self(0, tmplen, tmprows, tmpa);
         yy = sparsedot_self(vec2start, vec2end, rows, a);

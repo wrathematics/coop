@@ -59,6 +59,8 @@ SEXP R_cosine_vecvec(SEXP x, SEXP y)
 
 
 
+#define INEDEX_FROM_1 1
+
 SEXP R_cosine_sparse_coo(SEXP n_, SEXP a, SEXP i, SEXP j)
 {
   int check;
@@ -66,7 +68,7 @@ SEXP R_cosine_sparse_coo(SEXP n_, SEXP a, SEXP i, SEXP j)
   SEXP ret;
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
-  check = cosine_sparse_coo(n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
+  check = cosine_sparse_coo(INEDEX_FROM_1, n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
   if (check)
     error("unable to allocate necessary memory");
   

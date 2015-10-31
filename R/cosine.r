@@ -85,10 +85,13 @@ cosine.default <- function(x, y)
 cosine.simple_triplet_matrix <- function(x, y)
 {
   a <- x$v
-  i <- x$i - 1L
-  j <- x$j - 1L
+  i <- x$i
+  j <- x$j
   n <- x$ncol
   
-  .Call(R_cosine_sparse_coo, n, as.double(a), i, j)
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  .Call(R_cosine_sparse_coo, as.integer(n), a, i, j)
 }
 
