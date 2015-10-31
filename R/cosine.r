@@ -10,7 +10,10 @@
 #' vectors of the numeric input matrix, or of two vectors, depending
 #' on the input argument(s).
 #' 
-#' The implementation for matrix inputs is dominated
+#' Two different storage schemes are accepted for the matrix
+#' version.  For dense matrices, 
+#' 
+#' The implementation for dense matrix inputs is dominated
 #' by a symmetric rank-k update via the BLAS subroutine \code{dsyrk};
 #' see the package \code{README.md} file for a discussion of the 
 #' algorithm implementation and complexity.
@@ -38,6 +41,7 @@
 #' 
 #' cosine(x[, 1], x[, 2])
 #' 
+#' @seealso \code{\link{sparsity}}
 #' @export
 cosine <- function(x, y) UseMethod("cosine")
 

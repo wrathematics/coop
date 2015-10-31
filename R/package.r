@@ -13,10 +13,13 @@
 #' takes two forms.  If supplied with two vectors, then the cosine
 #' similarity of the two vectors will be computed.  On the other
 #' hand, if supplied a single matrix, then all pair-wise vector
-#' cosine similarities of the columns are computed.
+#' cosine similarities of the columns are computed.  The storage
+#' options for a "matrix" are ordinary R matrices and "simple
+#' triplet matrix" from the slam package.
 #' 
 #' 
-#' @useDynLib fastcosim, R_cosine_mat, R_cosine_vecvec, R_cosine_sparse_coo
+#' @useDynLib fastcosim, R_cosine_mat, R_cosine_vecvec,
+#'   R_cosine_sparse_coo, R_sparsity_int, R_sparsity_dbl
 #' 
 #' @docType package
 #' @author Drew Schmidt and Wei-Chen Chen
