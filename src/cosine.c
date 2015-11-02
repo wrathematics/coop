@@ -179,6 +179,20 @@ static inline void set2zero(const unsigned int n, double *restrict x)
 
 
 
+// NaN-out a row/column of cos matrix for numerical compatibility with dense methods
+static inline void set2nan(const int j, const int n, double *restrict cos)
+{
+  int i;
+  
+  for (i=j; i<n; i++)
+    cos[i + n*j] = NAN;
+  
+  for (i=0; i<j; i++)
+    cos[j + n*i] = NAN;
+}
+
+
+
 static double sparsedot(const int vec1start, const int vec1end, 
                         const int *restrict rows1, const double *restrict a1,
                         const int vec2start, const int vec2end,
@@ -242,6 +256,8 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
   double *restrict tmpa, int *restrict tmprows,
   const double *restrict a, const int *restrict rows)
 {
+  int k;
+  
   *tmplen = vecend - vecstart;
   
   if (*tmplen > *current_tmp_size)
@@ -249,13 +265,13 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
     *current_tmp_size = *tmplen;
     
     tmpa = realloc(tmpa, *current_tmp_size * sizeof(*tmpa));
-    checkmalloc(tmpa);
+    CHECKMALLOC(tmpa);
     
     tmprows = realloc(tmprows, *current_tmp_size * sizeof(*tmprows));
-    checkmalloc(tmprows);
+    CHECKMALLOC(tmprows);
   }
   
-  for (int k=0; k<=*tmplen; k++)
+  for (k=0; k<=*tmplen; k++)
   {
     tmpa[k] = a[k + vecstart];
     tmprows[k] = rows[k + vecstart];
@@ -302,7 +318,7 @@ int cosine_sparse_coo(const int index, const int n,
   double *restrict cos)
 {
   // TODO note, assuming sorted by column index, then row
-  int i, j, k;
+  int i, j;
   int info;
   int row, col;
   double xy, xx, yy;
@@ -315,9 +331,9 @@ int cosine_sparse_coo(const int index, const int n,
   int tmplen;
   int current_tmp_size = TMP_VEC_SIZE;
   double *tmpa = malloc(current_tmp_size * sizeof(*tmpa));
-  checkmalloc(tmpa);
+  CHECKMALLOC(tmpa);
   int *tmprows = malloc(current_tmp_size * sizeof(*tmprows));
-  checkmalloc(tmprows);
+  CHECKMALLOC(tmprows);
   
   set2zero(n*n, cos);
   
@@ -330,13 +346,7 @@ int cosine_sparse_coo(const int index, const int n,
     if (vec1end < vec1start)
     {
       vec1end++;
-      
-      for (i=j; i<n; i++)
-        cos[i + n*j] = NAN;
-      
-      for (i=0; i<j; i++)
-        cos[j + n*i] = NAN;
-      
+      set2nan(j, n, cos);
       continue;
     }
     
@@ -344,6 +354,7 @@ int cosine_sparse_coo(const int index, const int n,
     info = get_array(&tmplen, &current_tmp_size, vec1start, vec1end, tmpa, tmprows, a, rows);
     if (info) return info;
     
+    xx = sparsedot_self(0, tmplen, tmprows, tmpa);
     
     // i'th column, etc.
     for (i=j+1; i<n; i++)
@@ -354,7 +365,6 @@ int cosine_sparse_coo(const int index, const int n,
       
       if (xy > EPSILON)
       {
-        xx = sparsedot_self(0, tmplen, tmprows, tmpa);
         yy = sparsedot_self(vec2start, vec2end, rows, a);
         
         tmp = sqrt(xx * yy);

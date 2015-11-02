@@ -33,7 +33,7 @@
 #define EPSILON 1e-10
 
 
-#define checkmalloc(x) if(x==NULL) return -1
+#define CHECKMALLOC(x) if(x==NULL) return -1
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
 #define MAX(x,y) (((x)>(y))?(x):(y))
