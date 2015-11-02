@@ -237,6 +237,35 @@ static inline void get_startend(const int ind, int *col, int *vecstart, int *vec
 
 
 
+static inline int get_array(int *tmplen, int *current_tmp_size, 
+  const int vecstart, const int vecend,
+  double *restrict tmpa, int *restrict tmprows,
+  const double *restrict a, const int *restrict rows)
+{
+  *tmplen = vecend - vecstart;
+  
+  if (*tmplen > *current_tmp_size)
+  {
+    *current_tmp_size = *tmplen;
+    
+    tmpa = realloc(tmpa, *current_tmp_size * sizeof(*tmpa));
+    checkmalloc(tmpa);
+    
+    tmprows = realloc(tmprows, *current_tmp_size * sizeof(*tmprows));
+    checkmalloc(tmprows);
+  }
+  
+  for (int k=0; k<=*tmplen; k++)
+  {
+    tmpa[k] = a[k + vecstart];
+    tmprows[k] = rows[k + vecstart];
+  }
+  
+  return 0;
+}
+
+
+
 /**
  * @brief 
  * Compute the cosine similarity matrix of a sparse, COO-stored
@@ -268,10 +297,13 @@ static inline void get_startend(const int ind, int *col, int *vecstart, int *vec
  * The function returns -1 if needed memory cannot be allocated, and
  * 0 otherwise.
 */
-int cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos)
+int cosine_sparse_coo(const int index, const int n, 
+  const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, 
+  double *restrict cos)
 {
   // TODO note, assuming sorted by column index, then row
   int i, j, k;
+  int info;
   int row, col;
   double xy, xx, yy;
   double tmp;
@@ -309,24 +341,8 @@ int cosine_sparse_coo(const int index, const int n, const int len, const double 
     }
     
     // store j't column of data/rows for better cache access
-    tmplen = vec1end - vec1start;
-    
-    if (tmplen > current_tmp_size)
-    {
-      current_tmp_size = tmplen;
-      
-      tmpa = realloc(tmpa, tmplen * sizeof(*tmpa));
-      checkmalloc(tmpa);
-      
-      tmprows = realloc(tmprows, tmplen * sizeof(*tmprows));
-      checkmalloc(tmprows);
-    }
-    
-    for (k=0; k<=tmplen; k++)
-    {
-      tmpa[k] = a[k + vec1start];
-      tmprows[k] = rows[k + vec1start];
-    }
+    info = get_array(&tmplen, &current_tmp_size, vec1start, vec1end, tmpa, tmprows, a, rows);
+    if (info) return info;
     
     
     // i'th column, etc.
