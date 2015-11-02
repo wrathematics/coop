@@ -39,7 +39,7 @@
 // ddot replica using dgemm
 static inline double ddot(const int n, const double *restrict x, const double *restrict y)
 {
-  int one = 1;
+  const int one = 1;
   double dot;
   
   dgemm_(&(char){'t'}, &(char){'n'}, &one, &one, &n, 
@@ -51,13 +51,9 @@ static inline double ddot(const int n, const double *restrict x, const double *r
 
 
 // upper triangle of t(x) %*% x
-static inline int crossprod(const int m, const int n, const double *restrict x, const double alpha, double *restrict c)
+static inline void crossprod(const int m, const int n, const double *restrict x, double *restrict c)
 {
-  int info = 0;
-  
-  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x, &m, &(double){0.0}, c, &n);
-  
-  return info;
+  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &(double){1.0}, x, &m, &(double){0.0}, c, &n);
 }
 
 
@@ -74,7 +70,7 @@ static inline void diag2one(const unsigned int n, double *restrict x)
 
 
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-static inline void fill(const unsigned int n, double *restrict crossprod)
+static inline void fill(const unsigned int n, double *restrict cp)
 {
   int i, j;
   double diagj;
@@ -82,14 +78,14 @@ static inline void fill(const unsigned int n, double *restrict crossprod)
   #pragma omp parallel for private(i,j,diagj) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
-    diagj = crossprod[j + n*j];
+    diagj = cp[j + n*j];
     
     SAFE_SIMD
     for (i=j+1; i<n; i++)
-      crossprod[i + n*j] /= sqrt(crossprod[i + n*i] * diagj);
+      cp[i + n*j] /= sqrt(cp[i + n*i] * diagj);
   }
   
-  diag2one(n, crossprod);
+  diag2one(n, cp);
 }
 
 
@@ -128,7 +124,7 @@ static inline void symmetrize(const int n, double *restrict x)
 */
 void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
 {
-  crossprod(m, n, x, 1.0, cos);
+  crossprod(m, n, x, cos);
   fill(n, cos);
   symmetrize(n, cos);
 }
@@ -158,8 +154,8 @@ double cosine_vecvec(const int n, const double *restrict x, const double *restri
   
   double cp = ddot(n, x, y);
   
-  crossprod(n, 1, x, 1.0, &normx);
-  crossprod(n, 1, y, 1.0, &normy);
+  crossprod(n, 1, x, &normx);
+  crossprod(n, 1, y, &normy);
   
   return cp / sqrt(normx * normy);
 }
@@ -288,7 +284,8 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
  * matrix.
  * 
  * @details
- * TODO
+ * The implementation assumes the data is sorted by column index, 
+ * i.e. the COO is "column-major".
  * 
  * Note that if the number of rows times the number of columns of
  * the sparse matrix is equal to len, then your matrix is actually
@@ -317,7 +314,6 @@ int cosine_sparse_coo(const int index, const int n,
   const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, 
   double *restrict cos)
 {
-  // TODO note, assuming sorted by column index, then row
   int i, j;
   int info;
   int row, col;
@@ -355,6 +351,7 @@ int cosine_sparse_coo(const int index, const int n,
     if (info) return info;
     
     xx = sparsedot_self(0, tmplen, tmprows, tmpa);
+    
     
     // i'th column, etc.
     for (i=j+1; i<n; i++)
