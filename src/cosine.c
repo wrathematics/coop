@@ -331,7 +331,6 @@ int cosine_sparse_coo(const int index, const int n,
   int *tmprows = malloc(current_tmp_size * sizeof(*tmprows));
   CHECKMALLOC(tmprows);
   
-  set2zero(n*n, cos);
   
   for (j=0; j<n; j++)
   {
@@ -351,7 +350,7 @@ int cosine_sparse_coo(const int index, const int n,
     if (info) return info;
     
     xx = sparsedot_self(0, tmplen, tmprows, tmpa);
-    
+    xx = 1. / sqrt(xx);
     
     // i'th column, etc.
     for (i=j+1; i<n; i++)
@@ -364,9 +363,8 @@ int cosine_sparse_coo(const int index, const int n,
       {
         yy = sparsedot_self(vec2start, vec2end, rows, a);
         
-        tmp = sqrt(xx * yy);
-        if (tmp > 0)
-          cos[i + n*j] = xy/tmp;
+        if (yy > EPSILON)
+          cos[i + n*j] = xy * xx / sqrt(yy);
       }
     }
     
