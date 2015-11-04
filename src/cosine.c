@@ -300,7 +300,7 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
  * @param len
  * The length of the a/rows/cols vectors.
  * @param a
- * The input matrix, in COO (row, column, value) format.
+ * The data for the input matrix, in COO (row, column, value) format.
  * @param rows/cols
  * The row/column index vectors.
  * @param cos
@@ -310,8 +310,8 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
  * The function returns -1 if needed memory cannot be allocated, and
  * 0 otherwise.
 */
-int cosine_sparse_coo(const int index, const int n, 
-  const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, 
+int cosine_sparse_coo(const int index, const int n, const int len, 
+  const double *restrict a, const int *restrict rows, const int *restrict cols, 
   double *restrict cos)
 {
   int i, j;
