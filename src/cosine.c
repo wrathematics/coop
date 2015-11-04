@@ -324,7 +324,7 @@ int cosine_sparse_coo(const int index, const int n,
   int vec2start, vec2end;
   vec1end = 0;
   
-  int tmplen;
+  int len_colj;
   int current_tmp_size = TMP_VEC_SIZE;
   double *a_colj = malloc(current_tmp_size * sizeof(*a_colj));
   CHECKMALLOC(a_colj);
@@ -346,10 +346,10 @@ int cosine_sparse_coo(const int index, const int n,
     }
     
     // store j't column of data/rows for better cache access
-    info = get_array(&tmplen, &current_tmp_size, vec1start, vec1end, a_colj, rows_colj, a, rows);
+    info = get_array(&len_colj, &current_tmp_size, vec1start, vec1end, a_colj, rows_colj, a, rows);
     if (info) return info;
     
-    xx = sparsedot_self(0, tmplen, rows_colj, a_colj);
+    xx = sparsedot_self(0, len_colj, rows_colj, a_colj);
     xx = 1. / sqrt(xx);
     
     // i'th column, etc.
@@ -357,7 +357,7 @@ int cosine_sparse_coo(const int index, const int n,
     {
       get_startend(i+index, &col, &vec2start, &vec2end, cols);
       
-      xy = sparsedot(0, tmplen, rows_colj, a_colj, vec2start, vec2end, rows, a);
+      xy = sparsedot(0, len_colj, rows_colj, a_colj, vec2start, vec2end, rows, a);
       
       if (xy > EPSILON)
       {
