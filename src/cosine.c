@@ -317,7 +317,7 @@ int cosine_sparse_coo(const int index, const int n, const int len,
   const double *restrict a, const int *restrict rows, const int *restrict cols, 
   double *restrict cos)
 {
-  int i, j;
+  int i, j, k, l;
   int info;
   int row, col;
   double xy, xx, yy;
@@ -362,15 +362,45 @@ int cosine_sparse_coo(const int index, const int n, const int len,
     {
       get_startend(i+index, &col, &vec2start, &vec2end, cols);
       
-      xy = sparsedot(0, len_colj, rows_colj, a_colj, vec2start, vec2end, rows, a);
       
-      if (xy > EPSILON)
+      k = 0;
+      l = vec2start;
+      xy = 0.;
+      yy = 0.;
+      
+      
+      while (k <= len_colj && l <= vec2end)
       {
-        yy = sparsedot_self(vec2start, vec2end, rows, a);
+        // catch up row of colj to row of coli
+        while (k <= len_colj && rows_colj[k] < rows[l])
+          k++;
         
-        if (yy > EPSILON)
-          cos[i + n*j] = xy * xx / sqrt(yy);
+        // dot products
+        while (k <= len_colj && l <= vec2end && rows_colj[k] == rows[l])
+        {
+          xy += a_colj[k] * a[l];
+          yy += a[l] * a[l];
+          k++;
+          l++;
+        }
+        
+        // catch up row of coli to row of colj, self dot product along the way
+        if (k <= len_colj)
+        {
+          while (l <= vec2end && rows_colj[k] > rows[l])
+          {
+            yy += a[l] * a[l];
+            l++;
+          }
+        }
       }
+      
+      for (l=l; l<=vec2end; l++)
+        yy += a[l] * a[l];
+      
+      
+      if (xy > EPSILON && yy > EPSILON)
+        cos[i + n*j] = xy * xx / sqrt(yy);
     }
     
     vec1end++;
