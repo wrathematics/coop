@@ -202,18 +202,21 @@ static double sparsedot(const int vec1start, const int vec1end,
   
   while (vec1 <= vec1end && vec2 <= vec2end)
   {
-    while (rows1[vec1] < rows2[vec2] && vec1 <= vec1end)
+    while (vec1 <= vec1end && rows1[vec1] < rows2[vec2])
       vec1++;
     
-    while (rows1[vec1] == rows2[vec2] && vec1 <= vec1end && vec2 <= vec2end)
+    while (vec1 <= vec1end && vec2 <= vec2end && rows1[vec1] == rows2[vec2])
     {
       dot += a1[vec1] * a2[vec2];
       vec1++;
       vec2++;
     }
     
-    while (rows1[vec1] > rows2[vec2] && vec2 <= vec2end)
-      vec2++;
+    if (vec1 <= vec1end)
+    {
+      while (vec2 <= vec2end && rows1[vec1] > rows2[vec2])
+        vec2++;
+    }
   }
   
   return dot;
@@ -260,10 +263,10 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
   {
     *current_tmp_size = *tmplen;
     
-    b = realloc(b, *current_tmp_size * sizeof(*b));
+    b = realloc(b, ((*current_tmp_size)+1) * sizeof(*b));
     CHECKMALLOC(b);
     
-    brows = realloc(brows, *current_tmp_size * sizeof(*brows));
+    brows = realloc(brows, ((*current_tmp_size)+1) * sizeof(*brows));
     CHECKMALLOC(brows);
   }
   
@@ -331,6 +334,8 @@ int cosine_sparse_coo(const int index, const int n, const int len,
   int *rows_colj = malloc(current_tmp_size * sizeof(*rows_colj));
   CHECKMALLOC(rows_colj);
   
+  
+  set2zero(n*n, cos);
   
   for (j=0; j<n; j++)
   {
