@@ -238,11 +238,11 @@ static inline double sparsedot_self(const int vecstart, const int vecend, const 
 
 
 // get the first and last indices in the COO for column i
-static inline void get_startend(const int ind, int *col, int *vecstart, int *vecend, const int *cols)
+static inline void get_startend(const int len, const int ind, int *col, int *vecstart, int *vecend, const int *cols)
 {
   *vecstart = *col;
   
-  while (cols[*col] == ind)
+  while (*col < len && cols[*col] == ind)
     (*col)++;
   
   *vecend = *col - 1;
@@ -340,7 +340,7 @@ int cosine_sparse_coo(const int index, const int n, const int len,
   for (j=0; j<n; j++)
   {
     col = vec1end;
-    get_startend(j+index, &col, &vec1start, &vec1end, cols);
+    get_startend(len, j+index, &col, &vec1start, &vec1end, cols);
     
     // NaN-out row and column if col is 0
     if (vec1end < vec1start)
@@ -360,7 +360,7 @@ int cosine_sparse_coo(const int index, const int n, const int len,
     // i'th column, etc.
     for (i=j+1; i<n; i++)
     {
-      get_startend(i+index, &col, &vec2start, &vec2end, cols);
+      get_startend(len, i+index, &col, &vec2start, &vec2end, cols);
       
       
       k = 0;
