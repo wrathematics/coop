@@ -378,8 +378,9 @@ int cosine_sparse_coo(const int index, const int n, const int len,
         // dot products
         while (k <= len_colj && l <= vec2end && rows_colj[k] == rows[l])
         {
-          xy += a_colj[k] * a[l];
-          yy += a[l] * a[l];
+          tmp = a[l];
+          xy += a_colj[k] * tmp;
+          yy += tmp*tmp;
           k++;
           l++;
         }
@@ -389,14 +390,18 @@ int cosine_sparse_coo(const int index, const int n, const int len,
         {
           while (l <= vec2end && rows_colj[k] > rows[l])
           {
-            yy += a[l] * a[l];
+            tmp = a[l];
+            yy += tmp*tmp;
             l++;
           }
         }
       }
       
       for (l=l; l<=vec2end; l++)
-        yy += a[l] * a[l];
+      {
+        tmp = a[l];
+        yy += tmp*tmp;
+      }
       
       
       if (xy > EPSILON && yy > EPSILON)
