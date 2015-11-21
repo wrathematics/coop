@@ -189,41 +189,6 @@ static inline void set2nan(const int j, const int n, double *restrict cos)
 
 
 
-static double sparsedot(const int vec1start, const int vec1end, 
-                        const int *restrict rows1, const double *restrict a1,
-                        const int vec2start, const int vec2end,
-                        const int *restrict rows2, const double *restrict a2)
-{
-  int vec1 = vec1start;
-  int vec2 = vec2start;
-  
-  double dot = 0.0;
-  
-  
-  while (vec1 <= vec1end && vec2 <= vec2end)
-  {
-    while (vec1 <= vec1end && rows1[vec1] < rows2[vec2])
-      vec1++;
-    
-    while (vec1 <= vec1end && vec2 <= vec2end && rows1[vec1] == rows2[vec2])
-    {
-      dot += a1[vec1] * a2[vec2];
-      vec1++;
-      vec2++;
-    }
-    
-    if (vec1 <= vec1end)
-    {
-      while (vec2 <= vec2end && rows1[vec1] > rows2[vec2])
-        vec2++;
-    }
-  }
-  
-  return dot;
-}
-
-
-
 static inline double sparsedot_self(const int vecstart, const int vecend, const int *rows, const double *a)
 {
   int i;
@@ -319,7 +284,7 @@ int cosine_sparse_coo(const int index, const int n, const int len,
 {
   int i, j, k, l;
   int info;
-  int row, col;
+  int col;
   double xy, xx, yy;
   double tmp;
   
@@ -421,5 +386,3 @@ int cosine_sparse_coo(const int index, const int n, const int len,
   
   return 0;
 }
-
-

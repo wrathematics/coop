@@ -83,7 +83,6 @@ SEXP R_sparsity_int(SEXP x)
 {
   int i, j, count = 0;
   const int m = nrows(x), n = ncols(x);
-  const double eps = 1.1 * DBL_EPSILON * DBL_MIN;
   int *x_pt = INTEGER(x);
   SEXP ret;
   
@@ -132,4 +131,3 @@ SEXP R_sparsity_dbl(SEXP x, SEXP tol)
   
   return ret;
 }
-
