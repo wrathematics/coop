@@ -8,10 +8,11 @@
 #' @details
 #' The function computes the cosine similarity between all column
 #' vectors of the numeric input matrix, or of two vectors, depending
-#' on the input argument(s).
-#' 
-#' Two different storage schemes are accepted for the matrix
-#' version.  For dense matrices, 
+#' on the input argument(s). Two different storage schemes are 
+#' accepted for the matrix version.  For dense matrices, an ordinary
+#' R matrix input is accepted.  For sparse matrices, a matrix in
+#' COO format, namely \code{simple_triplet_matrix} from the slam
+#' package, is accepted.
 #' 
 #' The implementation for dense matrix inputs is dominated
 #' by a symmetric rank-k update via the BLAS subroutine \code{dsyrk};
@@ -68,6 +69,9 @@ cosine.default <- function(x, y)
 {
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
+  
+  if (missing(y))
+    return(1.0)
   if (!is.numeric(y))
     stop("argument 'y' must be numeric")
   
@@ -87,11 +91,23 @@ cosine.default <- function(x, y)
 #' @export
 cosine.simple_triplet_matrix <- function(x, y)
 {
+  if (!missing(y))
+    stop("argument 'y' can not be used with a matrix 'x'")
+  
   a <- x$v
-  n <- x$ncol
+  i <- x$i
+  j <- x$j
+  n <- as.integer(x$ncol)
+  
+  if (length(a) != length(i) || length(i) != length(j))
+    stop("Malformed simple_triplet_matrix: lengths of 'v', 'i', and 'j' do not agree")
   
   if (!is.double(a))
     storage.mode(a) <- "double"
+  if (!is.integer(i))
+    storage.mode(i) <- "integer"
+  if (!is.integer(j))
+    storage.mode(j) <- "integer"
   
-  .Call(R_cosine_sparse_coo, as.integer(n), a, x$i, x$j)
+  .Call(R_cosine_sparse_coo, n, a, i, j)
 }

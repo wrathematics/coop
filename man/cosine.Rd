@@ -25,10 +25,11 @@ with a very different implementation.
 \details{
 The function computes the cosine similarity between all column
 vectors of the numeric input matrix, or of two vectors, depending
-on the input argument(s).
-
-Two different storage schemes are accepted for the matrix
-version.  For dense matrices, 
+on the input argument(s). Two different storage schemes are 
+accepted for the matrix version.  For dense matrices, an ordinary
+R matrix input is accepted.  For sparse matrices, a matrix in
+COO format, namely \code{simple_triplet_matrix} from the slam
+package, is accepted.
 
 The implementation for dense matrix inputs is dominated
 by a symmetric rank-k update via the BLAS subroutine \code{dsyrk};
