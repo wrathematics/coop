@@ -14,7 +14,10 @@ Depends:
     R (>= 3.0.0)
 Enhances: slam (>= 0.1.32)
 Suggests:
-    lsa (>= 0.73.1)
+    lsa (>= 0.73.1),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
 NeedsCompilation: yes
 ByteCompile: yes
 URL: https://github.com/wrathematics/fastcosim
