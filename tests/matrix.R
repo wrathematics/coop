@@ -6,24 +6,15 @@ cosine <- function(x)
   return(cos)
 }
 
+check <- function(x)
+{
+  t1 <- cosine(x)
+  t2 <- fastcosim::cosine(x)
+  stopifnot(all.equal(t1, t2, check.attributes=FALSE))
+}
+
 x <- matrix(rnorm(30), 10)
-
-t1 <- cosine(x)
-t2 <- fastcosim::cosine(x)
-stopifnot(all.equal(t1, t2, check.attributes=FALSE))
-  
-  
-  
-x <- t(x)
-
-t1 <- cosine(x)
-t2 <- fastcosim::cosine(x)
-stopifnot(all.equal(t1, t2, check.attributes=FALSE))
-
-
-
-x <- tcrossprod(x)
-
-t1 <- cosine(x)
-t2 <- fastcosim::cosine(x)
-stopifnot(all.equal(t1, t2, check.attributes=FALSE))
+check(x)
+check(t(x))
+check(crossprod(x))
+check(tcrossprod(x))
