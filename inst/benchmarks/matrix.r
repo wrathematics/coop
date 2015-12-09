@@ -1,9 +1,19 @@
+cosine_R <- function(x)
+{
+  cp <- crossprod(x)
+  rtdg <- sqrt(diag(cp))
+  cos <- cp / tcrossprod(rtdg)
+  return(cos)
+}
+
+library(compiler)
+cosine_R <- cmpfun(cosine_R)
+
+library(fastcosim)
 library(rbenchmark)
-reps <- 100
-cols <- c("test", "replications", "elapsed", "relative")
 
 m <- 2000
 n <- 200
 x <- matrix(rnorm(m*n), m, n)
 
-benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
+benchmark(cosine_R(x), cosine(x), replications=100)
