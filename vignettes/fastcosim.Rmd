@@ -16,28 +16,26 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
+```{r, echo=FALSE}
+matmemsize <- function(n) capture.output(memuse::mu(8*2*(n+1)*n))
+```
 
 # Introduction
 
-**fastcosim** [[@fastcosim]] is a micro-package for computing cosine similarity quickly.  If you can do this faster, I'd love to know how.
+**fastcosim** [[@fastcosim]] is a micro-package for computing cosine similarity in a quick, memory efficient way.  If you can do this better, I'd love to know how.
 
 The package has separate routines for dense matrices/vectors and for a sparse matrix (like a term-document/document-term matrix). The use of each is seamless to the user by way of R's S3 methods.
 
 Both the dense and sparse routines are written in C and should be very efficient.  The dense implementations here have been ruthlessly optimized; there's not much you can do for sparse matrices, but they should be fast enough if your data is very sparse.
 
-When building/using this package, you will see the biggest performance improvements, in decreasing order of value, by using:
 
-1. A good BLAS library (MKL, OpenBLAS, ACML, ...).
-2. A compiler supporting OpenMP (preferably version 4 or better).
 
-If you're on Linux, you can very easily use OpenBLAS with R.  For example, on Ubuntu you can simply run:
+## Why Put this in a Package?
 
-```
-sudo apt-get install libopenblas-dev
-sudo update-alternatives --config libblas.so.3
-```
+There is no function built into R to compute the all-pairwise cosine similarities of the columns of a matrix.  As such, you will find people across the R community in a myriad of bizarre, often inefficient, ways.  In fact, some of them are even incorrect!
 
-Users on other platforms (which I know considerably less about) might consider using Revolution R Open, which ships with Intel MKL.
+The operation `cosine()` provided by this package is a simple one, but it is important enough, particularly to fields like text mining, to have a good, high performance implementation.
+
 
 
 ## Installation
@@ -50,6 +48,107 @@ devtools::install_github("wrathematics/fastcosim")
 
 The source code is also separated from the necessary R wrapper code.  So it easily builds as a shared library after removing `src/wrapper.c`.
 
+
+
+## BLAS Library
+
+When building/using this package, you will see the biggest performance improvements, in decreasing order of value, by using:
+
+1. A good BLAS library
+2. A compiler supporting OpenMP (preferably version 4 or better).
+
+R ships the reference BLAS [[@lawson1979basic]] which are known to have poor performance.  Modern re-implementations of the BLAS library have identical API and should generally produce similar outputs from the same input, but they are instrumented to be very high performance.
+
+Several well-supported high performance BLAS libraries used today are Intel MKL [[@mkl]], AMD ACML [[@acml]], both of which are proprietary and can, depending on circumstances, require paying for a license to use.  There are also good open source implementations, such as OpenBLAS [[@openblas]], which is perhaps the best of the free options.  Another free BLAS library which will outperform the reference BLAS is Atlas [[@atlas]], although OpenBLAS will seriously outperform it, so there is no reason to use it.
+
+multi-threaded
+
+If you're on Linux, you can very easily use OpenBLAS with R.  For example, on Ubuntu you can simply run:
+
+```
+sudo apt-get install libopenblas-dev
+sudo update-alternatives --config libblas.so.3
+```
+
+Users on other platforms (which I know considerably less about) might consider using Revolution R Open, which ships with Intel MKL.
+
+
+
+
+# Cosine Similarity
+
+## Definition
+
+an `m`x`n` matrix `x`
+
+
+
+## Computing Cosines
+
+
+### A Naive Implementation
+
+Proceeding directly from the definition, we can easily compute the cosine of two vectors as follows:
+
+```{r}
+cosine <- function(x, y)
+{
+  cp <- t(x) %*% y
+  normx <- sqrt(t(x) %*% x)
+  normy <- sqrt(t(y) %*% y)
+  cp / normx / normy
+}
+```
+
+This might lead us to generalize to a matrix by defining the function to operate recursively on the above construction.  In fact, this is precisely how the **lsa** package [[@lsa]] computes cosine similarity.  And while this captures the mathematical spirit of the operation, it ignores how computers actually operate on data in some critical ways.
+
+
+### A runtime efficient implementation in R
+
+We can massively improve the performance by being slightly more careful in which R functions we use:
+
+```{r}
+cosine <- function(x)
+{
+  cp <- crossprod(x)
+  rtdg <- sqrt(diag(cp))
+  cos <- cp / tcrossprod(rtdg)
+  return(cos)
+}
+```
+
+The main reason this will *significantly* outperform naive implementations is because it makes very efficient use of the BLAS; this of course assumes you are using efficient BLAS implementations.  Additionally, `crossprod()` and `tcrossprod()` are actually optimized to not only avoid the unnecessary copy in the call to `t()`, but only compute one triangle and copy it over to the other.  These operations alone allow for significant improvement in performance:
+
+```{r, cache=TRUE}
+library(microbenchmark)
+n <- 500
+x <- matrix(rnorm(n*n), n, n)
+
+mb <- microbenchmark(cp1 <- t(x) %*% x, cp2 <- crossprod(x), times=20)
+boxplot(mb)
+```
+
+It is additionally simple to verify that these indeed compute the exact same thing:
+
+```{r}
+all.equal(t(x) %*% x, crossprod(x))
+```
+
+
+
+However, this implementation is not memory efficient, as it requires the allocation  of the additional storage:
+
+1. `n`x`n` elements for the `crossprod()`
+2. `n` elements for `diag()`
+3. Another `n` elements just for the `sqrt()`
+4. `n`x`n` elements for the `tcrossprod()`
+
+The final output storage is the result of the division of `cp` by the result of `tcrossprod()`.   So the total number of *intermediary* elements allocated is `2n(n+1)`.  So for an input matrix with 1000 columns, you need `r matmemsize(1000)` of additional memory, and for one with 10000 columns, you need `r matmemsize(10000)` of additional storage.  For a smaller matrix, this may be satisfactory. 
+
+
+### Comparison to fastcosim
+
+On smaller datasets, the runtime efficient version can compete with the fastcosim version.  However, as the data size grows
 
 
 
