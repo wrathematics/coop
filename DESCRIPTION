@@ -14,6 +14,7 @@ Depends:
     R (>= 3.0.0)
 Enhances: slam (>= 0.1.32)
 Suggests:
+    memuse,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
