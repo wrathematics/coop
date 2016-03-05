@@ -19,6 +19,7 @@
 #' 
 #' 
 #' @useDynLib fastcosim, R_cosine_mat, R_cosine_vecvec,
+#'   R_pcor_mat, R_pcor_vecvec,
 #'   R_cosine_sparse_coo, R_sparsity_int, R_sparsity_dbl
 #' 
 #' @docType package

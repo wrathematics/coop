@@ -151,11 +151,134 @@ void cosine_mat(const int m, const int n, const double *restrict x, double *rest
 double cosine_vecvec(const int n, const double *restrict x, const double *restrict y)
 {
   double normx, normy;
-  
-  double cp = ddot(n, x, y);
+  const double cp = ddot(n, x, y);
   
   crossprod(n, 1, x, &normx);
   crossprod(n, 1, y, &normy);
+  
+  return cp / sqrt(normx * normy);
+}
+
+
+
+static void remove_colmeans(const int m, const int n, double *restrict x)
+{
+  int i, j;
+  double colmean;
+  
+  if (m == 0 || n == 0) 
+    return;
+  
+  const double div = 1. / ((double) m);
+  
+  #pragma omp parallel for private(i, j, colmean) shared(x) if(m*n > OMP_MIN_SIZE)
+  for (j=0; j<n; j++)
+  {
+    colmean = 0;
+    
+    // Get column mean
+    SAFE_SIMD
+    for (i=0; i<m; i++)
+      colmean += x[i   + m*j];
+    
+    colmean *= div;
+    
+    // Remove mean from column
+    SAFE_SIMD
+    for (i=0; i<m; i++)
+      x[i   + m*j] -= colmean;
+    
+  }
+}
+
+
+
+/**
+ * @brief 
+ * Compute the pearson correlation matrix.
+ * 
+ * @details
+ * The implementation is dominated by a symmetric rank-k update
+ * via the BLAS function dsyrk().
+ * 
+ * @param m,n
+ * The number of rows/columns of the input matrix x.
+ * @param x
+ * The input mxn matrix.
+ * @param cor
+ * The output nxn matrix.
+*/
+void pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor)
+{
+  double *x_cp = malloc(m*n*sizeof(*x));
+  memcpy(x_cp, x, m*n*sizeof(*x));
+  
+  remove_colmeans(m, n, x_cp);
+  crossprod(m, n, x_cp, cor);
+  fill(n, cor);
+  symmetrize(n, cor);
+  
+  free(x_cp);
+}
+
+
+
+static inline double mean(const int n, const double *restrict x)
+{
+  int i;
+  const double divbyn = 1. / ((double) n);
+  double mean = 0.;
+  
+  SAFE_FOR_SIMD
+  for (i=0; i<n; i++)
+    mean += x[i];
+  
+  return mean*divbyn;
+}
+
+
+
+/**
+ * @brief 
+ * Compute the pearson correlation between two vectors.
+ * 
+ * @details
+ * The implementation uses a dgemm() to compute the dot product
+ * of x and y, and then two dsyrk() calls to compute the (square of)
+ * the norms of x and y.
+ * 
+ * @param n
+ * The length of the x and y vectors.
+ * @param x,y
+ * The input vectors.
+ * 
+ * @return
+ * The cosine similarity between the two vectors.
+*/
+double pcor_vecvec(const int n, const double *restrict x, const double *restrict y)
+{
+  int i;
+  double normx, normy;
+  double *x_minusmean = malloc(n*sizeof(*x));
+  double *y_minusmean = malloc(n*sizeof(*y));
+  
+  const double meanx = mean(n, x);
+  const double meany = mean(n, y);
+  
+  SAFE_PARALLEL_FOR_SIMD
+  for (i=0; i<n; i++)
+  {
+    x_minusmean[i] = x[i] - meanx;
+    y_minusmean[i] = y[i] - meany;
+  }
+  
+  const double cp = ddot(n, x_minusmean, y_minusmean);
+  
+  crossprod(n, 1, x_minusmean, &normx);
+  crossprod(n, 1, y_minusmean, &normy);
+  
+  free(x_minusmean);
+  free(y_minusmean);
   
   return cp / sqrt(normx * normy);
 }

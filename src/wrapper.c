@@ -30,6 +30,11 @@
 #include "cosine.h"
 
 
+
+// ---------------------------------------------
+//  Dense
+// ---------------------------------------------
+
 SEXP R_cosine_mat(SEXP x)
 {
   const unsigned int m = nrows(x);
@@ -58,6 +63,39 @@ SEXP R_cosine_vecvec(SEXP x, SEXP y)
 }
 
 
+
+SEXP R_pcor_mat(SEXP x)
+{
+  const unsigned int m = nrows(x);
+  const unsigned int n = ncols(x);
+  SEXP ret;
+  PROTECT(ret = allocMatrix(REALSXP, n, n));
+  
+  pcor_mat(m, n, REAL(x), REAL(ret));
+  
+  UNPROTECT(1);
+  return ret;
+}
+
+
+
+SEXP R_pcor_vecvec(SEXP x, SEXP y)
+{
+  const unsigned int n = LENGTH(x);
+  SEXP ret;
+  PROTECT(ret = allocVector(REALSXP, 1));
+  
+  REAL(ret)[0] = pcor_vecvec(n, REAL(x), REAL(y));
+  
+  UNPROTECT(1);
+  return ret;
+}
+
+
+
+// ---------------------------------------------
+//  Sparse
+// ---------------------------------------------
 
 #define INEDEX_FROM_1 1
 

@@ -18,3 +18,17 @@ check(x)
 check(t(x))
 check(crossprod(x))
 check(tcrossprod(x))
+
+
+
+check <- function(x)
+{
+  t1 <- cor(x)
+  t2 <- fastcosim::pcor(x)
+  stopifnot(all.equal(t1, t2, check.attributes=FALSE))
+}
+
+check(x)
+check(t(x))
+check(crossprod(x))
+check(tcrossprod(x))
