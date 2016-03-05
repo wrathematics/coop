@@ -7,10 +7,10 @@ output:
     fig_caption: true
     toc: true
     number_sections: true
-    css: custom.css
+    css: include/custom.css
     highlight: kate
-bibliography: fastcosim.bib
-csl: "ieee.csl"
+bibliography: include/fastcosim.bib
+csl: "include/ieee.csl"
 vignette: >
   %\VignetteIndexEntry{fastcosim: Fast Cosine Similarity}
   %\VignetteEngine{knitr::rmarkdown}
@@ -74,11 +74,20 @@ Users on other platforms like Windows or Mac (which I know considerably less abo
 
 
 
+
 # Cosine Similarity
 
 ## Definition
 
-an `m`x`n` matrix `x`
+Given two vectors `x` and `y` each of length `m`, we can define the *cosine similarity* of the two vectors as 
+
+$$
+cosim(x,y) = \frac{x\cdot y}{\|x\| \|y\|}
+$$
+
+This is the cosine of the angle
+
+Given an `m`x`n` matrix `x`, we can define the *cosine similarity*
 
 
 
@@ -150,6 +159,7 @@ The final output storage is the result of the division of `cp` by the result of 
 ### Comparison to fastcosim
 
 On smaller datasets, the runtime efficient version can compete with the fastcosim version.  However, as the data size grows
+
 
 
 
@@ -323,4 +333,4 @@ It is hard to give perfect advice for when to use a dense or sparse method, but 
 
 
 # References
-<script language="JavaScript" src="headers.js"></script>
+<script language="JavaScript" src="include/headers.js"></script>
