@@ -9,7 +9,7 @@ cosine_R <- function(x)
 library(compiler)
 cosine_R <- cmpfun(cosine_R)
 
-library(fastcosim)
+library(fastco)
 library(rbenchmark)
 
 m <- 2000

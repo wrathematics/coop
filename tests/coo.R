@@ -1,7 +1,7 @@
 if(require(slam))
 {
   library(slam)
-  library(fastcosim)
+  library(fastco)
   set.seed(1234)
   
   generate <- function(m, n, size)
@@ -35,4 +35,3 @@ if(require(slam))
   stopifnot(all.equal(t1, t2))
   
 }
-

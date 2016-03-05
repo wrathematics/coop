@@ -9,7 +9,7 @@ cosine <- function(x)
 check <- function(x)
 {
   t1 <- cosine(x)
-  t2 <- fastcosim::cosine(x)
+  t2 <- fastco::cosine(x)
   stopifnot(all.equal(t1, t2, check.attributes=FALSE))
 }
 
@@ -24,7 +24,7 @@ check(tcrossprod(x))
 check <- function(x)
 {
   t1 <- cor(x)
-  t2 <- fastcosim::pcor(x)
+  t2 <- fastco::pcor(x)
   stopifnot(all.equal(t1, t2, check.attributes=FALSE))
 }
 

@@ -16,7 +16,7 @@
 #' similarities of the columns.
 #' 
 #' @examples
-#' library(fastcosim)
+#' library(fastco)
 #' x <- matrix(rnorm(10*3), 10, 3)
 #' pcor(x)
 #' 

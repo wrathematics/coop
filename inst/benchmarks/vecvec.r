@@ -6,4 +6,4 @@ n <- 1000000
 x <- rnorm(n)
 y <- rnorm(n)
 
-benchmark(fastcosim::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)
+benchmark(fastco::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)

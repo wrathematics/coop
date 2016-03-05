@@ -1,6 +1,6 @@
-Package: fastcosim
+Package: fastco
 Type: Package
-Title: Fast Cosine Similarity
+Title: Fast Correlation, Covariance, and Cosine Similarity
 Version: 0.1-0
 Description: Offers a single function to very quickly compute
     cosine similarity.  Separate, optimized methods are available
@@ -15,13 +15,15 @@ Depends:
 Enhances: slam (>= 0.1.32)
 Suggests:
     memuse,
+    rbenchmark,
+    microbenchmark,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: yes
 ByteCompile: yes
-URL: https://github.com/wrathematics/fastcosim
-BugReports: https://github.com/wrathematics/fastcosim/issues
+URL: https://github.com/wrathematics/fastco
+BugReports: https://github.com/wrathematics/fastco/issues
 Authors@R: c(person("Drew", "Schmidt", role=c("aut", "cre"),
   email="wrathematics@gmail.com"), 
   person("Christian", "Heckendorf", role="ctb", comment="Caught some

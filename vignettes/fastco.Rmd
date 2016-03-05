@@ -1,5 +1,5 @@
 ---
-title: "fastcosim: Fast Cosine Similarity"
+title: "fastco: Fast Covariance, Correlation, and Cosine Similarity"
 author: "Drew Schmidt"
 date: "`r Sys.Date()`"
 output:
@@ -9,10 +9,10 @@ output:
     number_sections: true
     css: include/custom.css
     highlight: kate
-bibliography: include/fastcosim.bib
+bibliography: include/fastco.bib
 csl: "include/ieee.csl"
 vignette: >
-  %\VignetteIndexEntry{fastcosim: Fast Cosine Similarity}
+  %\VignetteIndexEntry{fastco: Fast Correlation, Covariance, and Cosine Similarity}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -23,7 +23,7 @@ matmemsize <- function(n) capture.output(memuse::mu(8*2*(n+1)*n))
 
 # Introduction
 
-**fastcosim** [[@fastcosim]] is a micro-package for computing cosine similarity in a quick, memory efficient way.  If you can do this better, I'd love to know how.
+**fastco** [[@fastco]] is a micro-package for computing cosine similarity in a quick, memory efficient way.  If you can do this better, I'd love to know how.
 
 The package has separate routines for dense matrices/vectors and for a sparse matrix (like a term-document/document-term matrix). The use of each is seamless to the user by way of R's S3 methods.
 
@@ -44,7 +44,7 @@ The operation `cosine()` provided by this package is a simple one, but it is imp
 To install the R package:
 
 ```r
-devtools::install_github("wrathematics/fastcosim")
+devtools::install_github("wrathematics/fastco")
 ```
 
 The source code is also separated from the necessary R wrapper code.  So it easily builds as a shared library after removing `src/wrapper.c`.
@@ -166,9 +166,9 @@ However, this implementation is not memory efficient, as it requires the allocat
 The final output storage is the result of the division of `cp` by the result of `tcrossprod()`.   So the total number of *intermediary* elements allocated is `2n(n+1)`.  So for an input matrix with 1000 columns, you need `r matmemsize(1000)` of additional memory, and for one with 10000 columns, you need `r matmemsize(10000)` of additional storage.  For a smaller matrix, this may be satisfactory. 
 
 
-### Comparison to fastcosim
+### Comparison to fastco
 
-On smaller datasets, the runtime efficient version can compete with the fastcosim version.  However, as the data size grows
+On smaller datasets, the runtime efficient version can compete with the fastco version.  However, as the data size grows
 
 
 
@@ -260,10 +260,10 @@ m <- 2000
 n <- 200
 x <- matrix(rnorm(m*n), m, n)
 
-benchmark(fastcosim::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
+benchmark(fastco::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
 
 ##                   test replications elapsed relative
-## 1 fastcosim::cosine(x)          100   0.177    1.000
+## 1 fastco::cosine(x)          100   0.177    1.000
 ## 2       lsa::cosine(x)          100 113.543  641.486
 ```
 
@@ -281,10 +281,10 @@ n <- 1000000
 x <- rnorm(n)
 y <- rnorm(n)
 
-benchmark(fastcosim::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)
+benchmark(fastco::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)
 
 ##                      test replications elapsed relative
-## 1 fastcosim::cosine(x, y)          100   0.757    1.000
+## 1 fastco::cosine(x, y)          100   0.757    1.000
 ## 2       lsa::cosine(x, y)          100   0.768    1.015
 ```
 

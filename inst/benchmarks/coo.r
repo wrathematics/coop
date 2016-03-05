@@ -1,7 +1,7 @@
 library(rbenchmark)
 library(slam)
 library(memuse)
-library(fastcosim)
+library(fastco)
 
 reps <- 30
 cols <- c("test", "replications", "elapsed", "relative")
@@ -45,4 +45,3 @@ memuse(dense)
 memuse(sparse)
 
 benchmark(cosine(dense), cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
-

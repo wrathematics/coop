@@ -1,4 +1,4 @@
-library(fastcosim)
+library(fastco)
 library(rbenchmark)
 
 m <- 2000

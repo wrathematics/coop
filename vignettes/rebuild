@@ -1,5 +1,4 @@
 #!/bin/sh
 
 rm -f *.html *.pdf
-Rscript -e "rmarkdown::render('fastcosim.Rmd')"
-
+Rscript -e "rmarkdown::render('fastco.Rmd')"

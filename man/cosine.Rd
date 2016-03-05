@@ -43,7 +43,7 @@ by the square root of the product of the crossproducts
 BLAS function \code{dsyrk()}.
 }
 \examples{
-library(fastcosim)
+library(fastco)
 x <- matrix(rnorm(10*3), 10, 3)
 cosine(x)
 

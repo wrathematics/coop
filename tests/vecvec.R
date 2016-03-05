@@ -9,10 +9,10 @@ x <- rnorm(30)
 y <- rnorm(30)
 
 t1 <- as.vector(cosine(x, y))
-t2 <- fastcosim::cosine(x, y)
+t2 <- fastco::cosine(x, y)
 stopifnot(all.equal(t1, t2, check.attributes=FALSE))
 
 
 t1 <- cor(x, y)
-t2 <- fastcosim::pcor(x, y)
+t2 <- fastco::pcor(x, y)
 stopifnot(all.equal(t1, t2, check.attributes=FALSE))
