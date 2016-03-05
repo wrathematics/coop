@@ -79,15 +79,25 @@ Users on other platforms like Windows or Mac (which I know considerably less abo
 
 ## Definition
 
-Given two vectors `x` and `y` each of length `m`, we can define the *cosine similarity* of the two vectors as 
+Given two vectors $x$ and $y$ each of length $m$, we can define the *cosine similarity* of the two vectors as 
 
 $$
 cosim(x,y) = \frac{x\cdot y}{\|x\| \|y\|}
 $$
 
-This is the cosine of the angle
+This is the cosine of the angle between the two vectors.  This is very similar to pearson correlation.  In fact, if the vectors $x$ and $y$ have their means removed, it is identical.  
 
-Given an `m`x`n` matrix `x`, we can define the *cosine similarity*
+$$
+\rho(x,y) = \frac{(x - \bar{x}) \cdot (y - \bar{y})}{\|x - \bar{x}\| \|y - \bar{y}\|}
+$$
+
+Given an $m\times n$ matrix $A$, we can define the *cosine similarity* by extending the above definition to
+
+$$
+cosim(A) = \left[ cosim(A_{*,i}, A_{*,j}) \right]_{n\times n}
+$$
+
+Where $A_{*,i}$ denotes the i'th column vector of $A$.  In words, this is the matrix of all possible pairwise cosine similarities of the columns of the matrix $A$.
 
 
 
