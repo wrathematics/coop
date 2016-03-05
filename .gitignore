@@ -3,8 +3,7 @@
 *.html
 *.swp
 
-vignettes/fastcosim_cache/
-vignettes/fastcosim_files/
+vignettes/fastco_*
 
 src/*.o
 src/*.so
