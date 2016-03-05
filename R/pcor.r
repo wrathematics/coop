@@ -12,8 +12,8 @@
 #' \code{x} is a matrix.
 #' 
 #' @return
-#' The \eqn{n\times n} matrix of all pair-wise vector cosine
-#' similarities of the columns.
+#' The \eqn{n\times n} matrix of all pair-wise vector pearson
+#' correlations of the columns.
 #' 
 #' @examples
 #' library(fastco)
@@ -39,7 +39,7 @@ pcor.matrix <- function(x, y)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  .Call(R_pcor_mat, x)
+  .Call(R_co_mat, x, 2L)
 }
 
 
@@ -63,5 +63,5 @@ pcor.default <- function(x, y)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  .Call(R_pcor_vecvec, x, y)
+  .Call(R_co_vecvec, x, y, 2L)
 }

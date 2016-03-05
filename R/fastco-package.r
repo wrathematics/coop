@@ -18,8 +18,7 @@
 #' triplet matrix" from the slam package.
 #' 
 #' 
-#' @useDynLib fastco, R_cosine_mat, R_cosine_vecvec,
-#'   R_pcor_mat, R_pcor_vecvec,
+#' @useDynLib fastco, R_co_mat, R_co_vecvec,
 #'   R_cosine_sparse_coo, R_sparsity_int, R_sparsity_dbl
 #' 
 #' @docType package

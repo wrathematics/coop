@@ -1,3 +1,4 @@
+### Cosine similarity
 cosine <- function(x)
 {
   cp <- crossprod(x)
@@ -21,10 +22,26 @@ check(tcrossprod(x))
 
 
 
+### Pearson correlation
 check <- function(x)
 {
   t1 <- cor(x)
   t2 <- fastco::pcor(x)
+  stopifnot(all.equal(t1, t2, check.attributes=FALSE))
+}
+
+check(x)
+check(t(x))
+check(crossprod(x))
+check(tcrossprod(x))
+
+
+
+### Covariance
+check <- function(x)
+{
+  t1 <- cov(x)
+  t2 <- fastco::covar(x)
   stopifnot(all.equal(t1, t2, check.attributes=FALSE))
 }
 

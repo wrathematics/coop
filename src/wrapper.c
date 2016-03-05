@@ -30,19 +30,28 @@
 #include "cosine.h"
 
 
+#define CO_SIM 1
+#define CO_ORR 2
+#define CO_VAR 3
 
 // ---------------------------------------------
 //  Dense
 // ---------------------------------------------
 
-SEXP R_cosine_mat(SEXP x)
+SEXP R_co_mat(SEXP x, SEXP type_)
 {
+  SEXP ret;
+  const int type = INTEGER(type_)[0];
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
-  SEXP ret;
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
-  cosine_mat(m, n, REAL(x), REAL(ret));
+  if (type == CO_SIM)
+    cosine_mat(m, n, REAL(x), REAL(ret));
+  else if (type == CO_ORR)
+    pcor_mat(m, n, REAL(x), REAL(ret));
+  else if (type == CO_VAR)
+    covar_mat(m, n, REAL(x), REAL(ret));
   
   UNPROTECT(1);
   return ret;
@@ -50,46 +59,25 @@ SEXP R_cosine_mat(SEXP x)
 
 
 
-SEXP R_cosine_vecvec(SEXP x, SEXP y)
+SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
 {
-  const unsigned int n = LENGTH(x);
   SEXP ret;
+  const int type = INTEGER(type_)[0];
+  const unsigned int n = LENGTH(x);
   PROTECT(ret = allocVector(REALSXP, 1));
   
-  REAL(ret)[0] = cosine_vecvec(n, REAL(x), REAL(y));
+  if (type == CO_SIM)
+    REAL(ret)[0] = cosine_vecvec(n, REAL(x), REAL(y));
+  else if (type == CO_ORR)
+    REAL(ret)[0] = pcor_vecvec(n, REAL(x), REAL(y));
+  else if (type == CO_VAR)
+    REAL(ret)[0] = covar_vecvec(n, REAL(x), REAL(y));
   
   UNPROTECT(1);
   return ret;
 }
 
 
-
-SEXP R_pcor_mat(SEXP x)
-{
-  const unsigned int m = nrows(x);
-  const unsigned int n = ncols(x);
-  SEXP ret;
-  PROTECT(ret = allocMatrix(REALSXP, n, n));
-  
-  pcor_mat(m, n, REAL(x), REAL(ret));
-  
-  UNPROTECT(1);
-  return ret;
-}
-
-
-
-SEXP R_pcor_vecvec(SEXP x, SEXP y)
-{
-  const unsigned int n = LENGTH(x);
-  SEXP ret;
-  PROTECT(ret = allocVector(REALSXP, 1));
-  
-  REAL(ret)[0] = pcor_vecvec(n, REAL(x), REAL(y));
-  
-  UNPROTECT(1);
-  return ret;
-}
 
 
 

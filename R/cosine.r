@@ -59,7 +59,7 @@ cosine.matrix <- function(x, y)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  .Call(R_cosine_mat, x)
+  .Call(R_co_mat, x, 1L)
 }
 
 
@@ -83,7 +83,7 @@ cosine.default <- function(x, y)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  .Call(R_cosine_vecvec, x, y)
+  .Call(R_co_vecvec, x, y, 1L)
 }
 
 

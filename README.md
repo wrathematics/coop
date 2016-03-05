@@ -25,3 +25,9 @@ devtools::install_github("wrathematics/fastco")
 The source code is also separated from the necessary R wrapper
 code.  So it easily builds as a shared library after removing
 `src/wrapper.c`.
+
+
+
+## Package Use
+
+The `covar()` and `pcor()` functions behave like their native R counterparts `cov()` and `cor()`, respectively.

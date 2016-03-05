@@ -1,4 +1,4 @@
-/*  Copyright (c) 2015, Schmidt
+/*  Copyright (c) 2015-2016, Schmidt
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ static inline void diag2one(const unsigned int n, double *restrict x)
 
 
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-static inline void fill(const unsigned int n, double *restrict cp)
+static inline void cosim_fill(const unsigned int n, double *restrict cp)
 {
   int i, j;
   double diagj;
@@ -125,7 +125,7 @@ static inline void symmetrize(const int n, double *restrict x)
 void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
 {
   crossprod(m, n, x, cos);
-  fill(n, cos);
+  cosim_fill(n, cos);
   symmetrize(n, cos);
 }
 
@@ -215,7 +215,7 @@ void pcor_mat(const int m, const int n, const double *restrict x, double *restri
   
   remove_colmeans(m, n, x_cp);
   crossprod(m, n, x_cp, cor);
-  fill(n, cor);
+  cosim_fill(n, cor);
   symmetrize(n, cor);
   
   free(x_cp);
@@ -253,7 +253,7 @@ static inline double mean(const int n, const double *restrict x)
  * The input vectors.
  * 
  * @return
- * The cosine similarity between the two vectors.
+ * The correlation between the two vectors.
 */
 double pcor_vecvec(const int n, const double *restrict x, const double *restrict y)
 {
@@ -281,6 +281,82 @@ double pcor_vecvec(const int n, const double *restrict x, const double *restrict
   free(y_minusmean);
   
   return cp / sqrt(normx * normy);
+}
+
+
+
+/**
+ * @file
+ * @brief Covariance.
+ *
+ * @details
+ * Computes the variance-covariance matrix.  Centering is done in-place.
+ * 
+ * @param method
+ * Input.  The form the covariance matrix takes (pearson, kendall, 
+ * spearman).  Currently only pearson works.
+ * @param m,n
+ * Inputs.  Problem size (dims of x)
+ * @param x
+ * Input.  The data matrix.
+ * @param coc
+ * Output.  The covariance matrix.
+ *
+ * @return
+ * The return value indicates that status of the function.  Non-zero values
+ * are errors.
+*/
+void covar_mat(const int m, const int n, const double *restrict x, double *restrict cov)
+{
+  int info = 0;
+  double alpha = 1. / ((double) (m-1));
+  double *x_cp = malloc(m*n*sizeof(*x));
+  memcpy(x_cp, x, m*n*sizeof(*x));
+  
+  remove_colmeans(m, n, x_cp);
+  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x_cp, &m, &(double){0.0}, cov, &n);
+  symmetrize(n, cov);
+  
+  free(x_cp);
+}
+
+
+
+/**
+ * @brief 
+ * Compute the covariance between two vectors.
+ * 
+ * @details
+ * The implementation uses a dgemm() to compute the dot product
+ * of x and y, and then two dsyrk() calls to compute the (square of)
+ * the norms of x and y.
+ * 
+ * @param n
+ * The length of the x and y vectors.
+ * @param x,y
+ * The input vectors.
+ * 
+ * @return
+ * The variance of the vectors.
+*/
+double covar_vecvec(const int n, const double *restrict x, const double *restrict y)
+{
+  const double recip_n = (double) 1. / (n-1);
+  double sum_xy = 0., sum_x = 0., sum_y = 0.;
+  double tx, ty;
+  
+  #pragma omp simd reduction(+: sum_xy, sum_x, sum_y)
+  for (int i=0; i<n; i++)
+  {
+    tx = x[i];
+    ty = y[i];
+    
+    sum_xy += tx*ty;
+    sum_x += tx;
+    sum_y += ty;
+  }
+  
+  return (sum_xy - (sum_x*sum_y*((double) 1./n))) * recip_n;
 }
 
 
