@@ -6,7 +6,7 @@
 * **Author:** Drew Schmidt
 
 
-A for computing covariance, correlation, cosine similarity very quickly.  If you can do this faster, I'd love to know how.
+A package for computing covariance, correlation, and cosine similarity very quickly.  If you can do this faster, I'd love to know how.
 
 The package is optimized for high performance, and has different implementations for dense matrix inputs, dense vector-vector inputs, and sparse matrix inputs.
 
@@ -51,6 +51,8 @@ For more details, see the package vignette.
 
 
 ## Benchmarks
+
+Here we provide some benchmarks for dense matrices.  The package also has vector-vector methods for each operation, and a sparse method for cosine similarity.  These also perform quite well, but in the case of the former are generally not performance intensive, and in the case of the latter, I am not aware of any other sparse cosine similarity implementations available to R.
 
 All of these benchmarks can be found in the source tree of this package, under `fastco/inst/benchmarks`.  Implementation details can be found in the package vignette.  All tests performed using:
 
