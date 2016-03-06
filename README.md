@@ -76,7 +76,7 @@ x <- matrix(rnorm(m*n), m, n)
 #### Covariance
 
 ```r
-benchmark(cov(x), covar(x), replications=25)
+benchmark(cov(x), covar(x), replications=reps, columns=cols)
 ##       test replications elapsed relative
 ## 2 covar(x)           25   0.431    1.000
 ## 1   cov(x)           25   8.656   20.084
