@@ -9,7 +9,7 @@ env:
     - R_CHECK_ARGS="--no-build-vignettes --no-manual --as-cran"
 
 # desperately trying to shorten outrageous dep install times...
-install:
+before_install:
   - sudo apt-get update -q
   - sudo apt-get install -qq r-cran-bitops r-cran-catools r-cran-digest r-cran-evaluate r-cran-ggplot2 r-cran-memoise r-cran-scales r-cran-slam r-cran-stringr 
 
@@ -20,3 +20,5 @@ r_packages:
   - rbenchmark
   - knitr
   - rmarkdown
+
+r_check_args: --no-build-vignettes --no-manual
