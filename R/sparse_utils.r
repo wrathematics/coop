@@ -60,3 +60,16 @@ sparsity.simple_triplet_matrix <- function(x, proportion=TRUE)
     count
 }
 
+
+
+# Sparse matrix generator; used only for tests
+# @param m,n Dimensions (rows, cols)
+# @param prop Proportion of zeros.
+dense_stored_sparse_mat <- function(m, n, prop)
+{
+  size <- prop*m*n
+  x <- matrix(0, m, n)
+  x[sample(m*n, size=size)] <- 10#rnorm(size)
+  x
+}
+

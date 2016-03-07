@@ -27,12 +27,14 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <math.h>
-#include "cosine.h"
+#include "fastco.h"
 
 
 #define CO_SIM 1
 #define CO_ORR 2
 #define CO_VAR 3
+
+#define BADTYPE() error("Invalid 'type' argument; please report this to the package author")
 
 // ---------------------------------------------
 //  Dense
@@ -52,6 +54,8 @@ SEXP R_co_mat(SEXP x, SEXP type_)
     pcor_mat(m, n, REAL(x), REAL(ret));
   else if (type == CO_VAR)
     covar_mat(m, n, REAL(x), REAL(ret));
+  else
+    BADTYPE();
   
   UNPROTECT(1);
   return ret;
@@ -72,6 +76,8 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
     REAL(ret)[0] = pcor_vecvec(n, REAL(x), REAL(y));
   else if (type == CO_VAR)
     REAL(ret)[0] = covar_vecvec(n, REAL(x), REAL(y));
+  else
+    BADTYPE();
   
   UNPROTECT(1);
   return ret;
@@ -87,14 +93,19 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
 
 #define INEDEX_FROM_1 1
 
-SEXP R_cosine_sparse_coo(SEXP n_, SEXP a, SEXP i, SEXP j)
+SEXP R_co_sparse(SEXP n_, SEXP a, SEXP i, SEXP j, SEXP type_)
 {
+  const int type = INTEGER(type_)[0];
   int check;
   const int n = INTEGER(n_)[0];
   SEXP ret;
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
-  check = cosine_sparse_coo(INEDEX_FROM_1, n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
+  if (type == CO_SIM)
+    check = cosine_sparse_coo(INEDEX_FROM_1, n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
+  else
+    BADTYPE();
+  
   if (check)
     error("unable to allocate necessary memory");
   
@@ -104,6 +115,12 @@ SEXP R_cosine_sparse_coo(SEXP n_, SEXP a, SEXP i, SEXP j)
 }
 
 
+
+
+
+// ---------------------------------------------
+//  Sparse utils
+// ---------------------------------------------
 
 SEXP R_sparsity_int(SEXP x)
 {

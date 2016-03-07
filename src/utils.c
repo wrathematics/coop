@@ -24,33 +24,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __FASTCOSIM_OMP_H__
-#define __FASTCOSIM_OMP_H__
+
+#include "fastco.h"
+#include "omp.h"
 
 
-#define OMP_MIN_SIZE 2500
+// set diagonal of nxn matrix x to 1
+void diag2one(const unsigned int n, double *restrict x)
+{
+  int i;
+  
+  SAFE_FOR_SIMD
+  for (i=0; i<n; i++)
+    x[i + n*i] = 1.0;
+}
 
 
-#ifdef _OPENMP
-#include <omp.h>
-#if _OPENMP >= 201307
-#define OMP_VER_4
-#elif _OPENMP >= 200805
-#define OMP_VER_3
-#endif
-#endif
 
+// Copy lower triangle to upper
+void symmetrize(const int n, double *restrict x)
+{
+  int i, j;
+  
+  #pragma omp parallel for private(i) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  for (j=0; j<n; j++)
+  {
+    SAFE_SIMD
+    for (i=j+1; i<n; i++)
+      x[j + n*i] = x[i + n*j];
+  }
+}
 
-// Insert SIMD pragma if supported
-#ifdef OMP_VER_4
-#define SAFE_SIMD _Pragma("omp simd")
-#define SAFE_FOR_SIMD _Pragma("omp for simd")
-#define SAFE_PARALLEL_FOR_SIMD _Pragma("omp parallel for simd")
-#else
-#define SAFE_SIMD 
-#define SAFE_FOR_SIMD
-#define SAFE_PARALLEL_FOR_SIMD
-#endif
-
-
-#endif

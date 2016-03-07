@@ -19,7 +19,7 @@
 #' 
 #' 
 #' @useDynLib fastco, R_co_mat, R_co_vecvec,
-#'   R_cosine_sparse_coo, R_sparsity_int, R_sparsity_dbl
+#'   R_co_sparse, R_sparsity_int, R_sparsity_dbl
 #' 
 #' @docType package
 #' @author Drew Schmidt and Wei-Chen Chen
