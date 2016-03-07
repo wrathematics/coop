@@ -11,7 +11,7 @@ env:
 # desperately trying to shorten outrageous dep install times...
 install:
   - sudo apt-get update -q
-  - sudo apt-get install r-cran-bitops r-cran-catools r-cran-digest r-cran-evaluate r-cran-ggplot2 r-cran-memoise r-cran-scales r-cran-slam r-cran-stringr 
+  - sudo apt-get install -qq r-cran-bitops r-cran-catools r-cran-digest r-cran-evaluate r-cran-ggplot2 r-cran-memoise r-cran-scales r-cran-slam r-cran-stringr 
 
 r_packages:
   - slam
