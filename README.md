@@ -114,7 +114,7 @@ cosine_R <- function(x)
 }
 ```
 
-We note that while this implementation is reasonably "clock efficient", it is very memory wasteful compared to the implementation in **fastco**.
+We note that while this implementation is reasonably "clock efficient", it is very memory wasteful compared to the implementation in **fastco** (and for much larger data sizes, the implementation in **fastco** will dominate).
 
 ```r
 library(compiler)
