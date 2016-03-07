@@ -15,3 +15,8 @@ install:
 
 r_packages:
   - slam
+  - memuse
+  - microbenchmark
+  - rbenchmark
+  - knitr
+  - rmarkdown
