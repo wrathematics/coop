@@ -4,16 +4,11 @@ if(require(slam))
   library(fastco)
   set.seed(1234)
   
-  generate <- function(m, n, size)
-  {
-    x <- matrix(0, m, n)
-    x[sample(m*n, size=size)] <- 10
-    x
-  }
-  
+  m <- 30
+  n <- 10
   
   ### Very sparse, has column of 0's
-  x <- generate(30, 10, 25)
+  x <- fastco:::dense_stored_sparse_mat(m, n, prop=.05)
   coo <- as.simple_triplet_matrix(x)
   
   t1 <- cosine(x)
@@ -26,7 +21,7 @@ if(require(slam))
   #stopifnot(all.equal(t1, t2))
   
   ### Not very sparse
-  x <- generate(30, 10, 75)
+  x <- fastco:::dense_stored_sparse_mat(m, n, prop=.25)
   coo <- as.simple_triplet_matrix(x)
   
   t1 <- cosine(x)
