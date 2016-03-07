@@ -16,6 +16,7 @@ Enhances:
     slam (>= 0.1.32)
 Suggests:
     memuse,
+    microbenchmark,
     rbenchmark,
     knitr,
     rmarkdown

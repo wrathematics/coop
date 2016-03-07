@@ -139,8 +139,7 @@ cosine <- function(x)
 
 The main reason this will *significantly* outperform naive implementations is because it makes very efficient use of the BLAS; this of course assumes you are using efficient BLAS implementations.  Additionally, `crossprod()` and `tcrossprod()` are actually optimized to not only avoid the unnecessary copy in explicitly forming the transpose (produced when `t()` is called), but only compute one triangle and copy it over to the other, essentially doing only half the work.  These operations alone allow for significant improvement in performance:
 
-<!-- TODO replace this with something that doesn't depend on ggplot2 -->
-```r
+```{r, cache=TRUE}
 library(microbenchmark)
 n <- 500
 x <- matrix(rnorm(n*n), n, n)
@@ -151,7 +150,7 @@ boxplot(mb)
 
 It is additionally simple to verify that these indeed compute the exact same thing:
 
-```r
+```{r}
 all.equal(cp1, cp2)
 ``` 
 
