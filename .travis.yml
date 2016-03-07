@@ -4,9 +4,6 @@ warnings_are_errors: true
 env: 
   global:
     - CRAN: https://cran.rstudio.com
-    - _R_CHECK_FORCE_SUGGESTS_=FALSE
-    - R_CHECK_ARGS="--no-build-vignettes --no-manual --timings"
-    - _R_CHECK_TIMINGS_="0"
 
 r_packages:
   - slam

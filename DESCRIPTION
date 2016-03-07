@@ -17,7 +17,6 @@ Enhances:
 Suggests:
     memuse,
     rbenchmark,
-    microbenchmark,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
