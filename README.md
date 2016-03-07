@@ -8,9 +8,9 @@
 
 A package for computing covariance, correlation, and cosine similarity very quickly.  If you can do this faster, I'd love to know how.
 
-The package is optimized for high performance, and has different implementations for dense matrix inputs, dense vector-vector inputs, and sparse matrix inputs.
+The package is optimized for high performance, and has different implementations for dense matrix inputs, dense vector-vector inputs, and sparse matrix inputs.  Note that to get good performance with this package (as seen in these benchmarks), you will need to use a good BLAS library.  See the package vignette for details.
 
-For more information, including algorithmic details and benchmarks, see the package vignette.
+For more information, including algorithmic details, see the package vignette.
 
 
 
@@ -22,9 +22,7 @@ To install the R package:
 devtools::install_github("wrathematics/fastco")
 ```
 
-The source code is also separated from the necessary R wrapper
-code.  So it easily builds as a shared library after removing
-`src/wrapper.c`.
+The C internals are completely separated from the R wrapper code.  So if you prefer, you can easily build this as a C shared library after removing the file `src/wrapper.c`.
 
 
 
@@ -60,7 +58,6 @@ All of these benchmarks can be found in the source tree of this package, under `
 * OpenBLAS
 * gcc 5.3.1
 * 4 cores of a Core i5-2500K CPU @ 3.30GHz
-
 
 #### Setup
 
