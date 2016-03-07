@@ -1,5 +1,7 @@
 Release 0.2-0:
   * Add covariance and pearson correlation.
+  * Major re-organization of internals.
+  * Better tests.
 
 Release 0.1-0:
   * Add cosine() function.
