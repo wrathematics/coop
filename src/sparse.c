@@ -33,6 +33,8 @@
 #include "fastco.h"
 #include "omp.h"
 
+#define TMP_VEC_SIZE 1024
+
 
 // ---------------------------------------------
 //  Static utils

@@ -28,15 +28,9 @@
 #define FASTCOSIM_H
 
 
-#define TMP_VEC_SIZE 1024
-
 #define EPSILON 1e-10
 
-
 #define CHECKMALLOC(x) if(x==NULL) return -1
-
-#define MIN(x,y) (((x)<(y))?(x):(y))
-#define MAX(x,y) (((x)>(y))?(x):(y))
 
 // BLAS
 void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
@@ -49,13 +43,13 @@ void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
             const double *restrict beta, double *restrict c, const int *ldc);
 
 // dense
-void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
+int cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
 double cosine_vecvec(const int n, const double *restrict x, const double *restrict y);
 
-void pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor);
+int pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor);
 double pcor_vecvec(const int n, const double *restrict x, const double *restrict y);
 
-void covar_mat(const int m, const int n, const double *restrict x, double *restrict cov);
+int covar_mat(const int m, const int n, const double *restrict x, double *restrict cov);
 double covar_vecvec(const int n, const double *x, const double *y);
 
 // sparse

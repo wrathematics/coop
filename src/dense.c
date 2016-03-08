@@ -152,11 +152,13 @@ static inline double mean(const int n, const double *restrict x)
  * @param cos
  * The output nxn matrix.
 */
-void cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
+int cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
 {
   crossprod(m, n, x, cos);
   cosim_fill(n, cos);
   symmetrize(n, cos);
+  
+  return 0;
 }
 
 
@@ -212,9 +214,10 @@ double cosine_vecvec(const int n, const double *restrict x, const double *restri
  * @param cor
  * The output nxn matrix.
 */
-void pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor)
+int pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
+  CHECKMALLOC(x_cp);
   memcpy(x_cp, x, m*n*sizeof(*x));
   
   remove_colmeans(m, n, x_cp);
@@ -223,6 +226,7 @@ void pcor_mat(const int m, const int n, const double *restrict x, double *restri
   symmetrize(n, cor);
   
   free(x_cp);
+  return 0;
 }
 
 
@@ -248,6 +252,7 @@ double pcor_vecvec(const int n, const double *restrict x, const double *restrict
 {
   int i;
   double normx, normy;
+  
   double *x_minusmean = malloc(n*sizeof(*x));
   double *y_minusmean = malloc(n*sizeof(*y));
   
@@ -302,11 +307,12 @@ double pcor_vecvec(const int n, const double *restrict x, const double *restrict
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-void covar_mat(const int m, const int n, const double *restrict x, double *restrict cov)
+int covar_mat(const int m, const int n, const double *restrict x, double *restrict cov)
 {
   int info = 0;
   double alpha = 1. / ((double) (m-1));
   double *x_cp = malloc(m*n*sizeof(*x));
+  CHECKMALLOC(x_cp);
   memcpy(x_cp, x, m*n*sizeof(*x));
   
   remove_colmeans(m, n, x_cp);
@@ -314,6 +320,8 @@ void covar_mat(const int m, const int n, const double *restrict x, double *restr
   symmetrize(n, cov);
   
   free(x_cp);
+  
+  return 0;
 }
 
 
@@ -354,5 +362,3 @@ double covar_vecvec(const int n, const double *restrict x, const double *restric
   
   return (sum_xy - (sum_x*sum_y*((double) 1./n))) * recip_n;
 }
-
-

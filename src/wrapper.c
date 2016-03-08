@@ -1,4 +1,4 @@
-/*  Copyright (c) 2015, Schmidt
+/*  Copyright (c) 2015-2016, Schmidt
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
@@ -43,21 +43,26 @@
 SEXP R_co_mat(SEXP x, SEXP type_)
 {
   SEXP ret;
+  int check;
   const int type = INTEGER(type_)[0];
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
   if (type == CO_SIM)
-    cosine_mat(m, n, REAL(x), REAL(ret));
+    check = cosine_mat(m, n, REAL(x), REAL(ret));
   else if (type == CO_ORR)
-    pcor_mat(m, n, REAL(x), REAL(ret));
+    check = pcor_mat(m, n, REAL(x), REAL(ret));
   else if (type == CO_VAR)
-    covar_mat(m, n, REAL(x), REAL(ret));
+    check = covar_mat(m, n, REAL(x), REAL(ret));
   else
     BADTYPE();
   
   UNPROTECT(1);
+  
+  if (check)
+    error("unable to allocate necessary memory");
+  
   return ret;
 }
 
@@ -106,10 +111,10 @@ SEXP R_co_sparse(SEXP n_, SEXP a, SEXP i, SEXP j, SEXP type_)
   else
     BADTYPE();
   
+  UNPROTECT(1);
+  
   if (check)
     error("unable to allocate necessary memory");
-  
-  UNPROTECT(1);
   
   return ret;
 }
