@@ -1,9 +1,12 @@
-Release 0.2-0:
+Release 0.2-1 (///):
+  * 
+
+Release 0.2-0 (3/6/2016):
   * Add covariance and pearson correlation.
   * Rename package from fastcosim to fastco.
   * Major re-organization of internals.
   * Better tests.
 
-Release 0.1-0:
+Release 0.1-0 (12/9/2016):
   * Add cosine() function.
   * Add dense matrix, dense vector-vector, and sparse matrix methods.
