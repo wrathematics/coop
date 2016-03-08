@@ -1,5 +1,6 @@
 Release 0.2-0:
   * Add covariance and pearson correlation.
+  * Rename package from fastcosim to fastco.
   * Major re-organization of internals.
   * Better tests.
 
