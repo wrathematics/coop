@@ -90,7 +90,7 @@ benchmark(cor(x), pcor(x), replications=reps, columns=cols)
 ## 2 pcor(x)           25   0.517    1.000
 ```
 
-#### cosine
+#### Cosine
 
 ```r
 benchmark(lsa::cosine(x), cosine(x), replications=reps, columns=cols)
