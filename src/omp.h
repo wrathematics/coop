@@ -28,7 +28,7 @@
 #define __FASTCOSIM_OMP_H__
 
 
-#define OMP_MIN_SIZE 2500
+#define OMP_MIN_SIZE 1000
 
 
 #ifdef _OPENMP
