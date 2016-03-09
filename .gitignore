@@ -7,3 +7,4 @@ vignettes/fastco_*
 
 src/*.o
 src/*.so
+src/tautest
