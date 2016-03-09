@@ -1,4 +1,16 @@
 #!/bin/sh
 
+if [ X$1 = "Xclean" ];then
+  rm -rf *_cache/
+  rm -rf *_files/
+fi
+
 rm -f *.html *.pdf
-Rscript -e "rmarkdown::render('fastco.Rmd')"
+
+
+buildVignette(){
+  Rscript -e "rmarkdown::render('$1')"
+}
+
+buildVignette fastco.Rmd
+buildVignette algos.Rmd
