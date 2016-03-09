@@ -1,7 +1,7 @@
 Package: fastco
 Type: Package
 Title: Fast Correlation, Covariance, and Cosine Similarity
-Version: 0.2-1
+Version: 0.2-2
 Description: Offers a single function to very quickly compute
     cosine similarity.  Separate, optimized methods are available
     for a dense matrix, two dense vectors, or a sparse matrix.

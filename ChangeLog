@@ -1,4 +1,7 @@
-Release 0.2-1 (//):
+Release 0.2-2 (//);
+  * 
+
+Release 0.2-1 (3/9/2016):
   * Better memory allocation checking.
   * Move sparsity functions from wrappers.c to sparse_utils.c.
 

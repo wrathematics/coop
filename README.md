@@ -1,6 +1,6 @@
 # fastco
 
-* **Version:** 0.2-1
+* **Version:** 0.2-2
 * **Status:** [![Build Status](https://travis-ci.org/wrathematics/fastco.png)](https://travis-ci.org/wrathematics/fastco)
 * **License:** [![License](http://img.shields.io/badge/license-BSD%202--Clause-orange.svg?style=flat)](http://opensource.org/licenses/BSD-2-Clause)
 * **Author:** Drew Schmidt
