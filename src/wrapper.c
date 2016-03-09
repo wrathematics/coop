@@ -71,20 +71,27 @@ SEXP R_co_mat(SEXP x, SEXP type_)
 SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
 {
   SEXP ret;
+  int check;
   const int type = INTEGER(type_)[0];
   const unsigned int n = LENGTH(x);
+  double co;
   PROTECT(ret = allocVector(REALSXP, 1));
   
   if (type == CO_SIM)
-    REAL(ret)[0] = cosine_vecvec(n, REAL(x), REAL(y));
+    check = cosine_vecvec(n, REAL(x), REAL(y), &co);
   else if (type == CO_ORR)
-    REAL(ret)[0] = pcor_vecvec(n, REAL(x), REAL(y));
+    check = pcor_vecvec(n, REAL(x), REAL(y), &co);
   else if (type == CO_VAR)
-    REAL(ret)[0] = covar_vecvec(n, REAL(x), REAL(y));
+    check = covar_vecvec(n, REAL(x), REAL(y), &co);
   else
     BADTYPE();
   
+  REAL(ret)[0] = co;
   UNPROTECT(1);
+  
+  if (check)
+    error("unable to allocate necessary memory");
+  
   return ret;
 }
 

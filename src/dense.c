@@ -180,7 +180,7 @@ int cosine_mat(const int m, const int n, const double *restrict x, double *restr
  * @return
  * The cosine similarity between the two vectors.
 */
-double cosine_vecvec(const int n, const double *restrict x, const double *restrict y)
+int cosine_vecvec(const int n, const double *restrict x, const double *restrict y, double *cos)
 {
   double normx, normy;
   const double cp = ddot(n, x, y);
@@ -188,7 +188,8 @@ double cosine_vecvec(const int n, const double *restrict x, const double *restri
   crossprod(n, 1, x, &normx);
   crossprod(n, 1, y, &normy);
   
-  return cp / sqrt(normx * normy);
+  *cos = cp / sqrt(normx * normy);
+  return 0;
 }
 
 
@@ -248,13 +249,15 @@ int pcor_mat(const int m, const int n, const double *restrict x, double *restric
  * @return
  * The correlation between the two vectors.
 */
-double pcor_vecvec(const int n, const double *restrict x, const double *restrict y)
+int pcor_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
 {
   int i;
   double normx, normy;
   
   double *x_minusmean = malloc(n*sizeof(*x));
+  CHECKMALLOC(x_minusmean);
   double *y_minusmean = malloc(n*sizeof(*y));
+  CHECKMALLOC(y_minusmean);
   
   const double meanx = mean(n, x);
   const double meany = mean(n, y);
@@ -274,7 +277,8 @@ double pcor_vecvec(const int n, const double *restrict x, const double *restrict
   free(x_minusmean);
   free(y_minusmean);
   
-  return cp / sqrt(normx * normy);
+  *cor = cp / sqrt(normx * normy);
+  return 0;
 }
 
 
@@ -342,7 +346,7 @@ int covar_mat(const int m, const int n, const double *restrict x, double *restri
  * @return
  * The variance of the vectors.
 */
-double covar_vecvec(const int n, const double *restrict x, const double *restrict y)
+int covar_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cov)
 {
   const double recip_n = (double) 1. / (n-1);
   double sum_xy = 0., sum_x = 0., sum_y = 0.;
@@ -359,5 +363,6 @@ double covar_vecvec(const int n, const double *restrict x, const double *restric
     sum_y += ty;
   }
   
-  return (sum_xy - (sum_x*sum_y*((double) 1./n))) * recip_n;
+  *cov = (sum_xy - (sum_x*sum_y*((double) 1./n))) * recip_n;
+  return 0;
 }

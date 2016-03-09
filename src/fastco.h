@@ -44,13 +44,13 @@ void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
 
 // dense
 int cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
-double cosine_vecvec(const int n, const double *restrict x, const double *restrict y);
+int cosine_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cos);
 
 int pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor);
-double pcor_vecvec(const int n, const double *restrict x, const double *restrict y);
+int pcor_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cor);
 
 int covar_mat(const int m, const int n, const double *restrict x, double *restrict cov);
-double covar_vecvec(const int n, const double *x, const double *y);
+int covar_vecvec(const int n, const double *x, const double *y, double *restrict cov);
 
 // sparse
 int cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
