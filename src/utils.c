@@ -25,6 +25,7 @@
 */
 
 
+#include <math.h>
 #include "fastco.h"
 #include "omp.h"
 
@@ -53,4 +54,42 @@ void symmetrize(const int n, double *restrict x)
     for (i=j+1; i<n; i++)
       x[j + n*i] = x[i + n*j];
   }
+}
+
+
+
+// Number of 0's for integer matrix
+int sparsity_int(const int m, const int n, const int *x)
+{
+  int i, j, count = 0;
+  
+  for (j=0; j<n; j++)
+  {
+    for (i=0; i<m; i++)
+    {
+      if (x[i + m*j] == 0)
+        count++;
+    }
+  }
+  
+  return count;
+}
+
+
+
+// Number of (approximate) 0's for double matrix
+int sparsity_dbl(const int m , const int n, double *x, const double tol)
+{
+  int i, j, count = 0;
+  
+  for (j=0; j<n; j++)
+  {
+    for (i=0; i<m; i++)
+    {
+      if (fabs(x[i + m*j]) < tol)
+        count++;
+    }
+  }
+  
+  return count;
 }

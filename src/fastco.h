@@ -58,6 +58,8 @@ int cosine_sparse_coo(const int index, const int n, const int len, const double 
 // utils
 void diag2one(const unsigned int n, double *restrict x);
 void symmetrize(const int n, double *restrict x);
+int sparsity_int(const int m, const int n, const int *x);
+int sparsity_dbl(const int m , const int n, double *x, const double tol);
 
 
 #endif

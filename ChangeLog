@@ -1,5 +1,6 @@
-Release 0.2-1 (///):
+Release 0.2-1 (//):
   * Better memory allocation checking.
+  * Move sparsity functions from wrappers.c to sparse_utils.c.
 
 Release 0.2-0 (3/6/2016):
   * Add covariance and pearson correlation.

@@ -136,24 +136,11 @@ SEXP R_co_sparse(SEXP n_, SEXP a, SEXP i, SEXP j, SEXP type_)
 
 SEXP R_sparsity_int(SEXP x)
 {
-  int i, j, count = 0;
   const int m = nrows(x), n = ncols(x);
-  int *x_pt = INTEGER(x);
   SEXP ret;
   
-  
-  for (j=0; j<n; j++)
-  {
-    for (i=0; i<m; i++)
-    {
-      if (x_pt[i + m*j] == 0)
-        count++;
-    }
-  }
-  
-  
   PROTECT(ret = allocVector(INTSXP, 1));
-  INTEGER(ret)[0] = count;
+  INTEGER(ret)[0] = sparsity_int(m, n, INTEGER(x));
   UNPROTECT(1);
   
   return ret;
@@ -163,25 +150,11 @@ SEXP R_sparsity_int(SEXP x)
 
 SEXP R_sparsity_dbl(SEXP x, SEXP tol)
 {
-  int i, j, count = 0;
   const int m = nrows(x), n = ncols(x);
-  const double eps = REAL(tol)[0];
-  double *x_pt = REAL(x);
   SEXP ret;
   
-  
-  for (j=0; j<n; j++)
-  {
-    for (i=0; i<m; i++)
-    {
-      if (fabs(x_pt[i + m*j]) < eps)
-        count++;
-    }
-  }
-  
-  
   PROTECT(ret = allocVector(INTSXP, 1));
-  INTEGER(ret)[0] = count;
+  INTEGER(ret)[0] = sparsity_dbl(m , n, REAL(x), REAL(tol)[0]);
   UNPROTECT(1);
   
   return ret;
