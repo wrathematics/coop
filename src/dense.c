@@ -309,7 +309,6 @@ double pcor_vecvec(const int n, const double *restrict x, const double *restrict
 */
 int covar_mat(const int m, const int n, const double *restrict x, double *restrict cov)
 {
-  int info = 0;
   double alpha = 1. / ((double) (m-1));
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);

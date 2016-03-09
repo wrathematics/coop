@@ -54,4 +54,3 @@ void symmetrize(const int n, double *restrict x)
       x[j + n*i] = x[i + n*j];
   }
 }
-
