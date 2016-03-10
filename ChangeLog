@@ -1,5 +1,6 @@
 Release 0.2-2 (//);
   * Split vignette into 2.
+  * Improve R help.
 
 Release 0.2-1 (3/9/2016):
   * Better memory allocation checking.
