@@ -13,21 +13,23 @@ covar(x, y)
 \code{x} is a matrix.}
 }
 \value{
-The covariance.
+The covariance matrix.
 }
 \description{
-Compute covariance efficiently.
+An optimized, efficient implemntation for computing covariance.
 }
 \details{
-This implementation uses the internals for \code{cosine()}.
+See \code{?fastco} for implementation details.
 }
 \examples{
-library(fastco)
 x <- matrix(rnorm(10*3), 10, 3)
-pcor(x)
 
-pcor(x[, 1], x[, 2])
+fastco::pcor(x)
+fastco::pcor(x[, 1], x[, 2])
 
+}
+\author{
+Drew Schmidt
 }
 \seealso{
 \code{\link{cosine}}

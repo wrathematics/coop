@@ -1,9 +1,10 @@
 #' Pearson Correlation
 #' 
-#' Compute the pearson correlation efficiently.
+#' An optimized, efficient implemntation for computing the pearson
+#' correlation.
 #' 
 #' @details
-#' This implementation uses the internals for \code{cosine()}.
+#' See \code{?fastco} for implementation details.
 #' 
 #' @param x
 #' A numeric matrix or vector.
@@ -12,16 +13,15 @@
 #' \code{x} is a matrix.
 #' 
 #' @return
-#' The \eqn{n\times n} matrix of all pair-wise vector pearson
-#' correlations of the columns.
+#' The pearson correlation matrix.
 #' 
 #' @examples
-#' library(fastco)
 #' x <- matrix(rnorm(10*3), 10, 3)
-#' pcor(x)
 #' 
-#' pcor(x[, 1], x[, 2])
+#' fastco::pcor(x)
+#' fastco::pcor(x[, 1], x[, 2])
 #' 
+#' @author Drew Schmidt
 #' @seealso \code{\link{cosine}}
 #' @export
 pcor <- function(x, y) UseMethod("pcor")

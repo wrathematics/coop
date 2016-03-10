@@ -1,9 +1,9 @@
 #' Covariance
 #' 
-#' Compute covariance efficiently.
+#' An optimized, efficient implemntation for computing covariance.
 #' 
 #' @details
-#' This implementation uses the internals for \code{cosine()}.
+#' See \code{?fastco} for implementation details.
 #' 
 #' @param x
 #' A numeric matrix or vector.
@@ -12,15 +12,15 @@
 #' \code{x} is a matrix.
 #' 
 #' @return
-#' The covariance.
+#' The covariance matrix.
 #' 
 #' @examples
-#' library(fastco)
 #' x <- matrix(rnorm(10*3), 10, 3)
-#' pcor(x)
 #' 
-#' pcor(x[, 1], x[, 2])
+#' fastco::pcor(x)
+#' fastco::pcor(x[, 1], x[, 2])
 #' 
+#' @author Drew Schmidt
 #' @seealso \code{\link{cosine}}
 #' @export
 covar <- function(x, y) UseMethod("covar")
