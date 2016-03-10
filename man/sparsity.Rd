@@ -10,11 +10,10 @@ sparsity(x, proportion = TRUE)
 \item{x}{The matrix, stored as an ordinary R matrix or as a "simple
 triplet matrix" (from the slam package).}
 
-\item{proportion}{Logical; determines if a proportion or a count should be returned.}
+\item{proportion}{Logical; should a proportion or a count be returned?}
 }
 \value{
-The sparsity of the input matrix, of the form a proportion or
-a count.
+The sparsity of the input matrix, as a proportion or a count.
 }
 \description{
 Show the sparsity (as a count or proportion) of a matrix.  For
@@ -34,5 +33,8 @@ sparsity(x)
 x[sample(length(x), size=15)] <- 1
 sparsity(x)
 
+}
+\author{
+Drew Schmidt
 }
 

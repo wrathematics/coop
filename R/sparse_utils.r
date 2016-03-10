@@ -12,11 +12,10 @@
 #' The matrix, stored as an ordinary R matrix or as a "simple
 #' triplet matrix" (from the slam package).
 #' @param proportion
-#' Logical; determines if a proportion or a count should be returned.
+#' Logical; should a proportion or a count be returned?
 #' 
 #' @return
-#' The sparsity of the input matrix, of the form a proportion or
-#' a count.
+#' The sparsity of the input matrix, as a proportion or a count.
 #' 
 #' @examples
 #' ## Completely sparse matrix
@@ -27,6 +26,7 @@
 #' x[sample(length(x), size=15)] <- 1
 #' sparsity(x)
 #' 
+#' @author Drew Schmidt
 #' @export
 sparsity <- function(x, proportion=TRUE) UseMethod("sparsity")
 
@@ -53,18 +53,17 @@ sparsity.matrix <- function(x, proportion=TRUE)
 #' @export
 sparsity.simple_triplet_matrix <- function(x, proportion=TRUE)
 {
-  count <- x$nrow*x$ncol - length(x$v)
   if (proportion)
-    count / nrow(x) / ncol(x)
+    1 - length(x$v) / nrow(x) / ncol(x)
   else
-    count
+    nrow(x)*ncol(x) - length(x$v)
 }
 
 
 
 # Sparse matrix generator; used only for tests
 # @param m,n Dimensions (rows, cols)
-# @param prop Proportion of zeros.
+# @param prop Proportion of non-zeros.
 dense_stored_sparse_mat <- function(m, n, prop)
 {
   size <- prop*m*n
@@ -72,4 +71,3 @@ dense_stored_sparse_mat <- function(m, n, prop)
   x[sample(m*n, size=size)] <- 10#rnorm(size)
   x
 }
-
