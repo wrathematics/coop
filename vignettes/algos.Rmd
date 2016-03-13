@@ -1,5 +1,5 @@
 ---
-title: "Algorithms and Benchmarks for the fastco Package"
+title: "Algorithms and Benchmarks for the coop Package"
 author: "Drew Schmidt"
 date: "`r Sys.Date()`"
 output:
@@ -9,10 +9,10 @@ output:
     number_sections: true
     css: include/custom.css
     highlight: kate
-bibliography: include/fastco.bib
+bibliography: include/coop.bib
 csl: "include/ieee.csl"
 vignette: >
-  %\VignetteIndexEntry{Algorithms and Benchmarks for the fastco Package}
+  %\VignetteIndexEntry{Algorithms and Benchmarks for the coop Package}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -24,10 +24,10 @@ matmemsize <- function(n) capture.output(memuse::mu(8*2*(n+1)*n))
 
 # Introduction
 
-**fastco** [[@fastco]]
+**coop** [[@coop]]
 **OpenMP** [[@openmp]]
 **BLAS** [[@lawson1979basic]]
-*Introducing fastco: Fast Covariance, Correlation, and Cosine Operations* [[@fastco2016guide]]
+*Introducing coop: Fast Covariance, Correlation, and Cosine Operations* [[@coop2016guide]]
 
 
 
@@ -120,9 +120,9 @@ m <- 2000
 n <- 200
 x <- matrix(rnorm(m*n), m, n)
 
-benchmark(fastco::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
+benchmark(coop::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
 ##                test replications elapsed relative
-## 1 fastco::cosine(x)          100   0.177    1.000
+## 1 coop::cosine(x)          100   0.177    1.000
 ## 2    lsa::cosine(x)          100 113.543  641.486
 ```
 
@@ -135,9 +135,9 @@ n <- 1000000
 x <- rnorm(n)
 y <- rnorm(n)
 
-benchmark(fastco::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)
+benchmark(coop::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)
 ##                   test replications elapsed relative
-## 1 fastco::cosine(x, y)          100   0.757    1.000
+## 1 coop::cosine(x, y)          100   0.757    1.000
 ## 2    lsa::cosine(x, y)          100   0.768    1.015
 ```
 
@@ -150,7 +150,7 @@ We present two cases here of varying levels of sparsity.  First, we will generat
 ```r
 m <- 6000
 n <- 250
-dense <- fastco:::dense_stored_sparse_mat(m, n, .001)
+dense <- coop:::dense_stored_sparse_mat(m, n, .001)
 sparse <- slam::as.simple_triplet_matrix(dense)
 ```
 
@@ -166,7 +166,7 @@ memuse::memuse(sparse)
 So the dense matrix needs roughly 479 times as much storage for the exact same data.  In such very sparse cases, the sparse implementation will perform quite nicely:
 
 ```r
-benchmark(dense=fastco::cosine(dense), fastco::cosine(sparse), columns=cols, replications=reps)
+benchmark(dense=coop::cosine(dense), coop::cosine(sparse), columns=cols, replications=reps)
 ##     test replications elapsed relative
 ## 1  dense          100   0.712    3.082
 ## 2 sparse          100   0.231    1.000
@@ -175,7 +175,7 @@ benchmark(dense=fastco::cosine(dense), fastco::cosine(sparse), columns=cols, rep
 Note that this is a 3-fold speedup over our already highly optimized implementation.  This is quite nice, especially considering the sparse implementation uses only one thread and limited vectorization, while the dense one uses 4 threads and vectorization. However, as the matrix becomes more dense (and it doesn't take much), dense methods begin to perform better:
 
 ```r
-dense <- fastco:::dense_stored_sparse_mat(m, n, .01)
+dense <- coop:::dense_stored_sparse_mat(m, n, .01)
 sparse <- slam::as.simple_triplet_matrix(dense)
 
 memuse::memuse(dense)
@@ -183,7 +183,7 @@ memuse::memuse(dense)
 memuse::memuse(sparse)
 ## 235.383 KiB
 
-benchmark(fastco::cosine(dense), fastco::cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
+benchmark(coop::cosine(dense), coop::cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
 benchmark(cosine(dense), cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
 ##     test replications elapsed relative
 ## 1  dense          100   0.707    1.000

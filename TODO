@@ -1,0 +1,6 @@
+#------------ 0.3-0
+### RELEASE 3/21/2016
+# * rename again? cooperation :DDD
+# * namespace the lib
+# * add cran installation instructions, push for CRAN release
+# * add sparse methods for covar and pcor

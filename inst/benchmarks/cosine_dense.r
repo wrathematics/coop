@@ -9,7 +9,7 @@ cosine_R <- function(x)
 library(compiler)
 cosine_R <- cmpfun(cosine_R)
 
-library(fastco)
+library(coop)
 library(rbenchmark)
 cols <- cols <- c("test", "replications", "elapsed", "relative")
 reps <- 25

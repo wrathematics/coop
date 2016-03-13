@@ -1,7 +1,7 @@
 library(rbenchmark)
 library(slam)
 library(memuse)
-library(fastco)
+library(coop)
 
 reps <- 30
 cols <- c("test", "replications", "elapsed", "relative")

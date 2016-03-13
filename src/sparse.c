@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "fastco.h"
+#include "coop.h"
 #include "omp.h"
 
 #define TMP_VEC_SIZE 1024

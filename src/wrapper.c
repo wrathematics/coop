@@ -27,7 +27,7 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <math.h>
-#include "fastco.h"
+#include "coop.h"
 
 
 #define CO_SIM 1

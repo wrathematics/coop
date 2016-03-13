@@ -6,7 +6,7 @@
 #' with a very different implementation.
 #' 
 #' @details
-#' See \code{?fastco} for implementation details.
+#' See \code{?coop-package} for implementation details.
 #' 
 #' @param x
 #' A numeric matrix or vector.
@@ -21,8 +21,8 @@
 #' @examples
 #' x <- matrix(rnorm(10*3), 10, 3)
 #' 
-#' fastco::cosine(x)
-#' fastco::cosine(x[, 1], x[, 2])
+#' coop::cosine(x)
+#' coop::cosine(x[, 1], x[, 2])
 #' 
 #' @author Drew Schmidt
 #' @seealso \code{\link{sparsity}}

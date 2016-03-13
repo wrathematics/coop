@@ -1,4 +1,4 @@
-library(fastco)
+library(coop)
 library(rbenchmark)
 cols <- cols <- c("test", "replications", "elapsed", "relative")
 reps <- 25

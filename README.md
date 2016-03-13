@@ -1,7 +1,7 @@
-# fastco
+# coop
 
-* **Version:** 0.2-2
-* **Status:** [![Build Status](https://travis-ci.org/wrathematics/fastco.png)](https://travis-ci.org/wrathematics/fastco)
+* **Version:** 0.3-0
+* **Status:** [![Build Status](https://travis-ci.org/wrathematics/coop.png)](https://travis-ci.org/wrathematics/coop)
 * **License:** [![License](http://img.shields.io/badge/license-BSD%202--Clause-orange.svg?style=flat)](http://opensource.org/licenses/BSD-2-Clause)
 * **Author:** Drew Schmidt
 
@@ -19,7 +19,7 @@ For more information, including algorithmic details, see the package vignette.
 To install the R package:
 
 ```r
-devtools::install_github("wrathematics/fastco")
+devtools::install_github("wrathematics/coop")
 ```
 
 The C internals are completely separated from the R wrapper code.  So if you prefer, you can easily build this as a C shared library after removing the file `src/wrapper.c`.
@@ -52,7 +52,7 @@ For more details, see the package vignette.
 
 Here we provide some benchmarks for dense matrices.  The package also has vector-vector methods for each operation, and a sparse method for cosine similarity.  These also perform quite well, but in the case of the former are generally not performance intensive, and in the case of the latter, I am not aware of any other sparse cosine similarity implementations available to R.
 
-All of these benchmarks can be found in the source tree of this package, under `fastco/inst/benchmarks`.  Implementation details can be found in the package vignette.  All tests performed using:
+All of these benchmarks can be found in the source tree of this package, under `coop/inst/benchmarks`.  Implementation details can be found in the package vignette.  All tests performed using:
 
 * R 3.2.3
 * OpenBLAS
@@ -62,7 +62,7 @@ All of these benchmarks can be found in the source tree of this package, under `
 #### Setup
 
 ```r
-library(fastco)
+library(coop)
 library(rbenchmark)
 cols <- c("test", "replications", "elapsed", "relative")
 reps <- 25
@@ -111,7 +111,7 @@ cosine_R <- function(x)
 }
 ```
 
-We note that while this implementation is reasonably "clock efficient", it is very memory wasteful compared to the implementation in **fastco** (and for much larger data sizes, the implementation in **fastco** will dominate).
+We note that while this implementation is reasonably "clock efficient", it is very memory wasteful compared to the implementation in **coop** (and for much larger data sizes, the implementation in **coop** will dominate).
 
 ```r
 library(compiler)
@@ -123,4 +123,4 @@ benchmark(cosine_R(x), cosine(x), replications=reps, columns=cols)
 ## 2   cosine(x)           25   0.266    1.000
 ```
 
-In fact, similar tricks can be played with both covariance and correlation.  One major reason **fastco** is so much faster is because of its careful use of the BLAS.  See the vignette for more information.
+In fact, similar tricks can be played with both covariance and correlation.  One major reason **coop** is so much faster is because of its careful use of the BLAS.  See the vignette for more information.

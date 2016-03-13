@@ -26,7 +26,7 @@
 
 
 #include <math.h>
-#include "fastco.h"
+#include "coop.h"
 #include "omp.h"
 
 

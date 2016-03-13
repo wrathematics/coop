@@ -1,34 +1,34 @@
-citHeader("To cite fastco in a publication use:")
+citHeader("To cite coop in a publication use:")
 
 citEntry(
   entry = "Misc",
-  title = "{fastco}: Fast Correlation, Covariance, and Cosine Similarity",
+  title = "{Co-Opeartion}: Fast Correlation, Covariance, and Cosine Similarity",
   author = personList(as.person("Drew Schmidt")),
   year = "2016",
   note = "{R} Package",
-  url = "http://cran.r-project.org/package=fastco",
-  textVersion = "Schmidt, D. (2016) fastco: Fast Correlation, Covariance, and Cosine Similarity. R Package, URL http://cran.r-project.org/package=fastco",
-  key = "fastco2016"
+  url = "http://cran.r-project.org/package=coop",
+  textVersion = "Schmidt, D. (2016) coop: Fast Correlation, Covariance, and Cosine Similarity. R Package, URL http://cran.r-project.org/package=coop",
+  key = "coop2016"
 )
 
 citEntry(
   entry = "Manual",
-  title = "Introducing {fastco}: Fast Covariance, Correlation, and Cosine Operations",
+  title = "Introducing {coop}: Fast Covariance, Correlation, and Cosine Operations",
   author = personList(as.person("Drew Schmidt")),
   year = "2016",
   note = "{R} Vignette",
-  url = "http://cran.r-project.org/package=fastco",
-  textVersion = "Schmidt, D. (2016) Introducing fastco: Fast Covariance, Correlation, and Cosine Operations. R Vignette, URL http://cran.r-project.org/package=fastco",
-  key = "fastco2016guide"
+  url = "http://cran.r-project.org/package=coop",
+  textVersion = "Schmidt, D. (2016) Introducing coop: Fast Covariance, Correlation, and Cosine Operations. R Vignette, URL http://cran.r-project.org/package=coop",
+  key = "coop2016guide"
 )
 
 citEntry(
   entry = "Manual",
-  title = "Algorithms and Benchmarks for the {fastco} Package",
+  title = "Algorithms and Benchmarks for the {coop} Package",
   author = personList(as.person("Drew Schmidt")),
   year = "2016",
   note = "{R} Vignette",
-  url = "http://cran.r-project.org/package=fastco",
-  textVersion = "Schmidt, D. (2016) Algorithms and Benchmarks for the {fastco} Package. R Vignette, URL http://cran.r-project.org/package=fastco",
-  key = "fastco2016algos"
+  url = "http://cran.r-project.org/package=coop",
+  textVersion = "Schmidt, D. (2016) Algorithms and Benchmarks for the {coop} Package. R Vignette, URL http://cran.r-project.org/package=coop",
+  key = "coop2016algos"
 )

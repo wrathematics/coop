@@ -1,14 +1,14 @@
 if(require(slam))
 {
   library(slam)
-  library(fastco)
+  library(coop)
   set.seed(1234)
   
   m <- 30
   n <- 10
   
   ### Very sparse, has column of 0's
-  x <- fastco:::dense_stored_sparse_mat(m, n, prop=.05)
+  x <- coop:::dense_stored_sparse_mat(m, n, prop=.05)
   coo <- as.simple_triplet_matrix(x)
   
   t1 <- cosine(x)
@@ -21,7 +21,7 @@ if(require(slam))
   #stopifnot(all.equal(t1, t2))
   
   ### Not very sparse
-  x <- fastco:::dense_stored_sparse_mat(m, n, prop=.25)
+  x <- coop:::dense_stored_sparse_mat(m, n, prop=.25)
   coo <- as.simple_triplet_matrix(x)
   
   t1 <- cosine(x)

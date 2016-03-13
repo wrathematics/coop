@@ -23,13 +23,13 @@ syntax and behavior is largely modeled after that of the
 with a very different implementation.
 }
 \details{
-See \code{?fastco} for implementation details.
+See \code{?coop-package} for implementation details.
 }
 \examples{
 x <- matrix(rnorm(10*3), 10, 3)
 
-fastco::cosine(x)
-fastco::cosine(x[, 1], x[, 2])
+coop::cosine(x)
+coop::cosine(x[, 1], x[, 2])
 
 }
 \author{

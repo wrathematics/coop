@@ -1,7 +1,7 @@
-Package: fastco
+Package: coop
 Type: Package
-Title: Fast Correlation, Covariance, and Cosine Similarity
-Version: 0.2-2
+Title: Co-operation: Fast Covariance, Correlation, and Cosine Similarity Operations
+Version: 0.3-0
 Description: Fast, optimized methods for computing covariance,
     correlation, and cosine similarity. Separate implementations
     are available for a dense matrix, two dense vectors, or a
@@ -23,8 +23,8 @@ Suggests:
 VignetteBuilder: knitr
 NeedsCompilation: yes
 ByteCompile: yes
-URL: https://github.com/wrathematics/fastco
-BugReports: https://github.com/wrathematics/fastco/issues
+URL: https://github.com/wrathematics/coop
+BugReports: https://github.com/wrathematics/coop/issues
 Authors@R: c(person("Drew", "Schmidt", role=c("aut", "cre"),
     email="wrathematics@gmail.com"), 
     person("Christian", "Heckendorf", role="ctb", comment="Caught some

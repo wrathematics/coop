@@ -19,13 +19,13 @@ The covariance matrix.
 An optimized, efficient implemntation for computing covariance.
 }
 \details{
-See \code{?fastco} for implementation details.
+See \code{?coop-package} for implementation details.
 }
 \examples{
 x <- matrix(rnorm(10*3), 10, 3)
 
-fastco::pcor(x)
-fastco::pcor(x[, 1], x[, 2])
+coop::pcor(x)
+coop::pcor(x[, 1], x[, 2])
 
 }
 \author{

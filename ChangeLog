@@ -1,4 +1,7 @@
-Release 0.2-2 (//);
+Release 0.3-0 (//):
+  * Rename package to 'coop'.
+
+Release 0.2-2 (3/11/2016);
   * Split vignette into 2.
   * Improve R help.
 
