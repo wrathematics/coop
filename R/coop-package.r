@@ -1,13 +1,12 @@
 #' Cooperation: A Package of Co-Operations
 #' 
 #' @description
-#' Fast, optimized methods for computing covariance,
-#' correlation, and cosine similarity. Separate implementations
-#' are available for a dense matrix, two dense vectors, or a
-#' sparse matrix. The use of these methods is transparent to the
-#' user and handled automatically based on the input data, 
-#' handled by R's S3 methods.  Full description of the algorithms
-#' and benchmarks are available in the package vignettes.
+#' Fast implementations of the co-operations: covariance,
+#' correlation, and cosine similarity.  The implementations are
+#' fast and memory-efficient and their use is resolved
+#' automatically based on the input data, handled by R's S3
+#' methods.  Full descriptions of the algorithms and benchmarks
+#' are available in the package vignettes.
 #' 
 #' Covariance and correlation should largely need no introduction.
 #' Cosine similarity is commonly needed in, for example, natural
