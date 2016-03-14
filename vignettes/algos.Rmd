@@ -24,10 +24,30 @@ matmemsize <- function(n) capture.output(memuse::mu(8*2*(n+1)*n))
 
 # Introduction
 
-**coop** [[@coop]]
-**OpenMP** [[@openmp]]
-**BLAS** [[@lawson1979basic]]
-*Introducing coop: Fast Covariance, Correlation, and Cosine Operations* [[@coop2016guide]]
+In this document, we will introduce the algorithms underlying the  **coop** package [[@coop]], and offer some benchmarks.  In order to recreate the benchmarks here, one needs a compiler that supports **OpenMP** [[@openmp]] and a high-performance **BLAS** library [[@lawson1979basic]].  See the other **coop** package vignette *Introducing coop: Fast Covariance, Correlation, and Cosine Operations* [[@coop2016guide]] for details.
+
+
+## A Note on Sparse Operations
+Of the three operations, only cosine similarity currently has a sparse implementation.  The short reason why is that the other two operations require centering and/or scaling.  
+
+To better understand the problem, consider the $5\times 20$ matrix whose first row is a row of ones, and all other rows consist entirely of zeros:
+
+```{r}
+x <- matrix(0, 20, 5)
+x[1, ] <- 1
+```
+
+The original matrix is, obviously, 95% sparse:
+
+```{r}
+coop::sparsity(x)
+```
+
+But if we center, the data, it becomes 100% dense:
+
+```{r}
+coop::sparsity(scale(x, T, F))
+```
 
 
 
