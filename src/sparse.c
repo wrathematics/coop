@@ -93,6 +93,7 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
   const double *restrict a, const int *restrict rows)
 {
   int k;
+  void *realloc_ptr;
   
   *tmplen = vecend - vecstart;
   
@@ -100,11 +101,25 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
   {
     *current_tmp_size = *tmplen;
     
-    b = realloc(b, ((*current_tmp_size)+1) * sizeof(*b));
-    CHECKMALLOC(b);
+    realloc_ptr = realloc(b, ((*current_tmp_size)+1) * sizeof(*b));
+    if (realloc_ptr == NULL) 
+    {
+      free(b);
+      free(brows);
+      return -1;
+    }
+    else
+      b = realloc_ptr;
     
-    brows = realloc(brows, ((*current_tmp_size)+1) * sizeof(*brows));
-    CHECKMALLOC(brows);
+    realloc_ptr = realloc(brows, ((*current_tmp_size)+1) * sizeof(*brows));
+    if (realloc_ptr == NULL) 
+    {
+      free(b);
+      free(brows);
+      return -1;
+    }
+    else
+      brows = realloc_ptr;
   }
   
   for (k=0; k<=*tmplen; k++)
