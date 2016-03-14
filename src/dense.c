@@ -33,6 +33,17 @@
 #include "omp.h"
 
 
+// BLAS prototypes
+void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
+            const int *k, const double *restrict alpha, const double *restrict a, 
+            const int *lda, const double *restrict b, const int *ldb, 
+            const double *beta, double *restrict c, const int *ldc);
+
+void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k, 
+            const double *restrict alpha, const double *restrict a, const int *lda, 
+            const double *restrict beta, double *restrict c, const int *ldc);
+
+
 // ---------------------------------------------
 //  Static utils
 // ---------------------------------------------
@@ -76,7 +87,7 @@ static inline void cosim_fill(const unsigned int n, double *restrict cp)
       cp[i + n*j] /= sqrt(cp[i + n*i] * diagj);
   }
   
-  diag2one(n, cp);
+  coop_diag2one(n, cp);
 }
 
 
@@ -152,11 +163,11 @@ static inline double mean(const int n, const double *restrict x)
  * @param cos
  * The output nxn matrix.
 */
-int cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
+int coop_cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
 {
   crossprod(m, n, x, cos);
   cosim_fill(n, cos);
-  symmetrize(n, cos);
+  coop_symmetrize(n, cos);
   
   return 0;
 }
@@ -180,7 +191,7 @@ int cosine_mat(const int m, const int n, const double *restrict x, double *restr
  * @return
  * The cosine similarity between the two vectors.
 */
-int cosine_vecvec(const int n, const double *restrict x, const double *restrict y, double *cos)
+int coop_cosine_vecvec(const int n, const double *restrict x, const double *restrict y, double *cos)
 {
   double normx, normy;
   const double cp = ddot(n, x, y);
@@ -215,7 +226,7 @@ int cosine_vecvec(const int n, const double *restrict x, const double *restrict 
  * @param cor
  * The output nxn matrix.
 */
-int pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor)
+int coop_pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
@@ -224,7 +235,7 @@ int pcor_mat(const int m, const int n, const double *restrict x, double *restric
   remove_colmeans(m, n, x_cp);
   crossprod(m, n, x_cp, cor);
   cosim_fill(n, cor);
-  symmetrize(n, cor);
+  coop_symmetrize(n, cor);
   
   free(x_cp);
   return 0;
@@ -249,7 +260,7 @@ int pcor_mat(const int m, const int n, const double *restrict x, double *restric
  * @return
  * The correlation between the two vectors.
 */
-int pcor_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
+int coop_pcor_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
 {
   int i;
   double normx, normy;
@@ -311,7 +322,7 @@ int pcor_vecvec(const int n, const double *restrict x, const double *restrict y,
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int covar_mat(const int m, const int n, const double *restrict x, double *restrict cov)
+int coop_covar_mat(const int m, const int n, const double *restrict x, double *restrict cov)
 {
   double alpha = 1. / ((double) (m-1));
   double *x_cp = malloc(m*n*sizeof(*x));
@@ -320,7 +331,7 @@ int covar_mat(const int m, const int n, const double *restrict x, double *restri
   
   remove_colmeans(m, n, x_cp);
   dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x_cp, &m, &(double){0.0}, cov, &n);
-  symmetrize(n, cov);
+  coop_symmetrize(n, cov);
   
   free(x_cp);
   
@@ -346,7 +357,7 @@ int covar_mat(const int m, const int n, const double *restrict x, double *restri
  * @return
  * The variance of the vectors.
 */
-int covar_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cov)
+int coop_covar_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cov)
 {
   const double recip_n = (double) 1. / (n-1);
   double sum_xy = 0., sum_x = 0., sum_y = 0.;

@@ -31,7 +31,7 @@
 
 
 // set diagonal of nxn matrix x to 1
-void diag2one(const unsigned int n, double *restrict x)
+void coop_diag2one(const unsigned int n, double *restrict x)
 {
   int i;
   
@@ -43,7 +43,7 @@ void diag2one(const unsigned int n, double *restrict x)
 
 
 // Copy lower triangle to upper
-void symmetrize(const int n, double *restrict x)
+void coop_symmetrize(const int n, double *restrict x)
 {
   int i, j;
   
@@ -59,7 +59,7 @@ void symmetrize(const int n, double *restrict x)
 
 
 // Number of 0's for integer matrix
-int sparsity_int(const int m, const int n, const int *x)
+int coop_sparsity_int(const int m, const int n, const int *x)
 {
   int i, j, count = 0;
   
@@ -78,7 +78,7 @@ int sparsity_int(const int m, const int n, const int *x)
 
 
 // Number of (approximate) 0's for double matrix
-int sparsity_dbl(const int m , const int n, double *x, const double tol)
+int coop_sparsity_dbl(const int m , const int n, double *x, const double tol)
 {
   int i, j, count = 0;
   

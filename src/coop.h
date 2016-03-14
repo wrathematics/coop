@@ -29,37 +29,26 @@
 
 
 #define EPSILON 1e-10
-
 #define CHECKMALLOC(x) if(x==NULL) return -1
 
-// BLAS
-void dgemm_(const char *transa, const char *transb, const int *m, const int *n, 
-            const int *k, const double *restrict alpha, const double *restrict a, 
-            const int *lda, const double *restrict b, const int *ldb, 
-            const double *beta, double *restrict c, const int *ldc);
-
-void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k, 
-            const double *restrict alpha, const double *restrict a, const int *lda, 
-            const double *restrict beta, double *restrict c, const int *ldc);
-
 // dense
-int cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
-int cosine_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cos);
+int coop_cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos);
+int coop_cosine_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cos);
 
-int pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor);
-int pcor_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cor);
+int coop_pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor);
+int coop_pcor_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cor);
 
-int covar_mat(const int m, const int n, const double *restrict x, double *restrict cov);
-int covar_vecvec(const int n, const double *x, const double *y, double *restrict cov);
+int coop_covar_mat(const int m, const int n, const double *restrict x, double *restrict cov);
+int coop_covar_vecvec(const int n, const double *x, const double *y, double *restrict cov);
 
 // sparse
-int cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
+int coop_cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
 
 // utils
-void diag2one(const unsigned int n, double *restrict x);
-void symmetrize(const int n, double *restrict x);
-int sparsity_int(const int m, const int n, const int *x);
-int sparsity_dbl(const int m , const int n, double *x, const double tol);
+void coop_diag2one(const unsigned int n, double *restrict x);
+void coop_symmetrize(const int n, double *restrict x);
+int coop_sparsity_int(const int m, const int n, const int *x);
+int coop_sparsity_dbl(const int m , const int n, double *x, const double tol);
 
 
 #endif

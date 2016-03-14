@@ -50,11 +50,11 @@ SEXP R_co_mat(SEXP x, SEXP type_)
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
   if (type == CO_SIM)
-    check = cosine_mat(m, n, REAL(x), REAL(ret));
+    check = coop_cosine_mat(m, n, REAL(x), REAL(ret));
   else if (type == CO_ORR)
-    check = pcor_mat(m, n, REAL(x), REAL(ret));
+    check = coop_pcor_mat(m, n, REAL(x), REAL(ret));
   else if (type == CO_VAR)
-    check = covar_mat(m, n, REAL(x), REAL(ret));
+    check = coop_covar_mat(m, n, REAL(x), REAL(ret));
   else
     BADTYPE();
   
@@ -78,11 +78,11 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
   PROTECT(ret = allocVector(REALSXP, 1));
   
   if (type == CO_SIM)
-    check = cosine_vecvec(n, REAL(x), REAL(y), &co);
+    check = coop_cosine_vecvec(n, REAL(x), REAL(y), &co);
   else if (type == CO_ORR)
-    check = pcor_vecvec(n, REAL(x), REAL(y), &co);
+    check = coop_pcor_vecvec(n, REAL(x), REAL(y), &co);
   else if (type == CO_VAR)
-    check = covar_vecvec(n, REAL(x), REAL(y), &co);
+    check = coop_covar_vecvec(n, REAL(x), REAL(y), &co);
   else
     BADTYPE();
   
@@ -114,7 +114,7 @@ SEXP R_co_sparse(SEXP n_, SEXP a, SEXP i, SEXP j, SEXP type_)
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
   if (type == CO_SIM)
-    check = cosine_sparse_coo(INEDEX_FROM_1, n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
+    check = coop_cosine_sparse_coo(INEDEX_FROM_1, n, LENGTH(a), REAL(a), INTEGER(i), INTEGER(j), REAL(ret));
   else
     BADTYPE();
   
@@ -140,7 +140,7 @@ SEXP R_sparsity_int(SEXP x)
   SEXP ret;
   
   PROTECT(ret = allocVector(INTSXP, 1));
-  INTEGER(ret)[0] = sparsity_int(m, n, INTEGER(x));
+  INTEGER(ret)[0] = coop_sparsity_int(m, n, INTEGER(x));
   UNPROTECT(1);
   
   return ret;
@@ -154,7 +154,7 @@ SEXP R_sparsity_dbl(SEXP x, SEXP tol)
   SEXP ret;
   
   PROTECT(ret = allocVector(INTSXP, 1));
-  INTEGER(ret)[0] = sparsity_dbl(m , n, REAL(x), REAL(tol)[0]);
+  INTEGER(ret)[0] = coop_sparsity_dbl(m , n, REAL(x), REAL(tol)[0]);
   UNPROTECT(1);
   
   return ret;
