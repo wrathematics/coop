@@ -1,5 +1,7 @@
 Release 0.3-0 (//):
   * Rename package to 'coop'.
+  * 'Namespaced' the internal lib.
+  * Improved vignettes, package description.
 
 Release 0.2-2 (3/11/2016);
   * Split vignette into 2.
