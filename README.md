@@ -6,7 +6,7 @@
 * **Author:** Drew Schmidt
 
 
-A package for computing covariance, correlation, and cosine similarity very quickly.  If you can do this faster, I'd love to know how.
+The **coop** package does co-operations: covariance, correlation, and cosine similarity.  And it does them very quickly.  If you can do this faster, I'd love to know how.
 
 The package is optimized for high performance, and has different implementations for dense matrix inputs, dense vector-vector inputs, and sparse matrix inputs.  Note that to get good performance with this package (as seen in these benchmarks), you will need to use a good BLAS library.  See the package vignette for details.
 

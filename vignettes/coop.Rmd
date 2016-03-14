@@ -24,7 +24,7 @@ matmemsize <- function(n) capture.output(memuse::mu(8*2*(n+1)*n))
 
 # Introduction
 
-**coop** [[@coop]] is a package for computing covariance, pearson correlation, and cosine similarity in a quick, memory efficient way.
+The **coop** package [[@coop]] does co-operations: covariance, correlation, and cosine similarity.  And it does them in a quick, memory efficient way.
 
 The package has separate, optimized routines for dense matrices and vectors; and currently, there is a cosine similarity method for a sparse matrix (like a term-document/document-term matrix) stored as a "simple triplet matrix" (aij/coo format). The use of each of these methods is seamless to the user by way of R's S3 methods.  A full description of the algorithms, computational complexity, and benchmarks are available in the vignette *Algorithms and Benchmarks for the coop Package* [[@coop2016algos]].  
  
