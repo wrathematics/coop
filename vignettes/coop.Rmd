@@ -42,11 +42,11 @@ The way R computes covariance and pearson correlation is unreasonably slow.  Add
 The operation `cosine()` provided by this package is simple, but it is important enough, particularly to fields like text mining, to have a good, high performance implementation.
 
 ## Installation
-<!-- You can install the stable version from CRAN using the usual `install.packages()`:
+You can install the stable version from CRAN using the usual `install.packages()`:
 
 ```r
 install.packages("coop")
-``` -->
+```
 
 The development version is maintained on GitHub.  You can install this version using any of the well-known installer packages available to R:
 

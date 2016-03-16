@@ -16,10 +16,19 @@ For more information, including algorithmic details, see the package vignette.
 
 ## Installation
 
-To install the R package:
+To install the R package, run:
 
 ```r
+install.package("coop")
+```
+
+The development version is maintained on GitHub, and can easily be installed by any of the packages that offer installations from GitHub:
+
+```r
+### Pick your preference
 devtools::install_github("wrathematics/coop")
+ghit::install_github("wrathematics/coop")
+remotes::install_github("wrathematics/coop")
 ```
 
 The C internals are completely separated from the R wrapper code.  So if you prefer, you can easily build this as a C shared library after removing the file `src/wrapper.c`.
