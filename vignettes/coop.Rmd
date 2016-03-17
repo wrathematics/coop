@@ -86,6 +86,65 @@ Users on other platforms like Windows or Mac (which I know considerably less abo
 
 Covariance and correlation should largely need no introduction. Cosine similarity is commonly needed in, for example, natural language processing, where the cosine similarity coefficients of all columns of a term-document or document-term matrix is needed.
 
+
+## Covariance 
+
+### Definition
+The covariance matrix of an $m\times n$ matrix $A$ can be computed by first standardizing the data:
+
+$$
+covar(A) = \frac{1}{n-1}\sum_{i=1}^m\left(x_i-\mu_x\right)^T\left(x_i-\mu_x\right)
+$$
+where $x_i$ is row $i$ of $A$, and $\mu_x$ is a vector of the column means of $A$.
+
+
+### Computing Covariances
+Although covariance is often stated as above, it is generally not computed in this way.  For example, in R, which uses column-major matrix order, operating by rows will lead to very poor performance due to unnecessary cache misses.  Instead, we will want to first sweep the column means from each corresponding column and then compute a crossproduct.  In R, this necessarily requires a copy of the data (for the sweep operation).
+
+In R, we can use the `cov()` function.  It does not use the BLAS to do so, and is likely otherwise un-optimised.  However, we note that it has multiple ways of handling `NA`'s.  Implementing the computation in a more runtime efficient way in R is simple:
+
+```{r}
+cov2 <- function(x)
+{
+  1/(NROW(x)-1) * crossprod(scale(x, TRUE, FALSE))
+}
+```
+
+And indeed, this is a simplified R version of how the computation is performed in **coop**'s `covar()`, the latter being written in C.  For very small matrices, the `cov()` version is likely to dominate `cov2()`.  But for even modest sized data (and good BLAS), `cov2()` will win out:
+
+```{r, cache=TRUE}
+m <- 500
+n <- 100
+x <- matrix(rnorm(m*n), m, n)
+
+rbenchmark::benchmark(cov(x), cov2(x), columns=c("test", "replications", "elapsed", "relative"))
+```
+
+
+## Correlation
+
+We restrict our discussion solely to pearson correlation. 
+
+### Definition
+This is really just a minor modification of covariance.  The correlation matrix of an $m\times n$ matrix $A$ is given by:
+
+$$
+pcor(A) = \frac{1}{n-1}\sum_{i=1}^m \frac{\left(x_i-\mu_x\right)^T\left(x_i-\mu_x\right)}{\sigma_x}
+$$
+where $x_i$ and $\mu_x$ are as before, and $\sigma_x$ is a vector of the column standard deviations of $A$.
+
+
+### Computing Correlations
+As easily guessed, we need only make a trivial modification of the above covariance function to get correlation:
+
+```{r}
+cor2 <- function(x)
+{
+  1/(NROW(x)-1) * crossprod(scale(x, TRUE, TRUE))
+}
+```
+
+
 ## Cosine Similarity
 
 ### Definition
@@ -107,7 +166,8 @@ $$
 cosim(A) = \left[ cosim(A_{*,i}, A_{*,j}) \right]_{n\times n}
 $$
 
-Where $A_{*,i}$ denotes the i'th column vector of $A$.  In words, this is the matrix of all possible pairwise cosine similarities of the columns of the matrix $A$.
+Where $A_{*,i}$ denotes the i'th column vector of $A$.  In words, this is the matrix of all possible pairwise cosine similarities of the columns of the matrix $A$. 
+<!-- ** -->
 
 
 
@@ -143,11 +203,10 @@ cosine <- function(x)
 The main reason this will *significantly* outperform the naive implementation is because it makes very efficient use of the **BLAS**.  Additionally, `crossprod()` and `tcrossprod()` are actually optimized to not only avoid the unnecessary copy in explicitly forming the transpose (produced when `t()` is called), but they only compute one triangle of the desired matrix and copy it over to the other, essentially doing only half the work.  These operations alone allow for significant improvement in performance:
 
 ```{r, cache=TRUE}
-library(microbenchmark)
 n <- 500
 x <- matrix(rnorm(n*n), n, n)
 
-mb <- microbenchmark(cp1 <- t(x) %*% x, cp2 <- crossprod(x), times=20)
+mb <- microbenchmark::microbenchmark(cp1 <- t(x) %*% x, cp2 <- crossprod(x), times=20)
 boxplot(mb)
 ```
 
