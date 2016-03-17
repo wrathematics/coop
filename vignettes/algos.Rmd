@@ -26,6 +26,8 @@ matmemsize <- function(n) capture.output(memuse::mu(8*2*(n+1)*n))
 
 In this document, we will introduce the algorithms underlying the  **coop** package [[@coop]], and offer some benchmarks.  In order to recreate the benchmarks here, one needs a compiler that supports **OpenMP** [[@openmp]] and a high-performance **BLAS** library [[@lawson1979basic]].  See the other **coop** package vignette *Introducing coop: Fast Covariance, Correlation, and Cosine Operations* [[@coop2016guide]] for details.
 
+We do not bother to go into details for the covariance and correlation algorithms, because they are obvious and uninteresting.
+
 
 ## A Note on Sparse Operations
 Of the three operations, only cosine similarity currently has a sparse implementation.  The short reason why is that the other two operations require centering and/or scaling.  
@@ -104,7 +106,7 @@ Given an $m\times n$ sparse matrix $A$ stored as a COO with row/column indices $
         - Set the $(i, j)$'th entry of $C$ to $\frac{x\cdot y}{\sqrt{x\cdot x}\sqrt{y\cdot y}}$.
 3. Copy the lower triangle to the upper and set the diagonal to 1.
 
-The worst case run-time complexity occurs when the matrix is dense but stored as a sparse matrix, and is $O(mn^2)$, the same as in the dense case.  However, this will cause serious cache thrashing, and the performance will be abysmal.
+The worst case runtime complexity occurs when the matrix is dense but stored as a sparse matrix, and is $O(mn^2)$, the same as in the dense case.  However, this will cause serious cache thrashing, and the performance will be abysmal.
 
 The function stores the $j$'th column data and its row indices in temporary storage for better cache access patterns. Best case, this requires 12 KiB of additional storage, with 8 for the data and 4 for the indices.  Worse case (an all-dense column), this balloons up to $12m$. The storage complexity is best case $O(1)$, and worst case $O(m)$.
 
