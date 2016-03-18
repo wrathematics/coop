@@ -2,6 +2,7 @@ Release 0.3-0 (3/17/2016):
   * Rename package to 'coop'.
   * 'Namespaced' the internal lib.
   * Improved vignettes, package description.
+  * Use https in inst/CITATION.
   * Release to CRAN.
 
 Release 0.2-2 (3/11/2016);

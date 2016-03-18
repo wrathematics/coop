@@ -7,7 +7,7 @@ citEntry(
   author = person("Drew", "Schmidt"),
   year = year,
   note = note,
-  url = "http://cran.r-project.org/package=coop",
+  url = "https://cran.r-project.org/package=coop",
   textVersion = NULL,
   key = "coop2016"
 )
@@ -18,7 +18,7 @@ citEntry(
   author = person("Drew", "Schmidt"),
   year = "2016",
   note = "{R} Vignette",
-  url = "http://cran.r-project.org/package=coop",
+  url = "https://cran.r-project.org/package=coop",
   textVersion = NULL,
   key = "coop2016guide"
 )
@@ -29,7 +29,7 @@ citEntry(
   author = person("Drew", "Schmidt"),
   year = "2016",
   note = "{R} Vignette",
-  url = "http://cran.r-project.org/package=coop",
+  url = "https://cran.r-project.org/package=coop",
   textVersion = NULL,
   key = "coop2016algos"
 )
