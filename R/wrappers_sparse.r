@@ -1,16 +1,5 @@
-co_sparse <- function(x, y, type)
+co_sparse <- function(n, a, i, j, index, type)
 {
-  if (!missing(y))
-    stop("argument 'y' can not be used with a matrix 'x'")
-  
-  a <- x$v
-  i <- x$i
-  j <- x$j
-  n <- as.integer(x$ncol)
-  
-  if (length(a) != length(i) || length(i) != length(j))
-    stop("Malformed simple_triplet_matrix: lengths of 'v', 'i', and 'j' do not agree")
-  
   if (!is.double(a))
     storage.mode(a) <- "double"
   if (!is.integer(i))
@@ -18,5 +7,5 @@ co_sparse <- function(x, y, type)
   if (!is.integer(j))
     storage.mode(j) <- "integer"
   
-  .Call(R_co_sparse, n, a, i, j, as.integer(type))
+  .Call(R_co_sparse, as.integer(n), a, i, j, as.integer(index), as.integer(type))
 }

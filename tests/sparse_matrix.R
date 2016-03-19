@@ -1,4 +1,4 @@
-if(require(slam))
+if (require(slam))
 {
   library(slam)
   library(coop)
@@ -28,5 +28,34 @@ if(require(slam))
   t2 <- cosine(coo)
   
   stopifnot(all.equal(t1, t2))
+}
+
+
+
+if (require(Matrix))
+{
+  library(Matrix)
+  library(coop)
+  set.seed(1234)
   
+  m <- 30
+  n <- 10
+  
+  ### Very sparse, has column of 0's
+  x <- coop:::dense_stored_sparse_mat(m, n, prop=.05)
+  coo <- as(x, "sparseMatrix")
+  
+  t1 <- cosine(x)
+  t2 <- cosine(coo)
+  
+  stopifnot(all.equal(t1, t2))
+  
+  ### Not very sparse
+  x <- coop:::dense_stored_sparse_mat(m, n, prop=.25)
+  coo <- as(x, "sparseMatrix")
+  
+  t1 <- cosine(x)
+  t2 <- cosine(coo)
+  
+  stopifnot(all.equal(t1, t2))
 }

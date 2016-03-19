@@ -12,7 +12,8 @@ License: BSD 2-clause License + file LICENSE
 Depends:
     R (>= 3.0.0)
 Enhances: 
-    slam (>= 0.1.32)
+    slam (>= 0.1.32),
+    Matrix
 Suggests:
     memuse,
     microbenchmark,

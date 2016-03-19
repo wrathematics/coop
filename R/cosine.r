@@ -50,5 +50,39 @@ cosine.default <- function(x, y)
 #' @export
 cosine.simple_triplet_matrix <- function(x, y)
 {
-  co_sparse(x, y, type=CO_SIM)
+  if (!missing(y))
+    stop("argument 'y' can not be used with a matrix 'x'")
+  
+  n <- x$ncol
+  a <- x$v
+  i <- x$i
+  j <- x$j
+  index <- 1L
+  type <- CO_SIM
+  
+  if (length(a) != length(i) || length(i) != length(j))
+    stop("Malformed simple_triplet_matrix: lengths of 'v', 'i', and 'j' do not agree")
+  
+  co_sparse(n, a, i, j, index, type)
+}
+
+
+
+#' @export
+cosine.dgCMatrix <- function(x, y)
+{
+  if (!missing(y))
+    stop("argument 'y' can not be used with a matrix 'x'")
+  
+  n <- ncol(x)
+  a <- x@x
+  i <- x@i
+  j <- .Call("R_extract_colind_from_csr", i, x@p, package="coop")
+  index <- 0L
+  type <- CO_SIM
+  
+  if (length(a) != length(i) || length(i) != length(j))
+    stop("Malformed dgCMatrix: lengths of 'x', 'i', and 'p' do not agree")
+  
+  co_sparse(n, a, i, j, index, type)
 }
