@@ -31,7 +31,8 @@
 #' each computed via the BLAS function \code{dsyrk}.
 #' 
 #' @useDynLib coop, R_co_mat, R_co_vecvec,
-#'   R_co_sparse, R_sparsity_int, R_sparsity_dbl
+#'   R_co_sparse, R_sparsity_int, R_sparsity_dbl,
+#'   R_csc_to_coo
 #' 
 #' @docType package
 #' @name coop-package

@@ -165,7 +165,7 @@ SEXP R_sparsity_dbl(SEXP x, SEXP tol)
 
 #define INT(x,i) INTEGER(x)[i]
 
-SEXP R_extract_colind_from_csr(SEXP row_ind, SEXP col_ptr)
+SEXP R_csc_to_coo(SEXP row_ind, SEXP col_ptr)
 {
   int i, j = 0;
   int c = 0, ind = 0;

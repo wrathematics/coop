@@ -77,7 +77,7 @@ cosine.dgCMatrix <- function(x, y)
   n <- ncol(x)
   a <- x@x
   i <- x@i
-  j <- .Call("R_extract_colind_from_csr", i, x@p, package="coop")
+  j <- csc_to_coo(i, x@p)
   index <- 0L
   type <- CO_SIM
   

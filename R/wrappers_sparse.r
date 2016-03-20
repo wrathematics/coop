@@ -9,3 +9,10 @@ co_sparse <- function(n, a, i, j, index, type)
   
   .Call(R_co_sparse, as.integer(n), a, i, j, as.integer(index), as.integer(type))
 }
+
+
+
+csc_to_coo <- function(row_ind, col_ptr)
+{
+  .Call(R_csc_to_coo, row_ind, col_ptr)
+}
