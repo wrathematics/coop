@@ -167,7 +167,7 @@ SEXP R_sparsity_dbl(SEXP x, SEXP tol)
 
 SEXP R_csc_to_coo(SEXP row_ind, SEXP col_ptr)
 {
-  int i, j = 0;
+  int j = 0;
   int c = 0, ind = 0;
   int diff;
   const int len = LENGTH(row_ind);
@@ -175,9 +175,13 @@ SEXP R_csc_to_coo(SEXP row_ind, SEXP col_ptr)
   SEXP col_ind;
   PROTECT(col_ind = allocVector(INTSXP, len));
   
-  for (i=0; i<len-1 && c<LENGTH(col_ptr); i++)
+  
+  for (c=0; c<LENGTH(col_ptr)-1; c++) // hehehe
   {
-    diff = INT(col_ptr, i+1) - INT(col_ptr, i);
+    diff = INT(col_ptr, c+1) - INT(col_ptr, c);
+    
+    if (diff < 0)
+      error("malformed dgCMatrix; impossible col_ptr array");
     
     while (diff > 0)
     {
@@ -187,7 +191,6 @@ SEXP R_csc_to_coo(SEXP row_ind, SEXP col_ptr)
       diff--;
     }
     
-    c++; // hehehe
     j++;
   }
   
