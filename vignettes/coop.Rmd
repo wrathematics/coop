@@ -103,7 +103,7 @@ Although covariance is often stated as above, it is generally not computed in th
 
 In R, we can use the `cov()` function.  It does not use the BLAS to do so, and is likely otherwise un-optimised.  However, we note that it has multiple ways of handling `NA`'s.  Implementing the computation in a more runtime efficient way in R is simple:
 
-```{r}
+```r
 cov2 <- function(x)
 {
   1/(NROW(x)-1) * crossprod(scale(x, TRUE, FALSE))
@@ -112,12 +112,15 @@ cov2 <- function(x)
 
 And indeed, this is a simplified R version of how the computation is performed in **coop**'s `covar()`, the latter being written in C.  For very small matrices, the `cov()` version is likely to dominate `cov2()`.  But for even modest sized data (and good BLAS), `cov2()` will win out:
 
-```{r, cache=TRUE}
+```r
 m <- 500
 n <- 100
 x <- matrix(rnorm(m*n), m, n)
 
 rbenchmark::benchmark(cov(x), cov2(x), columns=c("test", "replications", "elapsed", "relative"))
+##      test replications elapsed relative
+## 2 cov2(x)          100   0.246    1.000
+## 1  cov(x)          100   0.435    1.768
 ```
 
 
@@ -137,7 +140,7 @@ where $x_i$ and $\mu_x$ are as before, and $\sigma_x$ is a vector of the column 
 ### Computing Correlations
 As easily guessed, we need only make a trivial modification of the above covariance function to get correlation:
 
-```{r}
+```r
 cor2 <- function(x)
 {
   1/(NROW(x)-1) * crossprod(scale(x, TRUE, TRUE))
@@ -174,7 +177,7 @@ Where $A_{*,i}$ denotes the i'th column vector of $A$.  In words, this is the ma
 ### Computing Cosines
 We begin with a naive implementation.  Proceeding directly from the definition, we can easily compute the cosine of two vectors as follows:
 
-```{r}
+```r
 cosine <- function(x, y)
 {
   cp <- t(x) %*% y
@@ -190,7 +193,7 @@ Notably, this will only use the so-called "Level 1" **BLAS**.  **BLAS** operatio
 
 However, we can massively improve the runtime performance by being slightly more careful in which R functions we use.  Consider for example:
 
-```{r}
+```r
 cosine <- function(x)
 {
   cp <- crossprod(x)
@@ -203,7 +206,7 @@ cosine <- function(x)
 The main reason this will *significantly* outperform the naive implementation is because it makes very efficient use of the **BLAS**.  Additionally, `crossprod()` and `tcrossprod()` are actually optimized to not only avoid the unnecessary copy in explicitly forming the transpose (produced when `t()` is called), but they only compute one triangle of the desired matrix and copy it over to the other, essentially doing only half the work.  These operations alone allow for significant improvement in performance:
 
 ```{r, cache=TRUE}
-n <- 500
+n <- 250
 x <- matrix(rnorm(n*n), n, n)
 
 mb <- microbenchmark::microbenchmark(cp1 <- t(x) %*% x, cp2 <- crossprod(x), times=20)
