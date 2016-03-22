@@ -1,33 +1,39 @@
+library(coop)
+m <- 30
+n <- 10
+
+
+test <- function(dense, sparse)
+{
+  t1 <- coop::cosine(dense)
+  t2 <- coop::cosine(sparse)
+  
+  stopifnot(all.equal(t1, t2))
+}
+
+
 if (require(slam))
 {
   library(slam)
-  library(coop)
   set.seed(1234)
-  
-  m <- 30
-  n <- 10
   
   ### Very sparse, has column of 0's
   x <- coop:::dense_stored_sparse_mat(m, n, prop=.05)
   coo <- as.simple_triplet_matrix(x)
+  test(x, coo)
   
-  t1 <- cosine(x)
-  t2 <- cosine(coo)
-  
-  stopifnot(all.equal(t1, t2))
-  
-  #t1[which(is.nan(t1))] <- 0
-  #t2[which(is.nan(t2))] <- 0
-  #stopifnot(all.equal(t1, t2))
+  colnames(x) <- sample(letters, size=n, replace=TRUE)
+  coo <- as.simple_triplet_matrix(x)
+  test(x, coo)
   
   ### Not very sparse
   x <- coop:::dense_stored_sparse_mat(m, n, prop=.25)
   coo <- as.simple_triplet_matrix(x)
+  test(x, coo)
   
-  t1 <- cosine(x)
-  t2 <- cosine(coo)
-  
-  stopifnot(all.equal(t1, t2))
+  colnames(x) <- sample(letters, size=n, replace=TRUE)
+  coo <- as.simple_triplet_matrix(x)
+  test(x, coo)
 }
 
 
@@ -35,27 +41,23 @@ if (require(slam))
 if (require(Matrix))
 {
   library(Matrix)
-  library(coop)
   set.seed(1234)
-  
-  m <- 30
-  n <- 10
   
   ### Very sparse, has column of 0's
   x <- coop:::dense_stored_sparse_mat(m, n, prop=.05)
-  coo <- as(x, "sparseMatrix")
+  csc <- as(x, "sparseMatrix")
+  test(x, csc)
   
-  t1 <- cosine(x)
-  t2 <- cosine(coo)
-  
-  stopifnot(all.equal(t1, t2))
+  colnames(x) <- sample(letters, size=n, replace=TRUE)
+  csc <- as(x, "sparseMatrix")
+  test(x, csc)
   
   ### Not very sparse
   x <- coop:::dense_stored_sparse_mat(m, n, prop=.25)
-  coo <- as(x, "sparseMatrix")
+  csc <- as(x, "sparseMatrix")
+  test(x, csc)
   
-  t1 <- cosine(x)
-  t2 <- cosine(coo)
-  
-  stopifnot(all.equal(t1, t2))
+  colnames(x) <- sample(letters, size=n, replace=TRUE)
+  csc <- as(x, "sparseMatrix")
+  test(x, csc)
 }

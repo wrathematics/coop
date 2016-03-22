@@ -15,7 +15,14 @@ co_matrix <- function(x, y, type)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  .Call(R_co_mat, x, as.integer(type))
+  ret <- .Call(R_co_mat, x, as.integer(type))
+  if (!is.null(colnames(x)))
+  {
+    rownames(ret) <- colnames(x)
+    colnames(ret) <- colnames(x)
+  }
+  
+  ret
 }
 
 
