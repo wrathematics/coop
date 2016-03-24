@@ -72,7 +72,7 @@ SEXP R_fast_naomit_dbl(SEXP x_)
   PROTECT(ret = allocMatrix(REALSXP, m_fin, n));
   double *retptr = REAL(ret);
   
-  #pragma omp parallel for default(shared) private(i, j, row, itmp) if(m*n>OMP_MIN_SIZE)
+  #pragma omp parallel for default(shared) private(i, j, row, itmp, mj) if(m*n>OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
     mj = m*j;
