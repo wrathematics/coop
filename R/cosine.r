@@ -52,7 +52,7 @@ cosine.default <- function(x, y, use="everything")
 
 
 #' @export
-cosine.simple_triplet_matrix <- function(x, y)
+cosine.simple_triplet_matrix <- function(x, y, use="everything")
 {
   if (!missing(y))
     stop("argument 'y' can not be used with a matrix 'x'")
@@ -80,7 +80,7 @@ cosine.simple_triplet_matrix <- function(x, y)
 
 
 #' @export
-cosine.dgCMatrix <- function(x, y)
+cosine.dgCMatrix <- function(x, y, use="everything")
 {
   if (!missing(y))
     stop("argument 'y' can not be used with a matrix 'x'")
