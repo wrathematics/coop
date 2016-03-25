@@ -1,4 +1,9 @@
-Release 0.3-1 (//):
+Release 0.4-0 (//):
+  * Implement a fast naomit for internals.
+  * Add 'use' argument.
+  * Implement use with "everything", "all.obs", and "complete.obs".
+
+Release 0.3-1 (3/22/2016):
   * Add support for dgCMatrix from Matrix.
   * Lower cost (time/mem) to rebuild the vignette.
   * Retain column names as row/col names in all co-operations.
