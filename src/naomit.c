@@ -31,7 +31,7 @@
 #include "omp.h"
 
 
-static SEXP copymat(const int m, const int n, SEXP x_)
+static SEXP copymat_dbl(const int m, const int n, SEXP x_)
 {
   SEXP ret;
   const double *x = REAL(x_);
@@ -45,10 +45,24 @@ static SEXP copymat(const int m, const int n, SEXP x_)
 
 
 
+static SEXP copymat_int(const int m, const int n, SEXP x_)
+{
+  SEXP ret;
+  const int *x = INTEGER(x_);
+  PROTECT(ret = allocMatrix(INTSXP, m, n));
+  int *retptr = INTEGER(ret);
+  memcpy(retptr, x, m*n*sizeof(*x));
+  
+  UNPROTECT(1);
+  return ret;
+}
+
+
+
 // faster to index each element and operate accordingly, but
 // this is too memory expensive for most applications
 // note: R does this anyway because, well, R...
-SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
+static SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
 {
   SEXP ret;
   const int len = m*n;
@@ -88,7 +102,7 @@ SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
   // do a cheap copy if the matrix is identical
   if (m_fin == m)
   {
-    ret = copymat(m, n, x_);
+    ret = copymat_dbl(m, n, x_);
     free(na_vec_ind);
     return ret;
   }
@@ -120,7 +134,7 @@ SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
 
 
 
-SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
+static SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
 {
   SEXP ret;
   int i, j, mj;
@@ -149,7 +163,7 @@ SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
   
   if (m_fin == m)
   {
-    ret = copymat(m, n, x_);
+    ret = copymat_dbl(m, n, x_);
     free(rows);
     return ret;
   }
@@ -181,13 +195,171 @@ SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
 
 
 
-SEXP R_fast_naomit_dbl(SEXP x_)
+SEXP R_fast_naomit_dbl(SEXP x)
 {
-  const int m = nrows(x_);
-  const int n = ncols(x_);
+  const int m = nrows(x);
+  const int n = ncols(x);
   
   if (m*n < OMP_MIN_SIZE)
-    return R_fast_naomit_dbl_small(m, n, x_);
+    return R_fast_naomit_dbl_small(m, n, x);
   else
-    return R_fast_naomit_dbl_big(m, n, x_);
+    return R_fast_naomit_dbl_big(m, n, x);
+}
+
+
+
+static SEXP R_fast_naomit_int_small(const int m, const int n, SEXP x_)
+{
+  SEXP ret;
+  const int len = m*n;
+  int i, j, mj;
+  int *na_vec_ind = (int*) calloc(len, sizeof(*na_vec_ind));
+  int m_fin = m;
+  int row;
+  
+  const int *x = INTEGER(x_);
+  
+  // get indices of NA's
+  SAFE_FOR_SIMD
+  for (i=0; i<len; i++)
+  {
+    if (x[i] == NA_INTEGER)
+      na_vec_ind[i] = 1;
+  }
+  
+  // adjust col index
+  for (j=1; j<n; j++)
+  {
+    mj = m*j;
+    for (i=0; i<m; i++)
+    {
+      if (na_vec_ind[i + mj])
+      {
+        na_vec_ind[i] = 1;
+      }
+    }
+  }
+  
+  // get number of rows of output
+  SAFE_FOR_SIMD
+  for (i=0; i<m; i++)
+    m_fin -= na_vec_ind[i];
+  
+  // do a cheap copy if the matrix is identical
+  if (m_fin == m)
+  {
+    ret = copymat_int(m, n, x_);
+    free(na_vec_ind);
+    return ret;
+  }
+  
+  // build reduced matrix
+  PROTECT(ret = allocMatrix(INTSXP, m_fin, n));
+  int *retptr = INTEGER(ret);
+  
+  SAFE_FOR_SIMD
+  for (j=0; j<n; j++)
+  {
+    mj = m*j;
+    row = 0;
+    
+    for (i=0; i<m; i++)
+    {
+      if (!na_vec_ind[i%m])
+      {
+        retptr[row + m_fin*j] = x[i + mj];
+        row++;
+      }
+    }
+  }
+  
+  free(na_vec_ind);
+  UNPROTECT(1);
+  return ret;
+}
+
+
+
+static SEXP R_fast_naomit_int_big(const int m, const int n, SEXP x_)
+{
+  SEXP ret;
+  int i, j, mj;
+  int *rows = (int*) calloc(m, sizeof(*rows));
+  int m_fin = m;
+  int row;
+  
+  const int *x = INTEGER(x_);
+  
+  #pragma omp parallel for default(shared) private(i, j, mj)
+  for (j=0; j<n; j++)
+  {
+    mj = m*j;
+    
+    SAFE_SIMD
+    for (i=0; i<m; i++)
+    {
+      if (x[i + mj] == NA_INTEGER)
+        rows[i] = 1;
+    }
+  }
+  
+  SAFE_FOR_SIMD
+  for (i=0; i<m; i++)
+    m_fin -= rows[i];
+  
+  if (m_fin == m)
+  {
+    ret = copymat_int(m, n, x_);
+    free(rows);
+    return ret;
+  }
+  
+  PROTECT(ret = allocMatrix(INTSXP, m_fin, n));
+  int *retptr = INTEGER(ret);
+  
+  #pragma omp parallel for default(shared) private(i, j, row, mj)
+  for (j=0; j<n; j++)
+  {
+    mj = m*j;
+    row = 0;
+    
+    SAFE_SIMD
+    for (i=0; i<m; i++)
+    {
+      if (!rows[i])
+      {
+        retptr[row + m_fin*j] = x[i + mj];
+        row++;
+      }
+    }
+  }
+  
+  free(rows);
+  UNPROTECT(1);
+  return ret;
+}
+
+
+
+SEXP R_fast_naomit_int(SEXP x)
+{
+  const int m = nrows(x);
+  const int n = ncols(x);
+  
+  if (m*n < OMP_MIN_SIZE)
+    return R_fast_naomit_int_small(m, n, x);
+  else
+    return R_fast_naomit_int_big(m, n, x);
+}
+
+
+
+SEXP R_fast_naomit(SEXP x)
+{
+  if (isReal(x))
+    return R_fast_naomit_dbl(x);
+  else if (isInteger(x))
+    return R_fast_naomit_int(x);
+  else
+    error("'x' must be numeric");
 }

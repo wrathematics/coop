@@ -32,7 +32,7 @@
 #' 
 #' @useDynLib coop, R_co_mat, R_co_vecvec,
 #'   R_co_sparse, R_sparsity_int, R_sparsity_dbl,
-#'   R_csc_to_coo
+#'   R_csc_to_coo, R_fast_naomit
 #' 
 #' @docType package
 #' @name coop-package
