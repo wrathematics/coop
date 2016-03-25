@@ -81,7 +81,8 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
       na_vec_ind[i] = 1;
   }
   
-  // adjust col index
+  // adjust col index; turn first column of the NA indices
+  // to track which rows should go
   for (j=1; j<n; j++)
   {
     mj = m*j;
@@ -144,6 +145,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
   
   const double *x = REAL(x_);
   
+  // get indices of NA's
   #pragma omp parallel for default(shared) private(i, j, mj)
   for (j=0; j<n; j++)
   {
@@ -157,10 +159,12 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
     }
   }
   
+  // get number of rows of output
   SAFE_FOR_SIMD
   for (i=0; i<m; i++)
     m_fin -= rows[i];
   
+  // do a cheap copy if the matrix is identical
   if (m_fin == m)
   {
     ret = copymat_dbl(m, n, x_);
@@ -171,6 +175,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
   PROTECT(ret = allocMatrix(REALSXP, m_fin, n));
   double *retptr = REAL(ret);
   
+  // build reduced matrix
   #pragma omp parallel for default(shared) private(i, j, row, mj)
   for (j=0; j<n; j++)
   {
