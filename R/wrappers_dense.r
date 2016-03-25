@@ -5,12 +5,26 @@ is.vec <- function(x)
 
 
 
-co_matrix <- function(x, y, type)
+co_matrix <- function(x, y, type, use)
 {
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
   if (!missing(y))
     stop("argument 'y' can not be used with a matrix 'x'")
+  
+  use <- match.arg(tolower(use), c("everything", "all.obs", "complete.obs"))
+  if (use == "everything")
+  {}
+  else if (use == "all.obs")
+  {
+    if (anyNA(x))
+      stop("missing observations in covar/pcor/cosine")
+  }
+  else if (use == "complete.obs")
+  {
+    if (anyNA(x))
+      x <- naomit(x)
+  }
   
   if (!is.double(x))
     storage.mode(x) <- "double"
@@ -27,7 +41,7 @@ co_matrix <- function(x, y, type)
 
 
 
-co_vecvec <- function(x, y, type)
+co_vecvec <- function(x, y, type, use)
 {
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
@@ -46,6 +60,26 @@ co_vecvec <- function(x, y, type)
     storage.mode(x) <- "double"
   if (!is.double(y))
     storage.mode(y) <- "double"
+  
+  # unlike the matrix version, this should come after casting
+  # because I don't feel like doing all this garbage for ints
+  use <- match.arg(tolower(use), c("everything", "all.obs", "complete.obs"))
+  if (use == "everything")
+  {}
+  else if (use == "all.obs")
+  {
+    if (anyNA(x) || anyNA(y))
+      stop("missing observations in covar/pcor/cosine")
+  }
+  else if (use == "complete.obs")
+  {
+    # perhaps a little hacky...
+    out <- .Call(R_naomit_vecvec, x, y)
+    x <- out[[1]]
+    dim(x) <- NULL
+    y <- out[[2]]
+    dim(y) <- NULL
+  }
   
   .Call(R_co_vecvec, x, y, as.integer(type))
 }

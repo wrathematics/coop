@@ -10,6 +10,10 @@
 #' @param y
 #' A vector (when \code{x} is a vector) or missing (blank) when 
 #' \code{x} is a matrix.
+#' @param use
+#' The NA handler, as in R's \code{cov()} and \code{cor()}
+#' functions.  Options are "everything", "all.obs", and 
+#' "complete.obs".
 #' 
 #' @return
 #' The covariance matrix.
@@ -23,20 +27,20 @@
 #' @author Drew Schmidt
 #' @seealso \code{\link{cosine}}
 #' @export
-covar <- function(x, y) UseMethod("covar")
+covar <- function(x, y, use="everything") UseMethod("covar")
 
 
 
 #' @export
-covar.matrix <- function(x, y)
+covar.matrix <- function(x, y, use="everything")
 {
-  co_matrix(x, y, CO_VAR)
+  co_matrix(x, y, CO_VAR, use)
 }
 
 
 
 #' @export
-covar.default <- function(x, y)
+covar.default <- function(x, y, use="everything")
 {
-  co_vecvec(x, y, CO_VAR)
+  co_vecvec(x, y, CO_VAR, use)
 }

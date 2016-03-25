@@ -30,39 +30,22 @@
 
 #include "omp.h"
 
+#define INT(x) INTEGER(x)
 
-static SEXP copymat_dbl(const int m, const int n, SEXP x_)
-{
-  SEXP ret;
-  const double *x = REAL(x_);
-  PROTECT(ret = allocMatrix(REALSXP, m, n));
-  double *retptr = REAL(ret);
-  memcpy(retptr, x, m*n*sizeof(*x));
-  
+#define COPYVEC(in,out,len,TYPE) \
+  PROTECT(out = allocVector(TYPE##SXP, len)); \
+  memcpy(TYPE(out), TYPE(in), len*sizeof(TYPE(in)));
+
+#define COPYMAT(in,out,m,n,TYPE) \
+  PROTECT(out = allocMatrix(TYPE##SXP, m, n)); \
+  memcpy(TYPE(out), in, m*n*sizeof(in)); \
   UNPROTECT(1);
-  return ret;
-}
-
-
-
-static SEXP copymat_int(const int m, const int n, SEXP x_)
-{
-  SEXP ret;
-  const int *x = INTEGER(x_);
-  PROTECT(ret = allocMatrix(INTSXP, m, n));
-  int *retptr = INTEGER(ret);
-  memcpy(retptr, x, m*n*sizeof(*x));
-  
-  UNPROTECT(1);
-  return ret;
-}
-
 
 
 // faster to index each element and operate accordingly, but
 // this is too memory expensive for most applications
 // note: R does this anyway because, well, R...
-static SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
+static SEXP R_fast_naomit_dbl_small(const int m, const int n, const double *x)
 {
   SEXP ret;
   const int len = m*n;
@@ -70,8 +53,6 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
   int *na_vec_ind = (int*) calloc(len, sizeof(*na_vec_ind));
   int m_fin = m;
   int row;
-  
-  const double *x = REAL(x_);
   
   // get indices of NA's
   SAFE_FOR_SIMD
@@ -103,7 +84,7 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
   // do a cheap copy if the matrix is identical
   if (m_fin == m)
   {
-    ret = copymat_dbl(m, n, x_);
+    COPYMAT(x, ret, m, n, REAL);
     free(na_vec_ind);
     return ret;
   }
@@ -135,15 +116,13 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, SEXP x_)
 
 
 
-static SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
+static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *x)
 {
   SEXP ret;
   int i, j, mj;
   int *rows = (int*) calloc(m, sizeof(*rows));
   int m_fin = m;
   int row;
-  
-  const double *x = REAL(x_);
   
   // get indices of NA's
   #pragma omp parallel for default(shared) private(i, j, mj)
@@ -167,7 +146,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
   // do a cheap copy if the matrix is identical
   if (m_fin == m)
   {
-    ret = copymat_dbl(m, n, x_);
+    COPYMAT(x, ret, m, n, REAL);
     free(rows);
     return ret;
   }
@@ -200,10 +179,12 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, SEXP x_)
 
 
 
-SEXP R_fast_naomit_dbl(SEXP x)
+SEXP R_fast_naomit_dbl(SEXP x_)
 {
-  const int m = nrows(x);
-  const int n = ncols(x);
+  const int m = nrows(x_);
+  const int n = ncols(x_);
+  
+  const double *x = REAL(x_);
   
   if (m*n < OMP_MIN_SIZE)
     return R_fast_naomit_dbl_small(m, n, x);
@@ -213,7 +194,7 @@ SEXP R_fast_naomit_dbl(SEXP x)
 
 
 
-static SEXP R_fast_naomit_int_small(const int m, const int n, SEXP x_)
+static SEXP R_fast_naomit_int_small(const int m, const int n, const int *x)
 {
   SEXP ret;
   const int len = m*n;
@@ -221,8 +202,6 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, SEXP x_)
   int *na_vec_ind = (int*) calloc(len, sizeof(*na_vec_ind));
   int m_fin = m;
   int row;
-  
-  const int *x = INTEGER(x_);
   
   // get indices of NA's
   SAFE_FOR_SIMD
@@ -253,7 +232,7 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, SEXP x_)
   // do a cheap copy if the matrix is identical
   if (m_fin == m)
   {
-    ret = copymat_int(m, n, x_);
+    COPYMAT(x, ret, m, n, INT);
     free(na_vec_ind);
     return ret;
   }
@@ -285,15 +264,13 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, SEXP x_)
 
 
 
-static SEXP R_fast_naomit_int_big(const int m, const int n, SEXP x_)
+static SEXP R_fast_naomit_int_big(const int m, const int n, const int *x)
 {
   SEXP ret;
   int i, j, mj;
   int *rows = (int*) calloc(m, sizeof(*rows));
   int m_fin = m;
   int row;
-  
-  const int *x = INTEGER(x_);
   
   #pragma omp parallel for default(shared) private(i, j, mj)
   for (j=0; j<n; j++)
@@ -314,7 +291,7 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, SEXP x_)
   
   if (m_fin == m)
   {
-    ret = copymat_int(m, n, x_);
+    COPYMAT(x, ret, m, n, INT);
     free(rows);
     return ret;
   }
@@ -346,10 +323,12 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, SEXP x_)
 
 
 
-SEXP R_fast_naomit_int(SEXP x)
+SEXP R_fast_naomit_int(SEXP x_)
 {
-  const int m = nrows(x);
-  const int n = ncols(x);
+  const int m = nrows(x_);
+  const int n = ncols(x_);
+  
+  const int *x = INTEGER(x_);
   
   if (m*n < OMP_MIN_SIZE)
     return R_fast_naomit_int_small(m, n, x);
@@ -367,4 +346,46 @@ SEXP R_fast_naomit(SEXP x)
     return R_fast_naomit_int(x);
   else
     error("'x' must be numeric");
+}
+
+
+
+SEXP R_naomit_vecvec(SEXP x_, SEXP y_)
+{
+  int i;
+  const int n = LENGTH(x_);
+  double *x, *y;
+  SEXP x_ret, y_ret;
+  SEXP ret;
+  
+  // COPYVEC(x_, x_ret, n, REAL);
+  // COPYVEC(y_, y_ret, n, REAL);
+  // double *x = REAL(x_);
+  // double *y = REAL(y_);
+  
+  x = malloc(n * sizeof(*x));
+  memcpy(x, REAL(x_), n*sizeof(*x));
+  y = malloc(n * sizeof(*y));
+  memcpy(y, REAL(y_), n*sizeof(*y));
+  
+  for (i=0; i<n; i++)
+  {
+    if (ISNA(x[i]) || ISNAN(x[i]))
+      y[i] = x[i];
+    else if (ISNA(y[i]) || ISNAN(y[i]))
+      x[i] = y[i];
+  }
+  
+  x_ret = R_fast_naomit_dbl_small(n, 1, x);
+  y_ret = R_fast_naomit_dbl_small(n, 1, y);
+  
+  free(x);
+  free(y);
+  
+  PROTECT(ret = allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(ret, 0, x_ret);
+  SET_VECTOR_ELT(ret, 1, y_ret);
+  
+  UNPROTECT(1);
+  return ret;
 }

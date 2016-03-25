@@ -4,13 +4,17 @@
 \alias{covar}
 \title{Covariance}
 \usage{
-covar(x, y)
+covar(x, y, use = "everything")
 }
 \arguments{
 \item{x}{A numeric matrix or vector.}
 
 \item{y}{A vector (when \code{x} is a vector) or missing (blank) when 
 \code{x} is a matrix.}
+
+\item{use}{The NA handler, as in R's \code{cov()} and \code{cor()}
+functions.  Options are "everything", "all.obs", and 
+"complete.obs".}
 }
 \value{
 The covariance matrix.

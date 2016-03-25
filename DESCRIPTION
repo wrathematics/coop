@@ -10,7 +10,7 @@ Description: Fast implementations of the co-operations: covariance,
     are available in the package vignettes.
 License: BSD 2-clause License + file LICENSE
 Depends:
-    R (>= 3.0.0)
+    R (>= 3.1.0)
 Enhances: 
     slam (>= 0.1.32),
     Matrix

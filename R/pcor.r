@@ -11,6 +11,10 @@
 #' @param y
 #' A vector (when \code{x} is a vector) or missing (blank) when 
 #' \code{x} is a matrix.
+#' @param use
+#' The NA handler, as in R's \code{cov()} and \code{cor()}
+#' functions.  Options are "everything", "all.obs", and 
+#' "complete.obs".
 #' 
 #' @return
 #' The pearson correlation matrix.
@@ -24,20 +28,20 @@
 #' @author Drew Schmidt
 #' @seealso \code{\link{cosine}}
 #' @export
-pcor <- function(x, y) UseMethod("pcor")
+pcor <- function(x, y, use="everything") UseMethod("pcor")
 
 
 
 #' @export
-pcor.matrix <- function(x, y)
+pcor.matrix <- function(x, y, use="everything")
 {
-  co_matrix(x, y, CO_ORR)
+  co_matrix(x, y, CO_ORR, use)
 }
 
 
 
 #' @export
-pcor.default <- function(x, y)
+pcor.default <- function(x, y, use="everything")
 {
-  co_vecvec(x, y, CO_ORR)
+  co_vecvec(x, y, CO_ORR, use)
 }
