@@ -125,6 +125,46 @@ static void remove_colmeans(const int m, const int n, double *restrict x)
 
 
 
+static void remove_colmeans_handleNA(const int m, const int n, double *restrict x)
+{
+  int i, j;
+  double colmean;
+  
+  if (m == 0 || n == 0) 
+    return;
+  
+  const double div = 1. / ((double) m);
+  
+  #pragma omp parallel for private(i, j, colmean) shared(x) if(m*n > OMP_MIN_SIZE)
+  for (j=0; j<n; j++)
+  {
+    colmean = 0;
+    
+    // Get column mean
+    SAFE_SIMD
+    for (i=0; i<m; i++)
+    {
+      if (!isnan(x[i + m*j]))
+        colmean += x[i + m*j];
+    }
+    
+    colmean *= div;
+    
+    // Remove mean from column
+    SAFE_SIMD
+    for (i=0; i<m; i++)
+    {
+      if (isnan(x[i + m*j]))
+        x[i + m*j] = 0.;
+      else
+        x[i + m*j] -= colmean;
+    }
+    
+  }
+}
+
+
+
 // compute the mean of a vector
 static inline double mean(const int n, const double *restrict x)
 {
@@ -359,12 +399,15 @@ int coop_covar_mat(const int m, const int n, const double *restrict x, double *r
 */
 int coop_covar_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cov)
 {
+  int i;
   const double recip_n = (double) 1. / (n-1);
   double sum_xy = 0., sum_x = 0., sum_y = 0.;
   double tx, ty;
   
+  #ifdef OMP_VER_4
   #pragma omp simd reduction(+: sum_xy, sum_x, sum_y)
-  for (int i=0; i<n; i++)
+  #endif
+  for (i=0; i<n; i++)
   {
     tx = x[i];
     ty = y[i];
