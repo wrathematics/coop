@@ -125,46 +125,6 @@ static void remove_colmeans(const int m, const int n, double *restrict x)
 
 
 
-static void remove_colmeans_handleNA(const int m, const int n, double *restrict x)
-{
-  int i, j;
-  double colmean;
-  
-  if (m == 0 || n == 0) 
-    return;
-  
-  const double div = 1. / ((double) m);
-  
-  #pragma omp parallel for private(i, j, colmean) shared(x) if(m*n > OMP_MIN_SIZE)
-  for (j=0; j<n; j++)
-  {
-    colmean = 0;
-    
-    // Get column mean
-    SAFE_SIMD
-    for (i=0; i<m; i++)
-    {
-      if (!isnan(x[i + m*j]))
-        colmean += x[i + m*j];
-    }
-    
-    colmean *= div;
-    
-    // Remove mean from column
-    SAFE_SIMD
-    for (i=0; i<m; i++)
-    {
-      if (isnan(x[i + m*j]))
-        x[i + m*j] = 0.;
-      else
-        x[i + m*j] -= colmean;
-    }
-    
-  }
-}
-
-
-
 // compute the mean of a vector
 static inline double mean(const int n, const double *restrict x)
 {
