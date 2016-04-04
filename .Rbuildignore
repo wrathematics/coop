@@ -1,3 +1,6 @@
 ^\.travis\.yml$
 src/tautest
 TODO
+
+vignettes/coop_cache
+vignettes/coop_files
