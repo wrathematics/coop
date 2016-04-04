@@ -205,21 +205,17 @@ cosine <- function(x)
 
 The main reason this will *significantly* outperform the naive implementation is because it makes very efficient use of the **BLAS**.  Additionally, `crossprod()` and `tcrossprod()` are actually optimized to not only avoid the unnecessary copy in explicitly forming the transpose (produced when `t()` is called), but they only compute one triangle of the desired matrix and copy it over to the other, essentially doing only half the work.  These operations alone allow for significant improvement in performance:
 
-```{r, cache=TRUE}
+```r
 n <- 250
 x <- matrix(rnorm(n*n), n, n)
 
-mb <- microbenchmark::microbenchmark(cp1 <- t(x) %*% x, cp2 <- crossprod(x), times=20)
+mb <- microbenchmark::microbenchmark(t(x) %*% x, crossprod(x), times=20)
 boxplot(mb)
 ```
 
-It is additionally simple to verify that these are identical computations:
+<img src="include/bench.png">
 
-```{r}
-all.equal(cp1, cp2)
-``` 
-
-However, this implementation is not memory efficient, as it requires the allocation  of additional storage for:
+One can easily numerically verify that these are identical computations.  However, this implementation is not memory efficient, as it requires the allocation  of additional storage for:
 
 1. $n\times n$ elements for the `crossprod()`
 2. $n$ elements for `diag()`
