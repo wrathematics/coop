@@ -16,8 +16,6 @@ Enhances:
     Matrix
 Suggests:
     memuse,
-    microbenchmark,
-    rbenchmark,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
