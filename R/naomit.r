@@ -3,10 +3,10 @@ naomit_mat <- function(x)
   .Call(R_fast_naomit, x)
 }
 
-naomit_coo <- function(a, i, j)
-{
-  .Call(R_naomit_coo, a, i, j)
-}
+# naomit_coo <- function(a, i, j)
+# {
+#   .Call(R_naomit_coo, a, i, j)
+# }
 
 ### TODO unify
 naomit <- function(x)

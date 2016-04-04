@@ -15,16 +15,17 @@ co_sparse <- function(n, a, i, j, index, type, use)
     if (anyNA(a))
       stop("missing observations in covar/pcor/cosine")
   }
-  else if (use == "complete.obs")
-  {
-    if (anyNA(x))
-    {
-      out <- naomit_coo(a, i, j)
-      a <- out[[1]]
-      i <- out[[2]]
-      j <- out[[3]]
-    }
-  }
+  ### TODO
+  # else if (use == "complete.obs")
+  # {
+  #   if (anyNA(x))
+  #   {
+  #     out <- naomit_coo(a, i, j)
+  #     a <- out[[1]]
+  #     i <- out[[2]]
+  #     j <- out[[3]]
+  #   }
+  # }
   else
     stop("unsupported 'use' method")
   
