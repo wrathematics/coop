@@ -1,5 +1,5 @@
-Release 0.4-0 (//):
-  * Implement a fast naomit for internals.
+Release 0.4-0 (4/4/2016):
+  * Implement a fast naomit for dense internals.
   * Add 'use' argument.
   * Implement use with "everything", "all.obs", and "complete.obs".
   * Add fix to coop_covar_vecvec for older compilers.
