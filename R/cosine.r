@@ -67,7 +67,7 @@ cosine.simple_triplet_matrix <- function(x, y, use="everything")
   if (length(a) != length(i) || length(i) != length(j))
     stop("Malformed simple_triplet_matrix: lengths of 'v', 'i', and 'j' do not agree")
   
-  ret <- co_sparse(n, a, i, j, index, type)
+  ret <- co_sparse(n, a, i, j, index, type, use)
   if (!is.null(colnames(x)))
   {
     rownames(ret) <- colnames(x)
@@ -95,7 +95,7 @@ cosine.dgCMatrix <- function(x, y, use="everything")
   if (length(a) != length(i) || length(i) != length(j))
     stop("Malformed dgCMatrix: lengths of 'x', 'i', and 'p' do not agree")
   
-  ret <- co_sparse(n, a, i, j, index, type)
+  ret <- co_sparse(n, a, i, j, index, type, use)
   if (!is.null(colnames(x)))
   {
     rownames(ret) <- colnames(x)

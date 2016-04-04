@@ -12,7 +12,7 @@ co_matrix <- function(x, y, type, use)
   if (!missing(y))
     stop("argument 'y' can not be used with a matrix 'x'")
   
-  use <- match.arg(tolower(use), c("everything", "all.obs", "complete.obs"))
+  use <- check_use(use)
   if (use == "everything")
   {}
   else if (use == "all.obs")
@@ -25,6 +25,8 @@ co_matrix <- function(x, y, type, use)
     if (anyNA(x))
       x <- naomit(x)
   }
+  else
+    stop("unsupported 'use' method")
   
   if (!is.double(x))
     storage.mode(x) <- "double"

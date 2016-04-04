@@ -38,3 +38,14 @@ stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
 
 storage.mode(y) <- "integer"
 stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
+
+
+
+### TODO
+# if (require(slam))
+# {
+#   library(slam)
+#   csc <- as.simple_triplet_matrix(y)
+#   z <- as.matrix(coop:::naomit_coo(as.double(csc$v), csc$i, csc$j))
+#   stopifnot(all.equal(na.omit(y), z, check.attributes=FALSE))
+# }

@@ -42,6 +42,10 @@
   UNPROTECT(1);
 
 
+// --------------------------------------------------------------
+// dense
+// --------------------------------------------------------------
+
 // faster to index each element and operate accordingly, but
 // this is too memory expensive for most applications
 // note: R does this anyway because, well, R...
@@ -389,3 +393,12 @@ SEXP R_naomit_vecvec(SEXP x_, SEXP y_)
   UNPROTECT(1);
   return ret;
 }
+
+
+
+// --------------------------------------------------------------
+// sparse
+// --------------------------------------------------------------
+
+// TODO
+// SEXP R_naomit_coo(SEXP a_in_, SEXP i_in_, SEXP j_in_)
