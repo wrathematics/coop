@@ -40,13 +40,14 @@
 //  Dense
 // ---------------------------------------------
 
-SEXP R_co_mat(SEXP x, SEXP type_)
+SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_)
 {
   SEXP ret;
   int check;
   const int type = INTEGER(type_)[0];
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
+  const int inplace = INTEGER(inplace_)[0];
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
   if (type == CO_SIM)
@@ -54,7 +55,12 @@ SEXP R_co_mat(SEXP x, SEXP type_)
   else if (type == CO_ORR)
     check = coop_pcor_mat(m, n, REAL(x), REAL(ret));
   else if (type == CO_VAR)
-    check = coop_covar_mat(m, n, REAL(x), REAL(ret));
+  {
+    if (inplace)
+      check = coop_covar_mat_inplace(m, n, REAL(x), REAL(ret));
+    else
+      check = coop_covar_mat(m, n, REAL(x), REAL(ret));
+  }
   else
     BADTYPE();
   

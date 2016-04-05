@@ -5,8 +5,10 @@ is.vec <- function(x)
 
 
 
-co_matrix <- function(x, y, type, use)
+co_matrix <- function(x, y, type, use, inplace)
 {
+  if (!is.logical(inplace) || length(inplace) != 1 || is.na(inplace))
+    stop("argument 'inplace' must be a length 1, non-NA logical")
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
   if (!missing(y))
@@ -31,7 +33,7 @@ co_matrix <- function(x, y, type, use)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  ret <- .Call(R_co_mat, x, as.integer(type))
+  ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace))
   if (!is.null(colnames(x)))
   {
     rownames(ret) <- colnames(x)

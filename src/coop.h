@@ -41,6 +41,9 @@ int coop_pcor_vecvec(const int n, const double *restrict x, const double *restri
 int coop_covar_mat(const int m, const int n, const double *restrict x, double *restrict cov);
 int coop_covar_vecvec(const int n, const double *x, const double *y, double *restrict cov);
 
+// dense - inplace
+int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov);
+
 // sparse
 int coop_cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
 
