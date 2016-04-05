@@ -27,6 +27,8 @@
 #' additional 6.7 GiB of data, while the inplace method requires
 #' only 469 KiB, a 15,000-fold difference.
 #' 
+#' Note that cosine is always computed in place.
+#' 
 #' @section Implementation Details:
 #' Multiple storage schemes for the input data are accepted.  
 #' For dense matrices, an ordinary R matrix input is accepted.  

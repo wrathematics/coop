@@ -31,6 +31,8 @@ of only m+n additional doubles.  For perspective, given a
 30,000x30,000 matrix, a copy of the data requires an
 additional 6.7 GiB of data, while the inplace method requires
 only 469 KiB, a 15,000-fold difference.
+
+Note that cosine is always computed in place.
 }
 
 \section{Implementation Details}{
