@@ -33,15 +33,8 @@
 #include "omp.h"
 
 
-// ---------------------------------------------
-//  Covariance
-// ---------------------------------------------
-
-// Same as coop_covar_*, but with less memory allocations
-
-
 // O(1) storage
-int coop_covar_vecvec_inplace(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
+static int coop_covar_vecvec_inplace(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
 {
   int i;
   const double denom = (double) 1/n;
@@ -86,19 +79,19 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
     free(vec);
     return -1;
   }
-  
   const double denom_mean = (double) 1./m;
   const double denom_cov = (double) 1./(m-1);
   double meanx;
   double meany; // :DDD
   double mmcp;  // minus-mean-crossproduct
   
+  #pragma omp parallel for private(i, j, mj) if (m*n > OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
     mj = m*j;
     
     means[j] = 0.0;
-    SAFE_FOR_SIMD
+    SAFE_SIMD
     for (i=0; i<m; i++)
       means[j] += x[i + mj];
     
@@ -117,7 +110,7 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
     for (k=0; k<m; k++)
       vec[k] -= meanx;
     
-    #pragma omp parallel for private(i, mi, meany, mmcp)
+    #pragma omp parallel for private(i, mi, meany, mmcp) if(m*n > OMP_MIN_SIZE)
     for (i=j; i<n; i++)
     {
       mi = m*i;
@@ -141,6 +134,10 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
 
 
 
+// ---------------------------------------------
+//  Interface
+// ---------------------------------------------
+
 int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cor)
 {
   int check;
@@ -153,6 +150,8 @@ int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, do
   
   return 0;
 }
+
+
 
 int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov)
 {
