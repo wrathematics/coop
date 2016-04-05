@@ -37,21 +37,10 @@
 //  Correlation
 // ---------------------------------------------
 
-/**
- * @brief 
- * Compute the pearson correlation matrix.
- * 
- * @details
- * The implementation is dominated by a symmetric rank-k update
- * via the BLAS function dsyrk().
- * 
- * @param m,n
- * The number of rows/columns of the input matrix x.
- * @param x
- * The input mxn matrix.
- * @param cor
- * The output nxn matrix.
-*/
+// Same as coop_covar_*, but with less memory allocations
+
+
+// O(1) storage
 int coop_covar_vecvec_inplace(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
 {
   int i;
@@ -84,7 +73,7 @@ int coop_covar_vecvec_inplace(const int n, const double *restrict x, const doubl
 
 
 
-// storage: m+n doubles
+// O(m+n) storage
 int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov)
 {
   int i, j, k;
@@ -92,9 +81,10 @@ int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, d
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
   double *means = malloc(n * sizeof(*means));
-  if (x==NULL)
+  if (means==NULL)
   {
-    
+    free(vec);
+    return -1;
   }
   
   const double denom_mean = (double) 1./m;
