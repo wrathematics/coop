@@ -34,7 +34,7 @@
 
 
 // ---------------------------------------------
-//  Correlation
+//  Covariance
 // ---------------------------------------------
 
 // Same as coop_covar_*, but with less memory allocations
@@ -74,7 +74,7 @@ int coop_covar_vecvec_inplace(const int n, const double *restrict x, const doubl
 
 
 // O(m+n) storage
-int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov)
+static int co_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov)
 {
   int i, j, k;
   int mj, mi;
@@ -133,9 +133,35 @@ int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, d
     }
   }
   
-  coop_symmetrize(n, cov);
   free(vec);
   free(means);
+  
+  return 0;
+}
+
+
+
+int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cor)
+{
+  int check;
+  
+  check = co_mat_inplace(m, n, x, cor);
+  if (check) return check;
+  
+  cosim_fill(n, cor);
+  coop_symmetrize(n, cor);
+  
+  return 0;
+}
+
+int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov)
+{
+  int check;
+  
+  check = co_mat_inplace(m, n, x, cov);
+  if (check) return check;
+  
+  coop_symmetrize(n, cov);
   
   return 0;
 }

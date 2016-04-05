@@ -53,7 +53,12 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_)
   if (type == CO_SIM)
     check = coop_cosine_mat(m, n, REAL(x), REAL(ret));
   else if (type == CO_ORR)
-    check = coop_pcor_mat(m, n, REAL(x), REAL(ret));
+  {
+    if (inplace)
+      check = coop_pcor_mat_inplace(m, n, REAL(x), REAL(ret));
+    else
+      check = coop_pcor_mat(m, n, REAL(x), REAL(ret));
+  }
   else if (type == CO_VAR)
   {
     if (inplace)

@@ -58,6 +58,27 @@ void coop_symmetrize(const int n, double *restrict x)
 
 
 
+// replaces upper triangle of the crossproduct of a matrix with its cosine similarity
+void cosim_fill(const unsigned int n, double *restrict cp)
+{
+  int i, j;
+  double diagj;
+  
+  #pragma omp parallel for private(i,j,diagj) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  for (j=0; j<n; j++)
+  {
+    diagj = cp[j + n*j];
+    
+    SAFE_SIMD
+    for (i=j+1; i<n; i++)
+      cp[i + n*j] /= sqrt(cp[i + n*i] * diagj);
+  }
+  
+  coop_diag2one(n, cp);
+}
+
+
+
 // Number of 0's for integer matrix
 int coop_sparsity_int(const int m, const int n, const int *x)
 {
