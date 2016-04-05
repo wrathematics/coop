@@ -1,3 +1,7 @@
+Release 0.5-0 (//):
+  * Implement inplace methods for correlation and covariance.
+  * Add 'inplace' argument.
+
 Release 0.4-0 (4/4/2016):
   * Implement a fast naomit for dense internals.
   * Add 'use' argument.
