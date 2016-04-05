@@ -38,7 +38,7 @@ cosine <- function(x, y, use="everything") UseMethod("cosine")
 #' @export
 cosine.matrix <- function(x, y, use="everything")
 {
-  co_matrix(x, y, CO_SIM, use)
+  co_matrix(x, y, CO_SIM, use, inplace=FALSE)
 }
 
 

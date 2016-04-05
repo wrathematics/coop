@@ -4,7 +4,7 @@
 \alias{pcor}
 \title{Pearson Correlation}
 \usage{
-pcor(x, y, use = "everything")
+pcor(x, y, use = "everything", inplace = FALSE)
 }
 \arguments{
 \item{x}{A numeric matrix or vector.}
@@ -15,6 +15,10 @@ pcor(x, y, use = "everything")
 \item{use}{The NA handler, as in R's \code{cov()} and \code{cor()}
 functions.  Options are "everything", "all.obs", and 
 "complete.obs".}
+
+\item{inplace}{Logical; if \code{TRUE} then the method used is slower but
+uses less memory than if \code{FALSE}.  See \code{?coop-package}
+for details.}
 }
 \value{
 The pearson correlation matrix.
