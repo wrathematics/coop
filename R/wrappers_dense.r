@@ -1,10 +1,3 @@
-is.vec <- function(x)
-{
-  is.vector(x) && !is.list(x)
-}
-
-
-
 co_matrix <- function(x, y, type, use, inplace)
 {
   if (!is.logical(inplace) || length(inplace) != 1 || is.na(inplace))
@@ -27,8 +20,6 @@ co_matrix <- function(x, y, type, use, inplace)
     if (anyNA(x))
       x <- naomit(x)
   }
-  else
-    stop("unsupported 'use' method")
   
   if (!is.double(x))
     storage.mode(x) <- "double"
