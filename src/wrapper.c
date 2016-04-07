@@ -107,6 +107,30 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
 }
 
 
+SEXP R_covar_mat_pairwise(SEXP x, SEXP type_)
+{
+  SEXP ret;
+  int check;
+  const int type = INTEGER(type_)[0];
+  const unsigned int m = nrows(x);
+  const unsigned int n = ncols(x);
+  PROTECT(ret = allocMatrix(REALSXP, n, n));
+  
+  
+  if (type == CO_SIM)
+    check = coop_cosine_mat_inplace_pairwise(m, n, REAL(x), REAL(ret));
+  else if (type == CO_VAR)
+    check = coop_covar_mat_inplace_pairwise(m, n, REAL(x), REAL(ret));
+  else
+    BADTYPE();
+  
+  UNPROTECT(1);
+  
+  if (check)
+    error("unable to allocate necessary memory");
+  
+  return ret;
+}
 
 
 

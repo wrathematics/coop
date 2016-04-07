@@ -71,6 +71,9 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
 {
   int i, j, k;
   int mj, mi;
+  double meanx;
+  double meany; // :DDD
+  double mmcp;  // minus-mean-crossproduct
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
   double *means = malloc(n * sizeof(*means));
@@ -81,9 +84,6 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
   }
   const double denom_mean = (double) 1./m;
   const double denom_cov = (double) 1./(m-1);
-  double meanx;
-  double meany; // :DDD
-  double mmcp;  // minus-mean-crossproduct
   
   #pragma omp parallel for private(i, j, mj) if (m*n > OMP_MIN_SIZE)
   for (j=0; j<n; j++)
@@ -110,7 +110,7 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
     for (k=0; k<m; k++)
       vec[k] -= meanx;
     
-    #pragma omp parallel for private(i, mi, meany, mmcp) if(m*n > OMP_MIN_SIZE)
+    #pragma omp parallel for private(i, k, mi, meany, mmcp) if(m*n > OMP_MIN_SIZE)
     for (i=j; i<n; i++)
     {
       mi = m*i;

@@ -45,8 +45,17 @@ int coop_covar_vecvec(const int n, const double *x, const double *y, double *res
 int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov);
 int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cor);
 
+// dense - pairwise complete observations (inplace)
+int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cos);
+int coop_covar_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cov);
+
 // sparse
 int coop_cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
+
+// special values
+void set_na_real(double *val);
+void set_nan_real(double *val);
+void set_na_int(int *val);
 
 // utils
 void coop_diag2one(const unsigned int n, double *restrict x);

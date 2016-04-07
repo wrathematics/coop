@@ -400,5 +400,47 @@ SEXP R_naomit_vecvec(SEXP x_, SEXP y_)
 // sparse
 // --------------------------------------------------------------
 
-// TODO
-// SEXP R_naomit_coo(SEXP a_in_, SEXP i_in_, SEXP j_in_)
+/*
+SEXP R_naomit_coo(SEXP a_in_, SEXP i_in_, SEXP j_in_)
+{
+  SEXP ret;
+  SEXP a_out_, i_out_, j_out_;
+  const double *a_in = REAL(a_in_);
+  const int *i_in = INTEGER(i_in_);
+  const int *j_in = INTEGER(j_in_);
+  const int len_in = LENGTH(a_in_);
+  int k;
+  int len_out = 0;
+  
+  
+  // Find all NA rows
+  for (k=0; k<len_in; k++)
+  {
+    
+  }
+  
+  
+  
+  
+  // build reduced matrix
+  PROTECT(a_out_ = allocVector(REALSXP, len_out));
+  PROTECT(i_out_ = allocVector(INTSXP, len_out));
+  PROTECT(j_out_ = allocVector(INTSXP, len_out));
+  int *i_out = INTEGRE(i_out_);
+  int *j_out = INTEGRE(j_out_);
+  
+  
+  
+  
+  
+  // Set return
+  PROTECT(ret = allocVector(VECSXP, 3));
+  
+  SET_VECTOR_ELT(ret, 0, a_out_);
+  SET_VECTOR_ELT(ret, 1, i_out_);
+  SET_VECTOR_ELT(ret, 2, j_out_);
+  
+  UNPROTECT(4);
+  return ret;
+}
+*/
