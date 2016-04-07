@@ -24,7 +24,11 @@ co_matrix <- function(x, y, type, use, inplace)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace))
+  if (use == "pairwise.complete.obs")
+    ret <- .Call(R_co_mat_pairwise, x, as.integer(type))
+  else
+    ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace))
+  
   if (!is.null(colnames(x)))
   {
     rownames(ret) <- colnames(x)

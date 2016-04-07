@@ -107,7 +107,7 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
 }
 
 
-SEXP R_covar_mat_pairwise(SEXP x, SEXP type_)
+SEXP R_co_mat_pairwise(SEXP x, SEXP type_)
 {
   SEXP ret;
   int check;
@@ -119,6 +119,8 @@ SEXP R_covar_mat_pairwise(SEXP x, SEXP type_)
   
   if (type == CO_SIM)
     check = coop_cosine_mat_inplace_pairwise(m, n, REAL(x), REAL(ret));
+  else if (type == CO_ORR)
+    error("This hasn't been implemented for correlation yet :(");
   else if (type == CO_VAR)
     check = coop_covar_mat_inplace_pairwise(m, n, REAL(x), REAL(ret));
   else
