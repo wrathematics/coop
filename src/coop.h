@@ -47,6 +47,7 @@ int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, do
 
 // dense - pairwise complete observations (inplace)
 int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cos);
+int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cor);
 int coop_covar_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cov);
 
 // sparse

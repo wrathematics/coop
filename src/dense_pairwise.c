@@ -113,6 +113,85 @@ int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double *res
 
 
 
+int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cor)
+{
+  int i, j, k;
+  int mj, mi;
+  int len;
+  double dlen;
+  double meanx, meany;
+  double sdx, sdy;
+  double mmcp, tmp;
+  double *vec = malloc(m * sizeof(*vec));
+  CHECKMALLOC(vec);
+  
+  
+  for (j=0; j<n; j++)
+  {
+    mj = m*j;
+    memcpy(vec, x+mj, m*sizeof(*vec));
+    
+    #pragma omp parallel for private(i, k, mi, meanx, meany, sdx, sdy, len, mmcp) if(m*n > OMP_MIN_SIZE)
+    for (i=j; i<n; i++)
+    {
+      mi = m*i;
+      
+      compute_sums(m, mi, vec, x, &meanx, &meany, &len);
+      
+      if (len == 0 || len == 1)
+      {
+        set_na_real(cor + (i + n*j));
+        set_na_real(cor + (j + n*i));
+        continue;
+      }
+      else if (len == 2)
+      {
+        cor[i + n*j] = 1.;
+        cor[j + n*i] = 1.;
+        continue;
+      }
+      
+      dlen = (double) len;
+      meanx /= dlen;
+      meany /= dlen;
+      
+      sdx = 0;
+      sdy = 0;
+      
+      SAFE_SIMD
+      for (k=0; k<m; k++)
+      {
+        if (!isnan(vec[k]) && !isnan(x[k + mi]))
+        {
+          sdx += (vec[k] - meanx)*(vec[k] - meanx);
+          sdy += (x[k + mi] - meany)*(x[k + mi] - meany);
+        }
+      }
+      
+      sdx = sqrt(sdx/(dlen-1.));
+      sdy = sqrt(sdy/(dlen-1.));
+      
+      mmcp = 0.0;
+      SAFE_SIMD
+      for (k=0; k<m; k++)
+      {
+        if (!isnan(vec[k]) && !isnan(x[k + mi]))
+          mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
+      }
+      
+      tmp = mmcp / sdx / sdy / (dlen - 1.0);
+      cor[i + n*j] = tmp;
+      cor[j + n*i] = tmp;
+    }
+  }
+  
+  free(vec);
+  
+  return 0;
+}
+
+
+
 int coop_covar_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cov)
 {
   int i, j, k;
