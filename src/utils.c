@@ -62,6 +62,7 @@ void coop_symmetrize(const int n, double *restrict x)
 void cosim_fill(const unsigned int n, double *restrict cp)
 {
   int i, j;
+  int nj;
   double diagj;
   
   #pragma omp parallel for private(i,j,diagj) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
@@ -69,12 +70,13 @@ void cosim_fill(const unsigned int n, double *restrict cp)
   {
     diagj = cp[j + n*j];
     
+    nj = n*j;
+    cp[j + nj] = 1;
+    
     SAFE_SIMD
     for (i=j+1; i<n; i++)
-      cp[i + n*j] /= sqrt(cp[i + n*i] * diagj);
+      cp[i + nj] /= sqrt(cp[i + n*i] * diagj);
   }
-  
-  coop_diag2one(n, cp);
 }
 
 
