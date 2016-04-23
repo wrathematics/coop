@@ -131,7 +131,7 @@ int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restr
     mj = m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
     
-    #pragma omp parallel for private(i, k, mi, meanx, meany, sdx, sdy, len, mmcp) if(m*n > OMP_MIN_SIZE)
+    #pragma omp parallel for private(i, k, mi, meanx, meany, sdx, sdy, len, dlen, mmcp) if(m*n > OMP_MIN_SIZE)
     for (i=j; i<n; i++)
     {
       mi = m*i;
