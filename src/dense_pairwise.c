@@ -218,6 +218,7 @@ int coop_covar_mat_inplace_pairwise(const int m, const int n, const double *rest
       if (len == 0)
       {
         set_na_real(cov + (i + n*j));
+        set_na_real(cov + (j + n*i));
         continue;
       }
       
