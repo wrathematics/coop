@@ -85,6 +85,8 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
   const double denom_mean = (double) 1./m;
   const double denom_cov = (double) 1./(m-1);
   
+  
+  // get column means
   #pragma omp parallel for private(i, j, mj) if (m*n > OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
@@ -99,6 +101,7 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
   }
   
   
+  // co-operation
   for (j=0; j<n; j++)
   {
     mj = m*j;
@@ -145,7 +148,7 @@ int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, do
   check = co_mat_inplace(m, n, x, cor);
   if (check) return check;
   
-  cosim_fill(n, cor);
+  coop_fill(n, cor);
   coop_symmetrize(n, cor);
   
   return 0;

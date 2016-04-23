@@ -144,7 +144,7 @@ static inline double mean(const int n, const double *restrict x)
 int coop_cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
 {
   crossprod(m, n, x, cos);
-  cosim_fill(n, cos);
+  coop_fill(n, cos);
   coop_symmetrize(n, cos);
   
   return 0;
@@ -212,7 +212,7 @@ int coop_pcor_mat(const int m, const int n, const double *restrict x, double *re
   
   remove_colmeans(m, n, x_cp);
   crossprod(m, n, x_cp, cor);
-  cosim_fill(n, cor);
+  coop_fill(n, cor);
   coop_symmetrize(n, cor);
   
   free(x_cp);

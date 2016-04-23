@@ -62,7 +62,7 @@ void coop_symmetrize(const int n, double *restrict x)
 
 
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-void cosim_fill(const unsigned int n, double *restrict cp)
+void coop_fill(const unsigned int n, double *restrict cp)
 {
   int i, j;
   int nj;
