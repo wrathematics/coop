@@ -1,7 +1,9 @@
 Release 0.5-0 (//):
-  * Implement inplace methods for correlation and covariance.
+  * Implement inplace methods for correlation and covariance (correlation is
+	always doneinplance)
   * Add 'inplace' argument.
   * Implement use='pairwise.complete.obs' methods.
+  * Several small performance improvements.
 
 Release 0.4-0 (4/4/2016):
   * Implement a fast naomit for dense internals.
