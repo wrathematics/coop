@@ -11,3 +11,6 @@ x[sample(m*n, size=.1*m*n)] <- NA_real_
 
 benchmark(R=(res.r <- cov(x, use="pair")), coop=(res.coop <- covar(x, use="pair")), replications=reps, columns=cols)
 all.equal(res.r, res.coop)
+
+benchmark(R=(res.r <- cor(x, use="pair")), coop=(res.coop <- pcor(x, use="pair")), replications=reps, columns=cols)
+all.equal(res.r, res.coop)
