@@ -46,13 +46,16 @@ void coop_diag2one(const unsigned int n, double *restrict x)
 void coop_symmetrize(const int n, double *restrict x)
 {
   int i, j;
+  int nj;
   
   #pragma omp parallel for private(i) default(shared) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (j=0; j<n; j++)
   {
+    nj = n*j;
+    
     SAFE_SIMD
     for (i=j+1; i<n; i++)
-      x[j + n*i] = x[i + n*j];
+      x[j + n*i] = x[i + nj];
   }
 }
 
@@ -84,13 +87,17 @@ void cosim_fill(const unsigned int n, double *restrict cp)
 // Number of 0's for integer matrix
 int coop_sparsity_int(const int m, const int n, const int *x)
 {
-  int i, j, count = 0;
+  int i, j;
+  int mj;
+  int count = 0;
   
   for (j=0; j<n; j++)
   {
+    mj = m*j;
+    
     for (i=0; i<m; i++)
     {
-      if (x[i + m*j] == 0)
+      if (x[i + mj] == 0)
         count++;
     }
   }
@@ -103,13 +110,17 @@ int coop_sparsity_int(const int m, const int n, const int *x)
 // Number of (approximate) 0's for double matrix
 int coop_sparsity_dbl(const int m , const int n, double *x, const double tol)
 {
-  int i, j, count = 0;
+  int i, j;
+  int mj;
+  int count = 0;
   
   for (j=0; j<n; j++)
   {
+    mj = m*j;
+    
     for (i=0; i<m; i++)
     {
-      if (fabs(x[i + m*j]) < tol)
+      if (fabs(x[i + mj]) < tol)
         count++;
     }
   }
