@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for f in `ls *.R`;do
+  echo $f: 
+  r $f
+done

@@ -144,19 +144,13 @@ int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restr
         set_na_real(cor + (j + n*i));
         continue;
       }
-      else if (len == 2)
-      {
-        cor[i + n*j] = 1.;
-        cor[j + n*i] = 1.;
-        continue;
-      }
       
       dlen = (double) len;
       meanx /= dlen;
       meany /= dlen;
       
-      sdx = 0;
-      sdy = 0;
+      sdx = 0.;
+      sdy = 0.;
       
       SAFE_SIMD
       for (k=0; k<m; k++)

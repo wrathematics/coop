@@ -1,8 +1,9 @@
 library(coop)
 set.seed(1234)
 
-x = matrix(rnorm(9), 3)
-x[2,1] = x[3,2] = NA 
+n <- 21
+x = matrix(rnorm(n), 3)
+x[sample(n, size=6)] = NA 
 
 t1 <- cov(x, use="pair")
 t2 <- covar(x, use="pair")
