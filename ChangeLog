@@ -1,4 +1,7 @@
-Release 0.5-0 (//):
+Release 0.5-1 (//):
+  * 
+
+Release 0.5-0 (4/24/2016):
   * Implement inplace methods for correlation and covariance (correlation is
 	always doneinplance)
   * Add 'inplace' argument.
