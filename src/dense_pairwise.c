@@ -1,16 +1,16 @@
 /*  Copyright (c) 2016, Schmidt
     All rights reserved.
-    
+
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-    
+
     1. Redistributions of source code must retain the above copyright notice,
     this list of conditions and the following disclaimer.
-    
+
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-    
+
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -30,17 +30,17 @@
 #include <string.h>
 #include <math.h>
 #include "coop.h"
-#include "omp.h"
+#include "omputils.h"
 
 
 static inline void compute_sums(const int m, const int mi, const double *restrict vec, const double *x, double *restrict sumx, double *restrict sumy, int *restrict len)
 {
   int k;
-  
+
   *sumx = 0;
   *sumy = 0;
   *len = 0;
-  
+
   SAFE_SIMD
   for (k=0; k<m; k++)
   {
@@ -64,21 +64,21 @@ int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double *res
   double tmp;
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
-  
-  
+
+
   for (j=0; j<n; j++)
   {
     mj = m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
-    
+
     #pragma omp parallel for private(i, k, mi, xx, yy, xy, xval, yval, len) if(m*n > OMP_MIN_SIZE)
     for (i=j; i<n; i++)
     {
       mi = m*i;
-      
+
       xx = yy = xy = 0.0;
       len = 0;
-      
+
       SAFE_SIMD
       for (k=0; k<m; k++)
       {
@@ -86,28 +86,28 @@ int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double *res
         {
           xval = vec[k];
           yval = x[k + mi];
-          
+
           xx += xval * xval;
           yy += yval * yval;
           xy += xval * yval;
           len++;
         }
       }
-      
+
       if (len == 0)
       {
         set_na_real(cos + (i + n*j));
         continue;
       }
-      
+
       tmp = xy / sqrt(xx * yy);
       cos[i + n*j] = tmp;
       cos[j + n*i] = tmp;
     }
   }
-  
+
   free(vec);
-  
+
   return 0;
 }
 
@@ -124,34 +124,34 @@ int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restr
   double mmcp, tmp;
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
-  
-  
+
+
   for (j=0; j<n; j++)
   {
     mj = m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
-    
+
     #pragma omp parallel for private(i, k, mi, meanx, meany, sdx, sdy, len, dlen, mmcp) if(m*n > OMP_MIN_SIZE)
     for (i=j; i<n; i++)
     {
       mi = m*i;
-      
+
       compute_sums(m, mi, vec, x, &meanx, &meany, &len);
-      
+
       if (len == 0 || len == 1)
       {
         set_na_real(cor + (i + n*j));
         set_na_real(cor + (j + n*i));
         continue;
       }
-      
+
       dlen = (double) len;
       meanx /= dlen;
       meany /= dlen;
-      
+
       sdx = 0.;
       sdy = 0.;
-      
+
       SAFE_SIMD
       for (k=0; k<m; k++)
       {
@@ -161,10 +161,10 @@ int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restr
           sdy += (x[k + mi] - meany)*(x[k + mi] - meany);
         }
       }
-      
+
       sdx = sqrt(sdx/(dlen-1.));
       sdy = sqrt(sdy/(dlen-1.));
-      
+
       mmcp = 0.0;
       SAFE_SIMD
       for (k=0; k<m; k++)
@@ -172,15 +172,15 @@ int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restr
         if (!isnan(vec[k]) && !isnan(x[k + mi]))
           mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
       }
-      
+
       tmp = mmcp / sdx / sdy / (dlen - 1.0);
       cor[i + n*j] = tmp;
       cor[j + n*i] = tmp;
     }
   }
-  
+
   free(vec);
-  
+
   return 0;
 }
 
@@ -195,30 +195,30 @@ int coop_covar_mat_inplace_pairwise(const int m, const int n, const double *rest
   double mmcp, tmp;
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
-  
-  
+
+
   for (j=0; j<n; j++)
   {
     mj = m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
-    
+
     #pragma omp parallel for private(i, k, mi, meanx, meany, len, mmcp) if(m*n > OMP_MIN_SIZE)
     for (i=j; i<n; i++)
     {
       mi = m*i;
-      
+
       compute_sums(m, mi, vec, x, &meanx, &meany, &len);
-      
+
       if (len == 0)
       {
         set_na_real(cov + (i + n*j));
         set_na_real(cov + (j + n*i));
         continue;
       }
-      
+
       meanx /= (double) len;
       meany /= (double) len;
-      
+
       mmcp = 0.0;
       SAFE_SIMD
       for (k=0; k<m; k++)
@@ -226,14 +226,14 @@ int coop_covar_mat_inplace_pairwise(const int m, const int n, const double *rest
         if (!isnan(vec[k]) && !isnan(x[k + mi]))
           mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
       }
-      
+
       tmp = mmcp * ((double) 1.0/(len-1));
       cov[i + n*j] = tmp;
       cov[j + n*i] = tmp;
     }
   }
-  
+
   free(vec);
-  
+
   return 0;
 }
