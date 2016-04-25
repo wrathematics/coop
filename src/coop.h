@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef COOP_LIB_H
-#define COOP_LIB_H
+#ifndef __COOP_LIB_H__
+#define __COOP_LIB_H__
 
 
 #define EPSILON 1e-10
