@@ -136,6 +136,52 @@ SEXP R_co_mat_pairwise(SEXP x, SEXP type_)
 
 
 
+SEXP R_scaler(SEXP centerx_, SEXP scalex_, SEXP x)
+{
+  SEXP ret, cm, cv;
+  const int m = nrows(x);
+  const int n = ncols(x);
+  const int centerx = INTEGER(centerx_)[0];
+  const int scalex = INTEGER(scalex_)[0];
+  int ptct;
+  double *colmeans, *colvars;
+  
+  PROTECT(ret = allocMatrix(REALSXP, m, n));
+  ptct = 1;
+  memcpy(REAL(ret), REAL(x), m*n*sizeof(double));
+  
+  if (centerx)
+  {
+    PROTECT(cm = allocVector(REALSXP, n));
+    colmeans = REAL(cm);
+    ptct++;
+  }
+  else
+    colmeans = NULL;
+  
+  if (scalex)
+  {
+    PROTECT(cv = allocVector(REALSXP, n));
+    colvars = REAL(cv);
+    ptct++;
+  }
+  else
+    colvars = NULL;
+  
+  coop_scale(centerx, scalex, m, n, REAL(ret), colmeans, colvars);
+  
+  if (centerx)
+    setAttrib(ret, install("scaled:center"), cm);
+  if (scalex)
+    setAttrib(ret, install("scaled:scale"), cv);
+  
+  UNPROTECT(ptct);
+  return ret;
+}
+
+
+
+
 // ---------------------------------------------
 //  Sparse
 // ---------------------------------------------

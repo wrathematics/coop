@@ -27,6 +27,7 @@
 #ifndef __COOP_LIB_H__
 #define __COOP_LIB_H__
 
+#include <stdbool.h>
 
 #define EPSILON 1e-10
 #define CHECKMALLOC(x) if(x==NULL) return -1
@@ -49,6 +50,9 @@ int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, do
 int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cos);
 int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cor);
 int coop_covar_mat_inplace_pairwise(const int m, const int n, const double *restrict x, double *restrict cov);
+
+// scale
+int coop_scale(const bool centerx, const bool scalex, const int m, const int n, double *restrict x, double *restrict colmeans, double *restrict colvars);
 
 // sparse
 int coop_cosine_sparse_coo(const int index, const int n, const int len, const double *restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);

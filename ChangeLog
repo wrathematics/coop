@@ -1,5 +1,5 @@
 Release 0.5-1 (//):
-  * 
+  * Add scaler() to center and/or scale efficiently.
 
 Release 0.5-0 (4/24/2016):
   * Implement inplace methods for correlation and covariance (correlation is
