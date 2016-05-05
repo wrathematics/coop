@@ -6,6 +6,14 @@
 \usage{
 scaler(x, center = TRUE, scale = TRUE)
 }
+\arguments{
+\item{x}{The input matrix.}
+
+\item{center, scale}{Logical; determine if the data should be centered and/or scaled.}
+}
+\value{
+The centered/scaled data, with attributes as in R's \code{scale()}.
+}
 \description{
 A function to center (subtract mean) and/or scale (divide by
 standard deviation) data column-wise in a computationally
