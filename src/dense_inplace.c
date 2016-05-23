@@ -67,13 +67,8 @@ static int coop_covar_vecvec_inplace(const int n, const double *restrict x, cons
 
 
 // O(m+n) storage
-static int co_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov)
+static int co_mat_inplace(const int m, const int n, const double * const restrict x, double *restrict cov)
 {
-  int i, j, k;
-  int mj, mi;
-  double meanx;
-  double meany; // :DDD
-  double mmcp;  // minus-mean-crossproduct
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
   double *means = malloc(n * sizeof(*means));
@@ -87,51 +82,51 @@ static int co_mat_inplace(const int m, const int n, const double *restrict x, do
 
 
   // get column means
-  #pragma omp parallel for private(i, j, mj) if (m*n > OMP_MIN_SIZE)
-  for (j=0; j<n; j++)
+  #pragma omp parallel for default(none) shared(means) if (m*n > OMP_MIN_SIZE)
+  for (int j=0; j<n; j++)
   {
-    mj = m*j;
-
+    const int mj = m*j;
+    
     means[j] = 0.0;
     SAFE_SIMD
-    for (i=0; i<m; i++)
+    for (int i=0; i<m; i++)
       means[j] += x[i + mj];
-
+    
     means[j] *= denom_mean;
   }
 
 
   // co-operation
-  for (j=0; j<n; j++)
+  for (int j=0; j<n; j++)
   {
-    mj = m*j;
-
+    const int mj = m*j;
+    
     memcpy(vec, x+mj, m*sizeof(*vec));
-
-    meanx = means[j];
+    
+    const double meanx = means[j];
     SAFE_FOR_SIMD
-    for (k=0; k<m; k++)
+    for (int k=0; k<m; k++)
       vec[k] -= meanx;
-
-    #pragma omp parallel for private(i, k, mi, meany, mmcp) if(m*n > OMP_MIN_SIZE)
-    for (i=j; i<n; i++)
+    
+    #pragma omp parallel for default(none) shared(j, means, vec, cov) if(m*n > OMP_MIN_SIZE)
+    for (int i=j; i<n; i++)
     {
-      mi = m*i;
-
-      meany = means[i];
-
-      mmcp = 0.0;
+      const int mi = m*i;
+      
+      const double meany = means[i];
+      
+      double mmcp = 0.0;
       SAFE_SIMD
-      for (k=0; k<m; k++)
+      for (int k=0; k<m; k++)
         mmcp += vec[k] * (x[k + mi] - meany);
-
+        
       cov[i + n*j] = mmcp * denom_cov;
     }
   }
-
+  
   free(vec);
   free(means);
-
+  
   return 0;
 }
 

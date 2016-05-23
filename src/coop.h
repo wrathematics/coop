@@ -66,8 +66,8 @@ void set_na_int(int *val);
 void coop_diag2one(const unsigned int n, double *restrict x);
 void coop_symmetrize(const int n, double *restrict x);
 void coop_fill(const unsigned int n, double *restrict cp);
-int coop_sparsity_int(const int m, const int n, const int *x);
-int coop_sparsity_dbl(const int m , const int n, double *x, const double tol);
+int coop_sparsity_int(const int m, const int n, const int * const restrict x);
+int coop_sparsity_dbl(const int m , const int n, const double * const restrict x, const double tol);
 
 
 #endif
