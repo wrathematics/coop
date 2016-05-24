@@ -49,21 +49,21 @@ void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
 // ---------------------------------------------
 
 // ddot replica using dgemm
-static inline double ddot(const int n, const double *restrict x, const double *restrict y)
+static inline double ddot(const int n, const double * const restrict x, const double * const restrict y)
 {
   const int one = 1;
   double dot;
-
+  
   dgemm_(&(char){'t'}, &(char){'n'}, &one, &one, &n,
     &(double){1.0}, x, &n, y, &n, &(double){0.0}, &dot, &one);
-
+  
   return dot;
 }
 
 
 
 // upper triangle of t(x) %*% x
-static inline void crossprod(const int m, const int n, const double *restrict x, double *restrict c)
+static inline void crossprod(const int m, const int n, const double * const restrict x, double *restrict c)
 {
   dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &(double){1.0}, x, &m, &(double){0.0}, c, &n);
 }
@@ -73,47 +73,42 @@ static inline void crossprod(const int m, const int n, const double *restrict x,
 // x[*, j] -= colmean(x[*, j])
 static void remove_colmeans(const int m, const int n, double *restrict x)
 {
-  int i, j;
-  double colmean;
-
   if (m == 0 || n == 0)
     return;
-
+    
   const double div = 1. / ((double) m);
-
-  #pragma omp parallel for private(i, j, colmean) shared(x) if(m*n > OMP_MIN_SIZE)
-  for (j=0; j<n; j++)
+  
+  #pragma omp parallel for default(none) shared(x) if(m*n > OMP_MIN_SIZE)
+  for (int j=0; j<n; j++)
   {
-    colmean = 0;
-
+    double colmean = 0;
+    
     // Get column mean
     SAFE_SIMD
-    for (i=0; i<m; i++)
+    for (int i=0; i<m; i++)
       colmean += x[i   + m*j];
-
+      
     colmean *= div;
-
+    
     // Remove mean from column
     SAFE_SIMD
-    for (i=0; i<m; i++)
+    for (int i=0; i<m; i++)
       x[i   + m*j] -= colmean;
-
   }
 }
 
 
 
 // compute the mean of a vector
-static inline double mean(const int n, const double *restrict x)
+static inline double mean(const int n, const double * const restrict x)
 {
-  int i;
   const double divbyn = 1. / ((double) n);
   double mean = 0.;
-
+  
   SAFE_FOR_SIMD
-  for (i=0; i<n; i++)
+  for (int i=0; i<n; i++)
     mean += x[i];
-
+  
   return mean*divbyn;
 }
 
@@ -141,12 +136,12 @@ static inline double mean(const int n, const double *restrict x)
  * @param cos
  * The output nxn matrix.
 */
-int coop_cosine_mat(const int m, const int n, const double *restrict x, double *restrict cos)
+int coop_cosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos)
 {
   crossprod(m, n, x, cos);
   coop_fill(n, cos);
   coop_symmetrize(n, cos);
-
+  
   return 0;
 }
 
@@ -169,14 +164,14 @@ int coop_cosine_mat(const int m, const int n, const double *restrict x, double *
  * @return
  * The cosine similarity between the two vectors.
 */
-int coop_cosine_vecvec(const int n, const double *restrict x, const double *restrict y, double *cos)
+int coop_cosine_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *cos)
 {
   double normx, normy;
   const double cp = ddot(n, x, y);
-
+  
   crossprod(n, 1, x, &normx);
   crossprod(n, 1, y, &normy);
-
+  
   *cos = cp / sqrt(normx * normy);
   return 0;
 }
@@ -204,17 +199,17 @@ int coop_cosine_vecvec(const int n, const double *restrict x, const double *rest
  * @param cor
  * The output nxn matrix.
 */
-int coop_pcor_mat(const int m, const int n, const double *restrict x, double *restrict cor)
+int coop_pcor_mat(const int m, const int n, const double * const restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
   memcpy(x_cp, x, m*n*sizeof(*x));
-
+  
   remove_colmeans(m, n, x_cp);
   crossprod(m, n, x_cp, cor);
   coop_fill(n, cor);
   coop_symmetrize(n, cor);
-
+  
   free(x_cp);
   return 0;
 }
@@ -238,34 +233,33 @@ int coop_pcor_mat(const int m, const int n, const double *restrict x, double *re
  * @return
  * The correlation between the two vectors.
 */
-int coop_pcor_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
+int coop_pcor_vecvec(const int n, const double * const  const restrict x, const double * const  const restrict y, double *restrict cor)
 {
-  int i;
   double normx, normy;
-
+  
   double *x_minusmean = malloc(n*sizeof(*x));
   CHECKMALLOC(x_minusmean);
   double *y_minusmean = malloc(n*sizeof(*y));
   CHECKMALLOC(y_minusmean);
-
+  
   const double meanx = mean(n, x);
   const double meany = mean(n, y);
-
+  
   SAFE_PARALLEL_FOR_SIMD
-  for (i=0; i<n; i++)
+  for (int i=0; i<n; i++)
   {
     x_minusmean[i] = x[i] - meanx;
     y_minusmean[i] = y[i] - meany;
   }
-
+  
   const double cp = ddot(n, x_minusmean, y_minusmean);
-
+  
   crossprod(n, 1, x_minusmean, &normx);
   crossprod(n, 1, y_minusmean, &normy);
-
+  
   free(x_minusmean);
   free(y_minusmean);
-
+  
   *cor = cp / sqrt(normx * normy);
   return 0;
 }
@@ -300,19 +294,19 @@ int coop_pcor_vecvec(const int n, const double *restrict x, const double *restri
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int coop_covar_mat(const int m, const int n, const double *restrict x, double *restrict cov)
+int coop_covar_mat(const int m, const int n, const double * const restrict x, double *restrict cov)
 {
   double alpha = 1. / ((double) (m-1));
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
   memcpy(x_cp, x, m*n*sizeof(*x));
-
+  
   remove_colmeans(m, n, x_cp);
   dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x_cp, &m, &(double){0.0}, cov, &n);
   coop_symmetrize(n, cov);
-
+  
   free(x_cp);
-
+  
   return 0;
 }
 
@@ -335,26 +329,24 @@ int coop_covar_mat(const int m, const int n, const double *restrict x, double *r
  * @return
  * The variance of the vectors.
 */
-int coop_covar_vecvec(const int n, const double *restrict x, const double *restrict y, double *restrict cov)
+int coop_covar_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cov)
 {
-  int i;
   const double recip_n = (double) 1. / (n-1);
   double sum_xy = 0., sum_x = 0., sum_y = 0.;
-  double tx, ty;
-
+  
   #ifdef OMP_VER_4
   #pragma omp simd reduction(+: sum_xy, sum_x, sum_y)
   #endif
-  for (i=0; i<n; i++)
+  for (int i=0; i<n; i++)
   {
-    tx = x[i];
-    ty = y[i];
-
+    const double tx = x[i];
+    const double ty = y[i];
+    
     sum_xy += tx*ty;
     sum_x += tx;
     sum_y += ty;
   }
-
+  
   *cov = (sum_xy - (sum_x*sum_y*((double) 1./n))) * recip_n;
   return 0;
 }

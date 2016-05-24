@@ -33,7 +33,7 @@
 #include "omputils.h"
 
 
-static inline void compute_sums(const int m, const int mi, const double *restrict vec, const double *x, double *restrict sumx, double *restrict sumy, int *restrict len)
+static inline void compute_sums(const int m, const int mi, const double * const restrict vec, const double * const restrict x, double *restrict sumx, double *restrict sumy, int *restrict len)
 {
   int k;
   

@@ -34,7 +34,7 @@
 
 
 // O(1) storage
-static int coop_covar_vecvec_inplace(const int n, const double *restrict x, const double *restrict y, double *restrict cor)
+static int coop_covar_vecvec_inplace(const int n, const double * const restrict x, const double * const restrict y, double *restrict cor)
 {
   int i;
   const double denom = (double) 1/n;
@@ -136,7 +136,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
 //  Interface
 // ---------------------------------------------
 
-int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cor)
+int coop_pcor_mat_inplace(const int m, const int n, const double * const restrict x, double *restrict cor)
 {
   int check;
 
@@ -151,7 +151,7 @@ int coop_pcor_mat_inplace(const int m, const int n, const double *restrict x, do
 
 
 
-int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov)
+int coop_covar_mat_inplace(const int m, const int n, const double * const restrict x, double *restrict cov)
 {
   int check;
 

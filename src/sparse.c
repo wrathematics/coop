@@ -61,7 +61,7 @@ static inline void set2nan(const int j, const int n, double *restrict cos)
 
 
 
-static inline double sparsedot_self(const int vecstart, const int vecend, const int *rows, const double *a)
+static inline double sparsedot_self(const int vecstart, const int vecend, const int *rows, const double * const a)
 {
   int i;
   double dot = 0.0;
@@ -90,7 +90,7 @@ static inline void get_startend(const int len, const int ind, int *col, int *vec
 static inline int get_array(int *tmplen, int *current_tmp_size,
   const int vecstart, const int vecend,
   double *restrict b, int *restrict brows,
-  const double *restrict a, const int *restrict rows)
+  const double * const restrict a, const int *restrict rows)
 {
   int k;
   void *realloc_ptr;
@@ -172,7 +172,7 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
  * 0 otherwise.
 */
 int coop_cosine_sparse_coo(const int index, const int n, const int len,
-  const double *restrict a, const int *restrict rows, const int *restrict cols,
+  const double * const restrict a, const int *restrict rows, const int *restrict cols,
   double *restrict cos)
 {
   int i, j, k, l;
