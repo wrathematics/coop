@@ -31,17 +31,7 @@
 #include <math.h>
 #include "coop.h"
 #include "omputils.h"
-
-
-// BLAS prototypes
-void dgemm_(const char *transa, const char *transb, const int *m, const int *n,
-            const int *k, const double *restrict alpha, const double *restrict a,
-            const int *lda, const double *restrict b, const int *ldb,
-            const double *beta, double *restrict c, const int *ldc);
-
-void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
-            const double *restrict alpha, const double *restrict a, const int *lda,
-            const double *restrict beta, double *restrict c, const int *ldc);
+#include "lapack.h"
 
 
 // ---------------------------------------------
