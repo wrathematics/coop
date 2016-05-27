@@ -1,7 +1,6 @@
 co_matrix <- function(x, y, type, use, inplace)
 {
-  if (!is.logical(inplace) || length(inplace) != 1 || is.na(inplace))
-    stop("argument 'inplace' must be a length 1, non-NA logical")
+  check.is.flag(inplace)
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
   if (!missing(y))

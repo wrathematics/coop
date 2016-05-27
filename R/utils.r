@@ -12,3 +12,16 @@ is.vec <- function(x)
 {
   is.vector(x) && !is.list(x)
 }
+
+
+
+check.is.flag <- function(x)
+{
+  if (!(is.logical(x) && length(x) == 1 && (!is.na(x))))
+  {
+    nm <- deparse(substitute(x))
+    stop(paste0("argument '", nm, "' must be TRUE or FALSE"))
+  }
+  
+  invisible()
+}

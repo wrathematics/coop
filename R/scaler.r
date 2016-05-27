@@ -20,10 +20,8 @@
 #' @export
 scaler <- function(x, center=TRUE, scale=TRUE)
 {
-  if (!is.logical(center) || length(center) != 1 || is.na(center))
-    stop("argument 'center' must be TRUE or FALSE")
-  if (!is.logical(scale) || length(scale) != 1 || is.na(scale))
-    stop("argument 'scale' must be TRUE or FALSE")
+  check.is.flag(center)
+  check.is.flag(scale)
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
   
