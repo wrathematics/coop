@@ -36,6 +36,8 @@
 
 #define BADTYPE() error("Invalid 'type' argument; please report this to the package author")
 
+#define INT(x) INTEGER(x)[0]
+
 // ---------------------------------------------
 //  Dense
 // ---------------------------------------------
@@ -44,10 +46,10 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_)
 {
   SEXP ret;
   int check;
-  const int type = INTEGER(type_)[0];
+  const int type = INT(type_);
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
-  const int inplace = INTEGER(inplace_)[0];
+  const int inplace = INT(inplace_);
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
   if (type == CO_SIM)
@@ -83,7 +85,7 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
 {
   SEXP ret;
   int check;
-  const int type = INTEGER(type_)[0];
+  const int type = INT(type_);
   const unsigned int n = LENGTH(x);
   double co;
   PROTECT(ret = allocVector(REALSXP, 1));
@@ -111,7 +113,7 @@ SEXP R_co_mat_pairwise(SEXP x, SEXP type_)
 {
   SEXP ret;
   int check;
-  const int type = INTEGER(type_)[0];
+  const int type = INT(type_);
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
   PROTECT(ret = allocMatrix(REALSXP, n, n));
@@ -141,8 +143,8 @@ SEXP R_scaler(SEXP centerx_, SEXP scalex_, SEXP x)
   SEXP ret, cm, cv;
   const int m = nrows(x);
   const int n = ncols(x);
-  const int centerx = INTEGER(centerx_)[0];
-  const int scalex = INTEGER(scalex_)[0];
+  const int centerx = INT(centerx_);
+  const int scalex = INT(scalex_);
   int ptct;
   double *colmeans, *colvars;
   
@@ -191,9 +193,9 @@ SEXP R_scaler(SEXP centerx_, SEXP scalex_, SEXP x)
 SEXP R_co_sparse(SEXP n_, SEXP a, SEXP i, SEXP j, SEXP index_, SEXP type_)
 {
   int check;
-  const int n = INTEGER(n_)[0];
-  const int index = INTEGER(index_)[0];
-  const int type = INTEGER(type_)[0];
+  const int n = INT(n_);
+  const int index = INT(index_);
+  const int type = INT(type_);
   SEXP ret;
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
@@ -224,7 +226,7 @@ SEXP R_sparsity_int(SEXP x)
   SEXP ret;
   
   PROTECT(ret = allocVector(INTSXP, 1));
-  INTEGER(ret)[0] = coop_sparsity_int(m, n, INTEGER(x));
+  INT(ret) = coop_sparsity_int(m, n, INTEGER(x));
   UNPROTECT(1);
   
   return ret;
@@ -238,7 +240,7 @@ SEXP R_sparsity_dbl(SEXP x, SEXP tol)
   SEXP ret;
   
   PROTECT(ret = allocVector(INTSXP, 1));
-  INTEGER(ret)[0] = coop_sparsity_dbl(m , n, REAL(x), REAL(tol)[0]);
+  INT(ret) = coop_sparsity_dbl(m , n, REAL(x), REAL(tol)[0]);
   UNPROTECT(1);
   
   return ret;
@@ -246,7 +248,7 @@ SEXP R_sparsity_dbl(SEXP x, SEXP tol)
 
 
 
-#define INT(x,i) INTEGER(x)[i]
+#define INTi(x,i) INTEGER(x)[i]
 
 SEXP R_csc_to_coo(SEXP row_ind, SEXP col_ptr)
 {
@@ -261,14 +263,14 @@ SEXP R_csc_to_coo(SEXP row_ind, SEXP col_ptr)
   
   for (c=0; c<LENGTH(col_ptr)-1; c++) // hehehe
   {
-    diff = INT(col_ptr, c+1) - INT(col_ptr, c);
+    diff = INTi(col_ptr, c+1) - INTi(col_ptr, c);
     
     if (diff < 0)
       error("malformed dgCMatrix; impossible col_ptr array");
     
     while (diff > 0)
     {
-      INT(col_ind, ind) = j;
+      INTi(col_ind, ind) = j;
       
       ind++;
       diff--;
