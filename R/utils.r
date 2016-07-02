@@ -25,3 +25,10 @@ check.is.flag <- function(x)
   
   invisible()
 }
+
+
+
+check_badvals <- function(x)
+{
+  .Call(R_check_badvals, x)
+}
