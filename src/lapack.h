@@ -27,6 +27,7 @@
 #ifndef __COOP_LIB_LAPACK_H__
 #define __COOP_LIB_LAPACK_H__
 
+// BLAS
 
 void dgemm_(const char *transa, const char *transb, const int *m, const int *n,
             const int *k, const double *restrict alpha, const double *restrict a,
@@ -37,5 +38,25 @@ void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
             const double *restrict alpha, const double *restrict a, const int *lda,
             const double *restrict beta, double *restrict c, const int *ldc);
 
+
+// LAPACK
+void dgeqrf_(const int *m, const int *n, double *restrict a, const int *lda, 
+             double *restrict tau, double *restrict work, int *lwork, int *info);
+
+void dgesdd_(const char *jobz, const int *m, const int *n, double *a, 
+             const int *lda, double *restrict s, double *restrict u, const int *restrict ldu, double *restrict vt, 
+             const int *ldvt, double *restrict work, const int *lwork, int *iwork, int *info);
+
+void dgetrf_(const int *m, const int *n, double *restrict a, const int *lda, 
+             int *restrict ipiv, int *info);
+
+void dgetri_(const int *n, double *restrict a, const int *lda, 
+             int *restrict ipiv, double *work, int *lwork, int *info);
+
+void dtrtri_(const char *uplo, const char *diag, const int *n, double *restrict a,
+             const int *lda, const int *info);
+
+void dlacpy_(const char *uplo, const int *m, const int *n, const double *restrict x, 
+             const int *lda, double *restrict y, const int *ldb);
 
 #endif
