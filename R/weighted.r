@@ -9,7 +9,7 @@
 #' @param x
 #' A matrix or data.frame.
 #' @param wt
-#' 
+#' A vector of weights or scalar weight.
 #' @param method
 #' Either "unbiased" or "ml". Unlike R, case is ignored.
 #' 
@@ -23,16 +23,12 @@
 #' @rdname weighted
 NULL
 
-#' @rdname weighted
-#' @export
+
+## TODO export these
 cosine_wt <- function(x, wt=NULL, method="unbiased") UseMethod("cosine_wt")
 
-#' @rdname weighted
-#' @export
 pcor_wt <- function(x, wt=NULL, method="unbiased") UseMethod("pcor_wt")
 
-#' @rdname weighted
-#' @export
 covar_wt <- function(x, wt=NULL, method="unbiased") UseMethod("covar_wt")
 
 
@@ -65,7 +61,7 @@ pcor_wt.matrix <- function(x, wt=NULL, method="unbiased")
 
 covar_wt.matrix <- function(x, wt=NULL, method="unbiased")
 {
-  covar_wt(x=x, wt=wt, method=method, type=CO_VAR)
+  co_wt(x=x, wt=wt, method=method, type=CO_VAR)
 }
 
 
@@ -79,5 +75,6 @@ co_wt <- function(x, wt=NULL, method="unbiased", type)
   
   check_badvals(x)
   
-  .Call(R_cov_wt, x, wt, type=type)
+  # FIXME
+  # .Call(R_cov_wt, x, wt, type=type)
 }
