@@ -34,6 +34,7 @@
 
 // dense
 int coop_cosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos);
+int coop_tcosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos);
 int coop_cosine_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cos);
 
 int coop_pcor_mat(const int m, const int n, const double * const restrict x, double *restrict cor);
