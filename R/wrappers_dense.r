@@ -1,4 +1,4 @@
-co_matrix <- function(x, y, type, use, inplace)
+co_matrix <- function(x, y, type, use, inplace, trans=FALSE)
 {
   check.is.flag(inplace)
   if (!is.numeric(x))
@@ -26,7 +26,7 @@ co_matrix <- function(x, y, type, use, inplace)
   if (use == "pairwise.complete.obs")
     ret <- .Call(R_co_mat_pairwise, x, as.integer(type))
   else
-    ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace))
+    ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace), as.integer(trans))
   
   if (!is.null(colnames(x)))
   {

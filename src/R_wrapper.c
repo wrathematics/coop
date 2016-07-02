@@ -42,7 +42,7 @@
 //  Dense
 // ---------------------------------------------
 
-SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_)
+SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_)
 {
   SEXP ret;
   int check;
@@ -50,10 +50,20 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_)
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
   const int inplace = INT(inplace_);
-  PROTECT(ret = allocMatrix(REALSXP, n, n));
+  const int trans = INT(trans_);
+  
+  if (trans)
+    PROTECT(ret = allocMatrix(REALSXP, m, m));
+  else
+    PROTECT(ret = allocMatrix(REALSXP, n, n));
   
   if (type == CO_SIM)
-    check = coop_cosine_mat(m, n, REAL(x), REAL(ret));
+  {
+    if (trans)
+      check = coop_tcosine_mat(m, n, REAL(x), REAL(ret));
+    else
+      check = coop_cosine_mat(m, n, REAL(x), REAL(ret));
+  }
   else if (type == CO_ORR)
   {
     if (inplace)
@@ -107,6 +117,7 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
   
   return ret;
 }
+
 
 
 SEXP R_co_mat_pairwise(SEXP x, SEXP type_)
@@ -180,7 +191,6 @@ SEXP R_scaler(SEXP centerx_, SEXP scalex_, SEXP x)
   UNPROTECT(ptct);
   return ret;
 }
-
 
 
 

@@ -30,6 +30,11 @@
 #' 
 #' @author Drew Schmidt
 #' @seealso \code{\link{sparsity}}
+#' @name cosine
+#' @rdname cosine
+NULL
+
+#' @rdname cosine
 #' @export
 cosine <- function(x, y, use="everything") UseMethod("cosine")
 
@@ -103,4 +108,20 @@ cosine.dgCMatrix <- function(x, y, use="everything")
   }
   
   ret
+}
+
+
+
+# tcosine
+
+#' @rdname cosine
+#' @export
+tcosine <- function(x, y, use="everything") UseMethod("tcosine")
+
+
+
+#' @export
+tcosine.matrix <- function(x, y, use="everything")
+{
+  co_matrix(x, y, CO_SIM, use, inplace=FALSE, trans=TRUE)
 }

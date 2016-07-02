@@ -57,5 +57,10 @@ check(tx, cosine, coop::cosine)
 check(cpx, cosine, coop::cosine)
 check(tcpx, cosine, coop::cosine)
 
+stopifnot(all.equal(cosine(x), tcosine(tx)))
+stopifnot(all.equal(cosine(tx), tcosine(x)))
+stopifnot(all.equal(cosine(cpx), tcosine(cpx)))
+stopifnot(all.equal(cosine(tcpx), tcosine(tcpx)))
+
 check(y, cosine, coop::cosine)
 check(ty, cosine, coop::cosine)

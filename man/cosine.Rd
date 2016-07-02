@@ -2,9 +2,12 @@
 % Please edit documentation in R/cosine.r
 \name{cosine}
 \alias{cosine}
+\alias{tcosine}
 \title{Cosine Similarity}
 \usage{
 cosine(x, y, use = "everything")
+
+tcosine(x, y, use = "everything")
 }
 \arguments{
 \item{x}{A numeric matrix or vector.}

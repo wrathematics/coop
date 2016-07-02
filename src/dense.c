@@ -58,10 +58,15 @@ static inline void crossprod(const int m, const int n, const double * const rest
   dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &(double){1.0}, x, &m, &(double){0.0}, c, &n);
 }
 
+static inline void tcrossprod(const int m, const int n, const double * const restrict x, double *restrict c)
+{
+  dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &(double){1.0}, x, &m, &(double){0.0}, c, &m);
+}
+
 
 
 // x[*, j] -= colmean(x[*, j])
-static void remove_colmeans(const int m, const int n, double *restrict x)
+void remove_colmeans(const int m, const int n, double *restrict x)
 {
   if (m == 0 || n == 0)
     return;
@@ -76,14 +81,42 @@ static void remove_colmeans(const int m, const int n, double *restrict x)
     // Get column mean
     SAFE_SIMD
     for (int i=0; i<m; i++)
-      colmean += x[i   + m*j];
+      colmean += x[i + m*j];
       
     colmean *= div;
     
     // Remove mean from column
     SAFE_SIMD
     for (int i=0; i<m; i++)
-      x[i   + m*j] -= colmean;
+      x[i + m*j] -= colmean;
+  }
+}
+
+
+
+static void remove_colmeans_retmean(const int m, const int n, double *restrict x, double *restrict colmeans)
+{
+  if (m == 0 || n == 0)
+    return;
+    
+  const double div = 1. / ((double) m);
+  
+  #pragma omp parallel for default(none) shared(x, colmeans) if(m*n > OMP_MIN_SIZE)
+  for (int j=0; j<n; j++)
+  {
+    colmeans[j] = 0;
+    
+    // Get column mean
+    SAFE_SIMD
+    for (int i=0; i<m; i++)
+      colmeans[j] += x[i + m*j];
+      
+    colmeans[j] *= div;
+    
+    // Remove mean from column
+    SAFE_SIMD
+    for (int i=0; i<m; i++)
+      x[i + m*j] -= colmeans[j];
   }
 }
 
@@ -131,6 +164,18 @@ int coop_cosine_mat(const int m, const int n, const double * const restrict x, d
   crossprod(m, n, x, cos);
   coop_fill(n, cos);
   coop_symmetrize(n, cos);
+  
+  return 0;
+}
+
+
+
+// cosine of transpose
+int coop_tcosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos)
+{
+  tcrossprod(m, n, x, cos);
+  coop_fill(m, cos);
+  coop_symmetrize(m, cos);
   
   return 0;
 }

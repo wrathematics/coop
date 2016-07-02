@@ -29,6 +29,13 @@
 #' 
 #' Note that cosine is always computed in place.
 #' 
+#' @section The \code{t} functions:
+#' The package also includes "t" functions, like \code{tcosine()}. These
+#' behave analogously to \code{tcrossprod()} as \code{crossprod()} in base R.
+#' So of \code{cosine()} operates on the columns of the input matrix, then
+#' \code{tcosine()} operates on the rows.  Another way to think of it is,
+#' \code{tcosine(x) = cosine(t(x))}.
+#' 
 #' @section Implementation Details:
 #' Multiple storage schemes for the input data are accepted.  
 #' For dense matrices, an ordinary R matrix input is accepted.  
@@ -48,7 +55,7 @@
 #' @useDynLib coop, R_co_mat, R_co_mat_pairwise, R_co_vecvec,
 #'   R_co_sparse, R_sparsity_int, R_sparsity_dbl,
 #'   R_csc_to_coo, R_fast_naomit, R_naomit_vecvec,
-#'   R_scaler
+#'   R_scaler, R_check_badvals
 #' 
 #' @docType package
 #' @name coop-package
