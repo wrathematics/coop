@@ -27,6 +27,11 @@ check(tx, cov, coop::covar)
 check(tcpx, cov, coop::covar)
 check(tcpx, cov, coop::covar)
 
+stopifnot(all.equal(cov(x), tcovar(tx)))
+stopifnot(all.equal(cov(tx), tcovar(x)))
+stopifnot(all.equal(cov(cpx), tcovar(cpx)))
+stopifnot(all.equal(cov(tcpx), tcovar(tcpx)))
+
 check(y, cov, coop::covar)
 check(ty, cov, coop::covar)
 
@@ -37,6 +42,11 @@ check(x, cor, coop::pcor)
 check(tx, cor, coop::pcor)
 check(cpx, cor, coop::pcor)
 check(tcpx, cor, coop::pcor)
+
+stopifnot(all.equal(cor(x), tpcor(tx)))
+stopifnot(all.equal(cor(tx), tpcor(x)))
+stopifnot(all.equal(cor(cpx), tpcor(cpx)))
+stopifnot(all.equal(cor(tcpx), tpcor(tcpx)))
 
 check(y, cor, coop::pcor)
 check(ty, cor, coop::pcor)

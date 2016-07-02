@@ -1,6 +1,10 @@
 co_matrix <- function(x, y, type, use, inplace, trans=FALSE)
 {
   check.is.flag(inplace)
+  if (type != CO_SIM && (inplace && trans))
+    stop("Not yet implemented for inplace=TRUE, trans=TRUE, method != cosine()")
+  
+  
   if (!is.numeric(x))
     stop("argument 'x' must be numeric")
   if (!missing(y))

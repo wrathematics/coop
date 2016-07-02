@@ -2,9 +2,12 @@
 % Please edit documentation in R/pcor.r
 \name{pcor}
 \alias{pcor}
+\alias{tpcor}
 \title{Pearson Correlation}
 \usage{
 pcor(x, y, use = "everything", inplace = FALSE)
+
+tpcor(x, y, use = "everything", inplace = FALSE)
 }
 \arguments{
 \item{x}{A numeric matrix or vector.}

@@ -152,6 +152,8 @@ static inline double mean(const int n, const double * const restrict x)
  * The implementation is dominated by a symmetric rank-k update
  * via the BLAS function dsyrk().
  *
+ * @param trans
+ * Perform cosine(x) or cosine(t(x))
  * @param m,n
  * The number of rows/columns of the input matrix x.
  * @param x
@@ -159,23 +161,20 @@ static inline double mean(const int n, const double * const restrict x)
  * @param cos
  * The output nxn matrix.
 */
-int coop_cosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos)
+int coop_cosine_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cos)
 {
-  crossprod(m, n, x, cos);
-  coop_fill(n, cos);
-  coop_symmetrize(n, cos);
-  
-  return 0;
-}
-
-
-
-// cosine of transpose
-int coop_tcosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos)
-{
-  tcrossprod(m, n, x, cos);
-  coop_fill(m, cos);
-  coop_symmetrize(m, cos);
+  if (trans)
+  {
+    tcrossprod(m, n, x, cos);
+    coop_fill(m, cos);
+    coop_symmetrize(m, cos);
+  }
+  else
+  {
+    crossprod(m, n, x, cos);
+    coop_fill(n, cos);
+    coop_symmetrize(n, cos);
+  }
   
   return 0;
 }
@@ -234,16 +233,29 @@ int coop_cosine_vecvec(const int n, const double * const restrict x, const doubl
  * @param cor
  * The output nxn matrix.
 */
-int coop_pcor_mat(const int m, const int n, const double * const restrict x, double *restrict cor)
+int coop_pcor_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
-  memcpy(x_cp, x, m*n*sizeof(*x));
+  int nrows, ncols;
   
-  remove_colmeans(m, n, x_cp);
-  crossprod(m, n, x_cp, cor);
-  coop_fill(n, cor);
-  coop_symmetrize(n, cor);
+  if (trans)
+  {
+    xpose(m, n, x, x_cp);
+    nrows = n;
+    ncols = m;
+  }
+  else
+  {
+    memcpy(x_cp, x, m*n*sizeof(*x));
+    nrows = m;
+    ncols = n;
+  }
+  
+  remove_colmeans(nrows, ncols, x_cp);
+  crossprod(nrows, ncols, x_cp, cor);
+  coop_fill(ncols, cor);
+  coop_symmetrize(ncols, cor);
   
   free(x_cp);
   return 0;
@@ -329,16 +341,31 @@ int coop_pcor_vecvec(const int n, const double * const  const restrict x, const 
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int coop_covar_mat(const int m, const int n, const double * const restrict x, double *restrict cov)
+int coop_covar_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cov)
 {
-  double alpha = 1. / ((double) (m-1));
+  int nrows, ncols;
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
-  memcpy(x_cp, x, m*n*sizeof(*x));
   
-  remove_colmeans(m, n, x_cp);
-  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x_cp, &m, &(double){0.0}, cov, &n);
-  coop_symmetrize(n, cov);
+  if (trans)
+  {
+    xpose(m, n, x, x_cp);
+    nrows = n;
+    ncols = m;
+  }
+  else
+  {
+    memcpy(x_cp, x, m*n*sizeof(*x));
+    nrows = m;
+    ncols = n;
+  }
+  
+  
+  const double alpha = 1. / ((double) (nrows-1));
+  
+  remove_colmeans(nrows, ncols, x_cp);
+  dsyrk_(&(char){'l'}, &(char){'t'}, &ncols, &nrows, &alpha, x_cp, &nrows, &(double){0.0}, cov, &ncols);
+  coop_symmetrize(ncols, cov);
   
   free(x_cp);
   

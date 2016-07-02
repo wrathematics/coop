@@ -52,31 +52,28 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_)
   const int inplace = INT(inplace_);
   const int trans = INT(trans_);
   
+  
   if (trans)
     PROTECT(ret = allocMatrix(REALSXP, m, m));
   else
     PROTECT(ret = allocMatrix(REALSXP, n, n));
   
+  
   if (type == CO_SIM)
-  {
-    if (trans)
-      check = coop_tcosine_mat(m, n, REAL(x), REAL(ret));
-    else
-      check = coop_cosine_mat(m, n, REAL(x), REAL(ret));
-  }
+    check = coop_cosine_mat(trans, m, n, REAL(x), REAL(ret));
   else if (type == CO_ORR)
   {
     if (inplace)
       check = coop_pcor_mat_inplace(m, n, REAL(x), REAL(ret));
     else
-      check = coop_pcor_mat(m, n, REAL(x), REAL(ret));
+      check = coop_pcor_mat(trans, m, n, REAL(x), REAL(ret));
   }
   else if (type == CO_VAR)
   {
     if (inplace)
       check = coop_covar_mat_inplace(m, n, REAL(x), REAL(ret));
     else
-      check = coop_covar_mat(m, n, REAL(x), REAL(ret));
+      check = coop_covar_mat(trans, m, n, REAL(x), REAL(ret));
   }
   else
     BADTYPE();

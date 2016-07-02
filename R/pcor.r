@@ -31,6 +31,11 @@
 #' 
 #' @author Drew Schmidt
 #' @seealso \code{\link{cosine}}
+#' @name pcor
+#' @rdname pcor
+NULL
+
+#' @rdname pcor
 #' @export
 pcor <- function(x, y, use="everything", inplace=FALSE) UseMethod("pcor")
 
@@ -39,7 +44,7 @@ pcor <- function(x, y, use="everything", inplace=FALSE) UseMethod("pcor")
 #' @export
 pcor.matrix <- function(x, y, use="everything", inplace=FALSE)
 {
-  co_matrix(x, y, CO_ORR, use, inplace)
+  co_matrix(x, y, CO_ORR, use, inplace, trans=FALSE)
 }
 
 
@@ -48,4 +53,20 @@ pcor.matrix <- function(x, y, use="everything", inplace=FALSE)
 pcor.default <- function(x, y, use="everything", inplace=FALSE)
 {
   co_vecvec(x, y, CO_ORR, use)
+}
+
+
+
+# tpcor
+
+#' @rdname pcor
+#' @export
+tpcor <- function(x, y, use="everything", inplace=FALSE) UseMethod("tpcor")
+
+
+
+#' @export
+tpcor.matrix <- function(x, y, use="everything", inplace=FALSE)
+{
+  co_matrix(x, y, CO_ORR, use, inplace, trans=TRUE)
 }

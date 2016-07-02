@@ -33,14 +33,13 @@
 #define CHECKMALLOC(x) if(x==NULL) return -1
 
 // dense
-int coop_cosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos);
-int coop_tcosine_mat(const int m, const int n, const double * const restrict x, double *restrict cos);
+int coop_cosine_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cos);
 int coop_cosine_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cos);
 
-int coop_pcor_mat(const int m, const int n, const double * const restrict x, double *restrict cor);
+int coop_pcor_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cor);
 int coop_pcor_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cor);
 
-int coop_covar_mat(const int m, const int n, const double * const restrict x, double *restrict cov);
+int coop_covar_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cov);
 int coop_covar_vecvec(const int n, const double * const x, const double * const y, double *restrict cov);
 
 // dense - inplace
@@ -69,6 +68,9 @@ void coop_symmetrize(const int n, double *restrict x);
 void coop_fill(const unsigned int n, double *restrict cp);
 int coop_sparsity_int(const int m, const int n, const int * const restrict x);
 int coop_sparsity_dbl(const int m , const int n, const double * const restrict x, const double tol);
+
+// xpose
+void xpose(const int m, const int n, const double *const restrict x, double *restrict tx);
 
 
 #endif

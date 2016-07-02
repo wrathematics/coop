@@ -2,9 +2,12 @@
 % Please edit documentation in R/covar.r
 \name{covar}
 \alias{covar}
+\alias{tcovar}
 \title{Covariance}
 \usage{
 covar(x, y, use = "everything", inplace = FALSE)
+
+tcovar(x, y, use = "everything", inplace = FALSE)
 }
 \arguments{
 \item{x}{A numeric matrix or vector.}

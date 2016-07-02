@@ -30,6 +30,11 @@
 #' 
 #' @author Drew Schmidt
 #' @seealso \code{\link{cosine}}
+#' @name covar
+#' @rdname covar
+NULL
+
+#' @rdname covar
 #' @export
 covar <- function(x, y, use="everything", inplace=FALSE) UseMethod("covar")
 
@@ -38,7 +43,7 @@ covar <- function(x, y, use="everything", inplace=FALSE) UseMethod("covar")
 #' @export
 covar.matrix <- function(x, y, use="everything", inplace=FALSE)
 {
-  co_matrix(x, y, CO_VAR, use, inplace)
+  co_matrix(x, y, CO_VAR, use, inplace, trans=FALSE)
 }
 
 
@@ -47,4 +52,20 @@ covar.matrix <- function(x, y, use="everything", inplace=FALSE)
 covar.default <- function(x, y, use="everything", inplace=FALSE)
 {
   co_vecvec(x, y, CO_VAR, use)
+}
+
+
+
+# tcovar
+
+#' @rdname covar
+#' @export
+tcovar <- function(x, y, use="everything", inplace=FALSE) UseMethod("tcovar")
+
+
+
+#' @export
+tcovar.matrix <- function(x, y, use="everything", inplace=FALSE)
+{
+  co_matrix(x, y, CO_VAR, use, inplace, trans=TRUE)
 }
