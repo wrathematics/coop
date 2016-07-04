@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "coop.h"
+#include "utils/fill.h"
 #include "utils/safeomp.h"
 
 
@@ -143,8 +144,8 @@ int coop_pcor_mat_inplace(const int m, const int n, const double * const restric
   check = co_mat_inplace(m, n, x, cor);
   if (check) return check;
 
-  coop_fill(n, cor);
-  coop_symmetrize(n, cor);
+  cosim_fill(n, cor);
+  symmetrize(n, cor);
 
   return 0;
 }
@@ -158,7 +159,7 @@ int coop_covar_mat_inplace(const int m, const int n, const double * const restri
   check = co_mat_inplace(m, n, x, cov);
   if (check) return check;
 
-  coop_symmetrize(n, cov);
+  symmetrize(n, cov);
 
   return 0;
 }

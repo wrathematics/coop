@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "coop.h"
+#include "utils/fill.h"
 #include "utils/mmult.h"
 #include "utils/safeomp.h"
 
@@ -125,7 +126,7 @@ int coop_covar_wt_mat(const int method, const int m, const int n, const double *
   
   wtcp(method, m, n, x, wtlen, wt);
   
-  coop_symmetrize(n, cov);
+  symmetrize(n, cov);
   
   return 0;
 }

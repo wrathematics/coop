@@ -32,6 +32,7 @@
 
 #include "coop.h"
 #include "utils/copy.h"
+#include "utils/fill.h"
 
 #define TMP_VEC_SIZE 1024
 
@@ -273,8 +274,8 @@ int coop_cosine_sparse_coo(const int index, const int n, const int len,
   free(a_colj);
   free(rows_colj);
   
-  coop_diag2one(n, cos);
-  coop_symmetrize(n, cos);
+  diag2one(n, cos);
+  symmetrize(n, cos);
   
   return 0;
 }

@@ -30,6 +30,7 @@
 #include <math.h>
 
 #include "coop.h"
+#include "utils/fill.h"
 #include "utils/mmult.h"
 #include "utils/safeomp.h"
 #include "utils/sumstats.h"
@@ -63,14 +64,14 @@ int coop_cosine_mat(const bool trans, const int m, const int n, const double * c
   if (trans)
   {
     tcrossprod(m, n, 1.0, x, cos);
-    coop_fill(m, cos);
-    coop_symmetrize(m, cos);
+    cosim_fill(m, cos);
+    symmetrize(m, cos);
   }
   else
   {
     crossprod(m, n, 1.0, x, cos);
-    coop_fill(n, cos);
-    coop_symmetrize(n, cos);
+    cosim_fill(n, cos);
+    symmetrize(n, cos);
   }
   
   return 0;
@@ -149,8 +150,8 @@ int coop_pcor_mat(const bool trans, const int m, const int n, const double * con
   
   remove_colmeans(nrows, ncols, x_cp);
   crossprod(nrows, ncols, 1.0, x_cp, cor);
-  coop_fill(ncols, cor);
-  coop_symmetrize(ncols, cor);
+  cosim_fill(ncols, cor);
+  symmetrize(ncols, cor);
   
   free(x_cp);
   return 0;
@@ -258,7 +259,14 @@ int coop_covar_mat(const bool trans, const int m, const int n, const double * co
   
   remove_colmeans(nrows, ncols, x_cp);
   crossprod(ncols, nrows, alpha, x_cp, cov);
-  coop_symmetrize(ncols, cov);
+  symmetrize(ncols, cov);
+  
+  for (int i=0; i<n; i++)
+  {
+    for (int j=0; j<n; j++)
+      printf("%.2f ", cov[i + n*j]);
+    putchar('\n');
+  }
   
   free(x_cp);
   

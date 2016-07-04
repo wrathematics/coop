@@ -57,10 +57,5 @@ int coop_scale(const bool centerx, const bool scalex, const int m, const int n, 
 // sparse
 int coop_cosine_sparse_coo(const int index, const int n, const int len, const double * const restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
 
-// utils
-void coop_diag2one(const unsigned int n, double *restrict x);
-void coop_symmetrize(const int n, double *restrict x);
-void coop_fill(const unsigned int n, double *restrict cp);
-
 
 #endif
