@@ -12,9 +12,9 @@ test <- function(dense, sparse)
 }
 
 
-if (require(slam))
+if (suppressPackageStartupMessages(require(slam)))
 {
-  library(slam)
+  suppressPackageStartupMessages(library(slam))
   set.seed(1234)
   
   ### Very sparse, has column of 0's
@@ -38,9 +38,9 @@ if (require(slam))
 
 
 
-if (require(Matrix))
+if (suppressPackageStartupMessages(require(Matrix)))
 {
-  library(Matrix)
+  suppressPackageStartupMessages(library(Matrix))
   set.seed(1234)
   
   ### Very sparse, has column of 0's
