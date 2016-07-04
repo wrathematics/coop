@@ -30,7 +30,7 @@
 #include <string.h>
 #include <math.h>
 #include "coop.h"
-#include "omputils.h"
+#include "utils/safeomp.h"
 
 
 // O(1) storage

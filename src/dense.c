@@ -29,12 +29,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 #include "coop.h"
-#include "omputils.h"
-#include "lapack.h"
-
-
 #include "utils/mmult.h"
+#include "utils/safeomp.h"
 #include "utils/sumstats.h"
 
 

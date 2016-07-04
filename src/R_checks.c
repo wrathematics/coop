@@ -27,7 +27,6 @@
 
 #include <R.h>
 #include <Rinternals.h>
-#include "omputils.h"
 
 
 // Check for NA, Inf, and NaN

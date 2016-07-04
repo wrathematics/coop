@@ -27,6 +27,7 @@
 #ifndef __COOP_SUMSTATS_H__
 #define __COOP_SUMSTATS_H__
 
+#include "safeomp.h"
 
 // x[*, j] -= colmean(x[*, j])
 static void remove_colmeans(const int m, const int n, double *restrict x)

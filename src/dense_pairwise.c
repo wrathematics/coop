@@ -29,8 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 #include "coop.h"
-#include "omputils.h"
+#include "utils/safeomp.h"
 
 
 static inline void compute_sums(const int m, const int mi, const double * const restrict vec, const double * const restrict x, double *restrict sumx, double *restrict sumy, int *restrict len)

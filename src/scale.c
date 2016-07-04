@@ -26,8 +26,9 @@
 
 #include <stdbool.h>
 #include <math.h>
+
 #include "coop.h"
-#include "omputils.h"
+#include "utils/safeomp.h"
 
 
 // center and/or scale x in place

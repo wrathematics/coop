@@ -28,7 +28,7 @@
 #include <Rinternals.h>
 #include <stdlib.h>
 
-#include "omputils.h"
+#include "utils/safeomp.h"
 
 #define INT(x) INTEGER(x)
 

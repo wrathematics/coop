@@ -28,6 +28,8 @@
 #define __COOP_COPY_H__
 
 
+#include <string.h>
+
 static inline void set2zero(const unsigned int n, double *restrict x)
 {
   memset(x, 0.0, n*sizeof(*x));

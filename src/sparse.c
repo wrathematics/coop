@@ -32,7 +32,6 @@
 #include <math.h>
 
 #include "coop.h"
-#include "omputils.h"
 #include "utils/copy.h"
 
 #define TMP_VEC_SIZE 1024

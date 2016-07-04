@@ -28,6 +28,9 @@
 #define __COOP_MMULT_H__
 
 
+#include "lapack.h"
+
+
 // ddot replica using dgemm
 static inline double ddot(const int n, const double * const restrict x, const double * const restrict y)
 {

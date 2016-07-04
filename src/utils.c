@@ -27,7 +27,7 @@
 
 #include <math.h>
 #include "coop.h"
-#include "omputils.h"
+#include "utils/safeomp.h"
 
 
 // set diagonal of nxn matrix x to 1
