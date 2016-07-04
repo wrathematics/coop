@@ -34,6 +34,7 @@
 #include "utils/mmult.h"
 #include "utils/safeomp.h"
 #include "utils/sumstats.h"
+#include "utils/xpose.h"
 
 
 // ---------------------------------------------
