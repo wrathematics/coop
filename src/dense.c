@@ -63,13 +63,13 @@ int coop_cosine_mat(const bool trans, const int m, const int n, const double * c
 {
   if (trans)
   {
-    tcrossprod(m, n, x, cos);
+    tcrossprod(m, n, 1.0, x, cos);
     coop_fill(m, cos);
     coop_symmetrize(m, cos);
   }
   else
   {
-    crossprod(m, n, x, cos);
+    crossprod(m, n, 1.0, x, cos);
     coop_fill(n, cos);
     coop_symmetrize(n, cos);
   }
@@ -101,8 +101,8 @@ int coop_cosine_vecvec(const int n, const double * const restrict x, const doubl
   double normx, normy;
   const double cp = ddot(n, x, y);
   
-  crossprod(n, 1, x, &normx);
-  crossprod(n, 1, y, &normy);
+  crossprod(n, 1, 1.0, x, &normx);
+  crossprod(n, 1, 1.0, y, &normy);
   
   *cos = cp / sqrt(normx * normy);
   return 0;
@@ -149,7 +149,7 @@ int coop_pcor_mat(const bool trans, const int m, const int n, const double * con
   }
   
   remove_colmeans(nrows, ncols, x_cp);
-  crossprod(nrows, ncols, x_cp, cor);
+  crossprod(nrows, ncols, 1.0, x_cp, cor);
   coop_fill(ncols, cor);
   coop_symmetrize(ncols, cor);
   
@@ -197,8 +197,8 @@ int coop_pcor_vecvec(const int n, const double * const  const restrict x, const 
   
   const double cp = ddot(n, x_minusmean, y_minusmean);
   
-  crossprod(n, 1, x_minusmean, &normx);
-  crossprod(n, 1, y_minusmean, &normy);
+  crossprod(n, 1, 1.0, x_minusmean, &normx);
+  crossprod(n, 1, 1.0, y_minusmean, &normy);
   
   free(x_minusmean);
   free(y_minusmean);
@@ -258,7 +258,7 @@ int coop_covar_mat(const bool trans, const int m, const int n, const double * co
   const double alpha = 1. / ((double) (nrows-1));
   
   remove_colmeans(nrows, ncols, x_cp);
-  dsyrk_(&(char){'l'}, &(char){'t'}, &ncols, &nrows, &alpha, x_cp, &nrows, &(double){0.0}, cov, &ncols);
+  crossprod(ncols, nrows, alpha, x_cp, cov);
   coop_symmetrize(ncols, cov);
   
   free(x_cp);

@@ -46,14 +46,14 @@ static inline double ddot(const int n, const double * const restrict x, const do
 
 
 // upper triangle of t(x) %*% x
-static inline void crossprod(const int m, const int n, const double * const restrict x, double *restrict c)
+static inline void crossprod(const int m, const int n, const double alpha, const double * const restrict x, double *restrict c)
 {
-  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &(double){1.0}, x, &m, &(double){0.0}, c, &n);
+  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x, &m, &(double){0.0}, c, &n);
 }
 
-static inline void tcrossprod(const int m, const int n, const double * const restrict x, double *restrict c)
+static inline void tcrossprod(const int m, const int n, const double alpha, const double * const restrict x, double *restrict c)
 {
-  dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &(double){1.0}, x, &m, &(double){0.0}, c, &m);
+  dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &alpha, x, &m, &(double){0.0}, c, &m);
 }
 
 

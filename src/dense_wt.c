@@ -31,10 +31,9 @@
 #include <math.h>
 
 #include "coop.h"
+#include "utils/mmult.h"
 #include "utils/safeomp.h"
 
-
-#if 0
 
 
 #define WT_UNBIASED 1
@@ -42,7 +41,7 @@
 
 #define BADWT -1
 
-static inline wtchecks(const int m, const double *wt))
+static inline int wtchecks(const int m, const double *wt)
 {
   double sum = 0;
   
@@ -59,12 +58,7 @@ static inline wtchecks(const int m, const double *wt))
     return BADWT;
 }
 
-static inline cp(const int m, const int n, const double alpha, const double * const restrict x, double * restrict c)
-{
-  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x, &m, &(double){0.0}, c, &n);
-}
-
-static void wtcp(const int m, const int n, double * const restrict x, const int wtlen, const double * const restrict wt)
+static void wtcp(const int method, const int m, const int n, double * const restrict x, const int wtlen, const double * const restrict wt)
 {
   double alpha;
   if (method == WT_UNBIASED)
@@ -84,34 +78,33 @@ static void wtcp(const int m, const int n, double * const restrict x, const int 
   else
     alpha = 1.;
   
-  cp(m, n, alpha, x, c);
+  // FIXME
+  // crossprod(m, n, alpha, x, c);
 }
 
 
 
-static void center_wt(const int m, const int n, const double * const restrict x, const double * const restrict wt, double * restrict colmeans)
+static inline void center_wt(const int m, const int n, const double * const restrict x, const double * const restrict wt, double * restrict colmeans)
 {
-  #pragma omp parallel for default(none) if(m*n>OMP_MIN_SIZE)
+  #pragma omp parallel for default(none) shared(colmeans) if(m*n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
     colmeans[j] = 0.;
     
-    SAFE_FOR_SIMD
+    SAFE_SIMD
     for (int i=0; i<m; i++)
-    {
       colmeans[j] += wt[j] * x[i + mj];
-    }
   }
 }
 
 
 
 // TODO just operate on x in place, leave the copy to the user
-int coop_covar_wt_mat(const int m, const int n, const double * const restrict x, int wtlen, const double * const restrict wt, double * restrict colmeans, double *restrict cov)
+int coop_covar_wt_mat(const int method, const int m, const int n, const double * const restrict x, int wtlen, const double * const restrict wt, double * restrict colmeans, double *restrict cov)
 {
   double wtval;
-  double wt_pt;
+  double *wt_pt;
   
   if (wt == NULL)
   {
@@ -131,30 +124,9 @@ int coop_covar_wt_mat(const int m, const int n, const double * const restrict x,
   
   coop_scale(true, false, m, n, x_cp, colmeans, NULL);
   
-  wtcp(m, n, x, wt)
+  wtcp(method, m, n, x, wtlen, wt);
   
   coop_symmetrize(n, cov);
   
   return 0;
 }
-
-
-
-n <- nrow(x)
-x <- sqrt(wt) * sweep(x, 2, center, check.margin = FALSE)
-cov <- switch(match.arg(method), unbiased = crossprod(x)/(1 - 
-    sum(wt^2)), ML = crossprod(x))
-
-y <- list(cov = cov, center = center, n.obs = n)
-if (with.wt) 
-    y$wt <- wt
-if (cor) {
-    Is <- 1/sqrt(diag(cov))
-    R <- cov
-    R[] <- Is * cov * rep(Is, each = nrow(cov))
-    y$cor <- R
-}
-y
-
-
-#endif
