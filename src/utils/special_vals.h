@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __COOP_SPECIALVALS_H__
-#define __COOP_SPECIALVALS_H__
+#ifndef __COOP_LIB_SPECIAL_VALS_H__
+#define __COOP_LIB_SPECIAL_VALS_H__
 
 
 #include <stdint.h>

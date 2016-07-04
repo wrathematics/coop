@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __COOP_SUMSTATS_H__
-#define __COOP_SUMSTATS_H__
+#ifndef __COOP_LIB_SUMSTATS_H__
+#define __COOP_LIB_SUMSTATS_H__
 
 #include "safeomp.h"
 

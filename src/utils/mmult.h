@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __COOP_MMULT_H__
-#define __COOP_MMULT_H__
+#ifndef __COOP_LIB_MMULT_H__
+#define __COOP_LIB_MMULT_H__
 
 
 #include <stdbool.h>

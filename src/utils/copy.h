@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __COOP_COPY_H__
-#define __COOP_COPY_H__
+#ifndef __COOP_LIB_COPY_H__
+#define __COOP_LIB_COPY_H__
 
 
 #include <string.h>

@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __COOP_SPARSITY_H__
-#define __COOP_SPARSITY_H__
+#ifndef __COOP_LIB_SPARSITY_H__
+#define __COOP_LIB_SPARSITY_H__
 
 
 // Number of 0's for integer matrix

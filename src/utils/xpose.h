@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef __COOP_XPOSE_H__
-#define __COOP_XPOSE_H__
+#ifndef __COOP_LIB_XPOSE_H__
+#define __COOP_LIB_XPOSE_H__
 
 
 static inline void xpose(const int m, const int n, const double *const restrict x, double *restrict tx)

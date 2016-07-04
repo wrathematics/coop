@@ -24,7 +24,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-// Functions for computing covariance, (pearson) correlation, and cosine similarity
 
 #include <stdlib.h>
 #include <string.h>
