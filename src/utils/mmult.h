@@ -28,10 +28,11 @@
 #define __COOP_MMULT_H__
 
 
+#include <stdbool.h>
 #include "lapack.h"
 
 
-// ddot replica using dgemm
+// C ddot replica using dgemm
 static inline double ddot(const int n, const double * const restrict x, const double * const restrict y)
 {
   const int one = 1;
@@ -54,6 +55,47 @@ static inline void crossprod(const int m, const int n, const double alpha, const
 static inline void tcrossprod(const int m, const int n, const double alpha, const double * const restrict x, double *restrict c)
 {
   dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &alpha, x, &m, &(double){0.0}, c, &m);
+}
+
+
+
+// dgemm wrapper
+static inline void matmult(const bool transx, const bool transy, const int mx, const int nx, const double *restrict x, const int my, const int ny, const double *restrict y, double *restrict ret)
+{
+  // m = # rows of op(x)
+  // n = # cols of op(y)
+  // k = # cols of op(x)
+  int im, in, ik;
+  char ctransx, ctransy;
+  static const double one = 1., zero = 0.;
+  
+  if (transx) ctransx = 't';
+  else ctransx = 'n';
+  if (transy) ctransy = 't';
+  else ctransy = 'n';
+  
+  if (transx)
+  {
+    im = nx;
+    ik = mx;
+    
+    if (transy == 't')
+      in = my;
+    else
+      in = ny;
+  }
+  else
+  {
+    im = mx;
+    ik = nx;
+    
+    if (transy)
+      in = my;
+    else
+      in = ny;
+  }
+  
+  dgemm_(&ctransx, &ctransy, &im, &in, &ik, &one, x, &mx, y, &my, &zero, ret, &(ret->nrows));
 }
 
 
