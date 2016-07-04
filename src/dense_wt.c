@@ -58,7 +58,7 @@ static inline int wtchecks(const int m, const double *wt)
     return BADWT;
 }
 
-static void wtcp(const int method, const int m, const int n, double * const restrict x, const int wtlen, const double * const restrict wt)
+static void wtcp(const int method, const int m, const int n, const double * const restrict x, const int wtlen, const double * const restrict wt)
 {
   double alpha;
   if (method == WT_UNBIASED)
