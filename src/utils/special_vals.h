@@ -24,6 +24,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef __COOP_SPECIALVALS_H__
+#define __COOP_SPECIALVALS_H__
+
 
 #include <stdint.h>
 #include <string.h>
@@ -32,17 +35,20 @@
 static const int64_t R_NA_real = 0x7FF00000000007A2LL;
 static const int64_t R_NaN_real = 0x7FF0000000000000LL;
 
-void set_na_real(double *val)
+static inline void set_na_real(double *val)
 {
   memcpy((void *) val, (void *) &R_NA_real, 8);
 }
 
-void set_nan_real(double *val)
+static inline void set_nan_real(double *val)
 {
   memcpy((void *) val, (void *) &R_NaN_real, 8);
 }
 
-void set_na_int(int *val)
+static inline void set_na_int(int *val)
 {
   *val = INT32_MIN;
 }
+
+
+#endif

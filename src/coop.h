@@ -57,18 +57,10 @@ int coop_scale(const bool centerx, const bool scalex, const int m, const int n, 
 // sparse
 int coop_cosine_sparse_coo(const int index, const int n, const int len, const double * const restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
 
-// special values
-void set_na_real(double *val);
-void set_nan_real(double *val);
-void set_na_int(int *val);
-
 // utils
 void coop_diag2one(const unsigned int n, double *restrict x);
 void coop_symmetrize(const int n, double *restrict x);
 void coop_fill(const unsigned int n, double *restrict cp);
-
-// xpose
-void xpose(const int m, const int n, const double *const restrict x, double *restrict tx);
 
 
 #endif

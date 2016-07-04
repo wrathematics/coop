@@ -32,6 +32,7 @@
 
 #include "coop.h"
 #include "utils/safeomp.h"
+#include "utils/special_vals.h"
 
 
 static inline void compute_sums(const int m, const int mi, const double * const restrict vec, const double * const restrict x, double *restrict sumx, double *restrict sumy, int *restrict len)
