@@ -28,7 +28,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+
 #include "coop.h"
 #include "utils/safeomp.h"
 
