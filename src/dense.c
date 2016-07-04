@@ -258,15 +258,8 @@ int coop_covar_mat(const bool trans, const int m, const int n, const double * co
   const double alpha = 1. / ((double) (nrows-1));
   
   remove_colmeans(nrows, ncols, x_cp);
-  crossprod(ncols, nrows, alpha, x_cp, cov);
+  crossprod(nrows, ncols, alpha, x_cp, cov);
   symmetrize(ncols, cov);
-  
-  for (int i=0; i<n; i++)
-  {
-    for (int j=0; j<n; j++)
-      printf("%.2f ", cov[i + n*j]);
-    putchar('\n');
-  }
   
   free(x_cp);
   
