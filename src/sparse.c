@@ -48,10 +48,10 @@
 static inline void set2nan(const int j, const int n, double *restrict cos)
 {
   int i;
-
+  
   for (i=j; i<n; i++)
     cos[i + n*j] = NAN;
-
+    
   for (i=0; i<j; i++)
     cos[j + n*i] = NAN;
 }
@@ -62,10 +62,10 @@ static inline double sparsedot_self(const int vecstart, const int vecend, const 
 {
   int i;
   double dot = 0.0;
-
+  
   for (i=vecstart; i<=vecend; i++)
     dot += a[i]*a[i];
-
+    
   return dot;
 }
 
@@ -75,10 +75,10 @@ static inline double sparsedot_self(const int vecstart, const int vecend, const 
 static inline void get_startend(const int len, const int ind, int *col, int *vecstart, int *vecend, const int *cols)
 {
   *vecstart = *col;
-
+  
   while (*col < len && cols[*col] == ind)
     (*col)++;
-
+    
   *vecend = *col - 1;
 }
 
@@ -91,13 +91,13 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
 {
   int k;
   void *realloc_ptr;
-
+  
   *tmplen = vecend - vecstart;
-
+  
   if (*tmplen > *current_tmp_size)
   {
     *current_tmp_size = *tmplen;
-
+    
     realloc_ptr = realloc(b, ((*current_tmp_size)+1) * sizeof(*b));
     if (realloc_ptr == NULL)
     {
@@ -107,7 +107,7 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
     }
     else
       b = realloc_ptr;
-
+      
     realloc_ptr = realloc(brows, ((*current_tmp_size)+1) * sizeof(*brows));
     if (realloc_ptr == NULL)
     {
@@ -118,13 +118,13 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
     else
       brows = realloc_ptr;
   }
-
+  
   for (k=0; k<=*tmplen; k++)
   {
     b[k] = a[k + vecstart];
     brows[k] = rows[k + vecstart];
   }
-
+  
   return 0;
 }
 
@@ -177,26 +177,30 @@ int coop_cosine_sparse_coo(const int index, const int n, const int len,
   int col;
   double xy, xx, yy;
   double tmp;
-
+  
   int vec1start, vec1end;
   int vec2start, vec2end;
   vec1end = 0;
-
+  
   int len_colj;
   int current_tmp_size = TMP_VEC_SIZE;
   double *a_colj = malloc(current_tmp_size * sizeof(*a_colj));
   CHECKMALLOC(a_colj);
   int *rows_colj = malloc(current_tmp_size * sizeof(*rows_colj));
-  CHECKMALLOC(rows_colj);
-
-
+  if (rows_colj == NULL)
+  {
+    free(a_colj);
+    return -1;
+  }
+  
+  
   set2zero(n*n, cos);
-
+  
   for (j=0; j<n; j++)
   {
     col = vec1end;
     get_startend(len, j+index, &col, &vec1start, &vec1end, cols);
-
+    
     // NaN-out row and column if col is 0
     if (vec1end < vec1start)
     {
@@ -204,32 +208,32 @@ int coop_cosine_sparse_coo(const int index, const int n, const int len,
       set2nan(j, n, cos);
       continue;
     }
-
+    
     // store j't column of data/rows for better cache access
     info = get_array(&len_colj, &current_tmp_size, vec1start, vec1end, a_colj, rows_colj, a, rows);
     if (info) return info;
-
+    
     xx = sparsedot_self(0, len_colj, rows_colj, a_colj);
     xx = 1. / sqrt(xx);
-
+    
     // i'th column, etc.
     for (i=j+1; i<n; i++)
     {
       get_startend(len, i+index, &col, &vec2start, &vec2end, cols);
-
-
+      
+      
       k = 0;
       l = vec2start;
       xy = 0.;
       yy = 0.;
-
-
+      
+      
       while (k <= len_colj && l <= vec2end)
       {
         // catch up row of colj to row of coli
         while (k <= len_colj && rows_colj[k] < rows[l])
           k++;
-
+        
         // dot products
         while (k <= len_colj && l <= vec2end && rows_colj[k] == rows[l])
         {
@@ -239,7 +243,7 @@ int coop_cosine_sparse_coo(const int index, const int n, const int len,
           k++;
           l++;
         }
-
+        
         // catch up row of coli to row of colj, self dot product along the way
         if (k <= len_colj)
         {
@@ -251,27 +255,27 @@ int coop_cosine_sparse_coo(const int index, const int n, const int len,
           }
         }
       }
-
+      
       for (l=l; l<=vec2end; l++)
       {
         tmp = a[l];
         yy += tmp*tmp;
       }
-
-
+      
+      
       if (xy > EPSILON && yy > EPSILON)
         cos[i + n*j] = xy * xx / sqrt(yy);
     }
-
+    
     vec1end++;
   }
-
-
+  
+  
   free(a_colj);
   free(rows_colj);
-
+  
   coop_diag2one(n, cos);
   coop_symmetrize(n, cos);
-
+  
   return 0;
 }
