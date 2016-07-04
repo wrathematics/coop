@@ -30,8 +30,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 #include "coop.h"
 #include "omputils.h"
+#include "utils/copy.h"
 
 #define TMP_VEC_SIZE 1024
 
@@ -40,10 +42,6 @@
 //  Static utils
 // ---------------------------------------------
 
-static inline void set2zero(const unsigned int n, double *restrict x)
-{
-  memset(x, 0.0, n*sizeof(*x));
-}
 
 
 

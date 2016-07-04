@@ -34,109 +34,8 @@
 #include "lapack.h"
 
 
-// ---------------------------------------------
-//  Static utils
-// ---------------------------------------------
-
-// ddot replica using dgemm
-static inline double ddot(const int n, const double * const restrict x, const double * const restrict y)
-{
-  const int one = 1;
-  double dot;
-  
-  dgemm_(&(char){'t'}, &(char){'n'}, &one, &one, &n,
-    &(double){1.0}, x, &n, y, &n, &(double){0.0}, &dot, &one);
-  
-  return dot;
-}
-
-
-
-// upper triangle of t(x) %*% x
-static inline void crossprod(const int m, const int n, const double * const restrict x, double *restrict c)
-{
-  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &(double){1.0}, x, &m, &(double){0.0}, c, &n);
-}
-
-static inline void tcrossprod(const int m, const int n, const double * const restrict x, double *restrict c)
-{
-  dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &(double){1.0}, x, &m, &(double){0.0}, c, &m);
-}
-
-
-
-// x[*, j] -= colmean(x[*, j])
-void remove_colmeans(const int m, const int n, double *restrict x)
-{
-  if (m == 0 || n == 0)
-    return;
-    
-  const double div = 1. / ((double) m);
-  
-  #pragma omp parallel for default(none) shared(x) if(m*n > OMP_MIN_SIZE)
-  for (int j=0; j<n; j++)
-  {
-    double colmean = 0;
-    
-    // Get column mean
-    SAFE_SIMD
-    for (int i=0; i<m; i++)
-      colmean += x[i + m*j];
-      
-    colmean *= div;
-    
-    // Remove mean from column
-    SAFE_SIMD
-    for (int i=0; i<m; i++)
-      x[i + m*j] -= colmean;
-  }
-}
-
-
-
-static void remove_colmeans_retmean(const int m, const int n, double *restrict x, double *restrict colmeans)
-{
-  if (m == 0 || n == 0)
-    return;
-    
-  const double div = 1. / ((double) m);
-  
-  #pragma omp parallel for default(none) shared(x, colmeans) if(m*n > OMP_MIN_SIZE)
-  for (int j=0; j<n; j++)
-  {
-    colmeans[j] = 0;
-    
-    // Get column mean
-    SAFE_SIMD
-    for (int i=0; i<m; i++)
-      colmeans[j] += x[i + m*j];
-      
-    colmeans[j] *= div;
-    
-    // Remove mean from column
-    SAFE_SIMD
-    for (int i=0; i<m; i++)
-      x[i + m*j] -= colmeans[j];
-  }
-}
-
-
-
-// compute the mean of a vector
-static inline double mean(const int n, const double * const restrict x)
-{
-  const double divbyn = 1. / ((double) n);
-  double mean = 0.;
-  
-  SAFE_FOR_SIMD
-  for (int i=0; i<n; i++)
-    mean += x[i];
-  
-  return mean*divbyn;
-}
-
-
-
+#include "utils/mmult.h"
+#include "utils/sumstats.h"
 
 
 // ---------------------------------------------
@@ -209,8 +108,6 @@ int coop_cosine_vecvec(const int n, const double * const restrict x, const doubl
   *cos = cp / sqrt(normx * normy);
   return 0;
 }
-
-
 
 
 
@@ -310,8 +207,6 @@ int coop_pcor_vecvec(const int n, const double * const  const restrict x, const 
   *cor = cp / sqrt(normx * normy);
   return 0;
 }
-
-
 
 
 

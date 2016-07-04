@@ -1,16 +1,16 @@
 /*  Copyright (c) 2015-2016, Schmidt
     All rights reserved.
-
+    
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-
+    
     1. Redistributions of source code must retain the above copyright notice,
     this list of conditions and the following disclaimer.
-
+    
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-
+    
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -24,53 +24,49 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <math.h>
-#include "coop.h"
-#include "omputils.h"
+#ifndef __COOP_SPARSITY_H__
+#define __COOP_SPARSITY_H__
 
 
-// set diagonal of nxn matrix x to 1
-void coop_diag2one(const unsigned int n, double *restrict x)
+// Number of 0's for integer matrix
+static int coop_sparsity_int(const int m, const int n, const int * const restrict x)
 {
-  int i;
+  int count = 0;
   
-  SAFE_FOR_SIMD
-  for (i=0; i<n; i++)
-    x[i + n*i] = 1.0;
-}
-
-
-
-// Copy lower triangle to upper
-void coop_symmetrize(const int n, double *restrict x)
-{
-  #pragma omp parallel for default(none) shared(x) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
-    const int nj = n*j;
+    const int mj = m*j;
     
-    SAFE_SIMD
-    for (int i=j+1; i<n; i++)
-      x[j + n*i] = x[i + nj];
+    for (int i=0; i<m; i++)
+    {
+      if (x[i + mj] == 0)
+        count++;
+    }
   }
+  
+  return count;
 }
 
 
 
-// replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-void coop_fill(const unsigned int n, double *restrict cp)
+// Number of (approximate) 0's for double matrix
+static int coop_sparsity_dbl(const int m , const int n, const double * const restrict x, const double tol)
 {
-  #pragma omp parallel for default(none) shared(cp) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  int count = 0;
+
   for (int j=0; j<n; j++)
   {
-    const double diagj = cp[j + n*j];
+    const int mj = m*j;
     
-    const int nj = n*j;
-    cp[j + nj] = 1;
-    
-    SAFE_SIMD
-    for (int i=j+1; i<n; i++)
-      cp[i + nj] /= sqrt(cp[i + n*i] * diagj);
+    for (int i=0; i<m; i++)
+    {
+      if (fabs(x[i + mj]) < tol)
+        count++;
+    }
   }
+  
+  return count;
 }
+
+
+#endif

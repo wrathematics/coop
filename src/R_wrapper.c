@@ -27,7 +27,9 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <math.h>
+
 #include "coop.h"
+#include "utils/sparsity.h"
 
 
 #define CO_SIM 1
@@ -188,6 +190,50 @@ SEXP R_scaler(SEXP centerx_, SEXP scalex_, SEXP x)
   UNPROTECT(ptct);
   return ret;
 }
+
+
+
+#if 0
+SEXP R_co_wt(SEXP x, SEXP type_)
+{
+  SEXP ret, retnames;
+  SEXP co, center, nobs;
+  int check;
+  const int type = INT(type_);
+  const unsigned int m = nrows(x);
+  const unsigned int n = ncols(x);
+  
+  PROTECT(co = allocMatrix(REALSXP, n, n));
+  PROTECT(nobs = allocVector(INTSXP, 1));
+  INT(nobs) = n;
+  
+  if (type == CO_SIM || type == CO_ORR)
+    PROTECT(center = allocVector(REALSXP, n));
+  
+  if (type == CO_SIM)
+    check = coop_cosine_wt_mat(m, n, REAL(x), REAL(co));
+  else if (type == CO_ORR)
+    check = coop_pcor_wt_mat(m, n, REAL(x), REAL(co));
+  else if (type == CO_VAR)
+    check = coop_covar_wt_mat(m, n, REAL(x), REAL(co));
+  else
+    BADTYPE();
+  
+  if (check)
+    error("unable to allocate necessary memory");
+  
+  PROTECT(ret = allocVector(VECSXP, 3));
+  SET_VECTOR_ELT(ret, 0, co);
+  if (type == CO_SIM || type == CO_ORR)
+    SET_VECTOR_ELT(ret, 1, center);
+  else
+    SET_VECTOR_ELT(ret, 1, R_NilValue);
+  SET_VECTOR_ELT(ret, 2, nobs);
+  
+  UNPROTECT(5);
+  return ret;
+}
+#endif
 
 
 

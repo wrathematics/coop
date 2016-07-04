@@ -1,16 +1,16 @@
 /*  Copyright (c) 2015-2016, Schmidt
     All rights reserved.
-
+    
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-
+    
     1. Redistributions of source code must retain the above copyright notice,
     this list of conditions and the following disclaimer.
-
+    
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-
+    
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -24,53 +24,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <math.h>
-#include "coop.h"
-#include "omputils.h"
+#ifndef __COOP_MMULT_H__
+#define __COOP_MMULT_H__
 
 
-// set diagonal of nxn matrix x to 1
-void coop_diag2one(const unsigned int n, double *restrict x)
+// ddot replica using dgemm
+static inline double ddot(const int n, const double * const restrict x, const double * const restrict y)
 {
-  int i;
+  const int one = 1;
+  double dot;
   
-  SAFE_FOR_SIMD
-  for (i=0; i<n; i++)
-    x[i + n*i] = 1.0;
+  dgemm_(&(char){'t'}, &(char){'n'}, &one, &one, &n,
+    &(double){1.0}, x, &n, y, &n, &(double){0.0}, &dot, &one);
+  
+  return dot;
 }
 
 
 
-// Copy lower triangle to upper
-void coop_symmetrize(const int n, double *restrict x)
+// upper triangle of t(x) %*% x
+static inline void crossprod(const int m, const int n, const double * const restrict x, double *restrict c)
 {
-  #pragma omp parallel for default(none) shared(x) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
-  for (int j=0; j<n; j++)
-  {
-    const int nj = n*j;
-    
-    SAFE_SIMD
-    for (int i=j+1; i<n; i++)
-      x[j + n*i] = x[i + nj];
-  }
+  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &(double){1.0}, x, &m, &(double){0.0}, c, &n);
 }
 
-
-
-// replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-void coop_fill(const unsigned int n, double *restrict cp)
+static inline void tcrossprod(const int m, const int n, const double * const restrict x, double *restrict c)
 {
-  #pragma omp parallel for default(none) shared(cp) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
-  for (int j=0; j<n; j++)
-  {
-    const double diagj = cp[j + n*j];
-    
-    const int nj = n*j;
-    cp[j + nj] = 1;
-    
-    SAFE_SIMD
-    for (int i=j+1; i<n; i++)
-      cp[i + nj] /= sqrt(cp[i + n*i] * diagj);
-  }
+  dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &(double){1.0}, x, &m, &(double){0.0}, c, &m);
 }
+
+
+#endif
