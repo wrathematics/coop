@@ -95,7 +95,7 @@ static inline void matmult(const bool transx, const bool transy, const int mx, c
       in = ny;
   }
   
-  dgemm_(&ctransx, &ctransy, &im, &in, &ik, &one, x, &mx, y, &my, &zero, ret, &(ret->nrows));
+  dgemm_(&ctransx, &ctransy, &im, &in, &ik, &one, x, &mx, y, &my, &zero, ret, &im);
 }
 
 
