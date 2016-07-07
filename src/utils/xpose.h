@@ -30,11 +30,12 @@
 
 static inline void xpose(const int m, const int n, const double *const restrict x, double *restrict tx)
 {
-  const int blocksize = 16; // TODO check cache line explicitly
+  const int blocksize = 8; // TODO check cache line explicitly
   
+  #pragma omp parallel for default(none) shared(tx) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j+=blocksize)
   {
-    for (int i=0; i<m; i+=blocksize)
+    for (int i=j; i<m; i+=blocksize)
     {
       for (int col=j; col<j+blocksize && col<n; ++col)
       {
@@ -44,48 +45,6 @@ static inline void xpose(const int m, const int n, const double *const restrict 
     }
   }
 }
-
-/*
-void matprinter(int m, int n, double *x)
-{
-  int i, j;
-  
-  for (i=0; i<m; i++)
-  {
-    for (j=0; j<n; j++)
-      printf("%.0f ", x[i+m*j]);
-    
-    putchar('\n');
-  }
-}
-
-int main()
-{
-  const int m = 5;
-  const int n = 3;
-  double *x = malloc(m*n * sizeof(*x));
-  double *y = malloc(n*m * sizeof(*y));
-  
-  for (int j=0; j<n; j++)
-    for (int i=0; i<m; i++)
-      x[i + m*j] = i + m*j + 1;
-  
-  matprinter(m, n, x);
-  putchar('\n');
-  
-  xpose(m, n, x, y);
-  
-  matprinter(n, m, y);
-  
-  // putchar('\n');
-  // for (int j=0; j<n; j++)
-  //   for (int i=0; i<m; i++)
-  //     printf("%f\n", y[i + m*j]);
-  
-  return 0;
-}
-
-*/
 
 
 #endif
