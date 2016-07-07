@@ -37,7 +37,7 @@ static inline void xpose(const int m, const int n, const double *const restrict 
   {
     for (int i=0; i<m; i+=blocksize)
     {
-      for (int col=0; col<j+blocksize && col<n; ++col)
+      for (int col=j; col<j+blocksize && col<n; ++col)
       {
         for (int row=i; row<i+blocksize && row<m; ++row)
           tx[col + n*row] = x[row + m*col];
