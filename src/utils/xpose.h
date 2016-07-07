@@ -35,9 +35,9 @@ static inline void xpose(const int m, const int n, const double *const restrict 
   #pragma omp parallel for default(none) shared(tx) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j+=blocksize)
   {
-    for (int i=j; i<m; i+=blocksize)
+    for (int i=0; i<m; i+=blocksize)
     {
-      for (int col=j; col<j+blocksize && col<n; ++col)
+      for (int col=0; col<j+blocksize && col<n; ++col)
       {
         for (int row=i; row<i+blocksize && row<m; ++row)
           tx[col + n*row] = x[row + m*col];
