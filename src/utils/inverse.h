@@ -32,7 +32,7 @@
 #include "safeomp.h"
 
 
-static inline int inv_ge_lu(const int n, double *x)
+static inline int inv_gen_lu(const int n, double *x)
 {
   int info = 0;
   int *ipiv;
@@ -66,7 +66,7 @@ static inline int inv_ge_lu(const int n, double *x)
 
 
 // invert triangular x in place
-static inline int inv_tr(const int lda, const int n, double *x)
+static inline int inv_tri(const int lda, const int n, double *x)
 {
   int info;
   const char uplo = 'u';
@@ -78,8 +78,8 @@ static inline int inv_tr(const int lda, const int n, double *x)
 
 
 
-// invert diagonal x in place
-static inline void inv_diag(const int len, double *x)
+// invert diagonal x and square it in place
+static inline void inv_diagsq(const int len, double *x)
 {
   SAFE_FOR_SIMD
   for (int i=0; i<len; i++)
@@ -88,6 +88,26 @@ static inline void inv_diag(const int len, double *x)
     x[i] = 1.0 / (tmp * tmp);
   }
 }
+
+
+
+// invert symmetric positive definite (e.g., covariance matrix) via cholesky
+static inline int inv_sym_chol(const int n, double *x)
+{
+  int info;
+  const char uplo = 'u';
+  
+  // factor 
+  dpotrf_(&uplo, &n, x, &n, &info);
+  if (info != 0)
+    return info;
+  
+  // invert
+  dpotr_(&uplo, &n, x, &n, &info);
+  
+  return info;
+}
+
 
 
 #endif

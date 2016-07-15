@@ -59,4 +59,9 @@ void dtrtri_(const char *uplo, const char *diag, const int *n, double *restrict 
 void dlacpy_(const char *uplo, const int *m, const int *n, const double *restrict x, 
              const int *lda, double *restrict y, const int *ldb);
 
+void dpotrf_(const char *uplo, const int *n, double *restrict a, const int *lda, int *info);
+
+void dpotri_(const char *uplo, const int *n, double *restrict a, const int *lda, int *info);
+
+
 #endif
