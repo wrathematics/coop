@@ -32,6 +32,7 @@
 
 #include "coop.h"
 #include "utils/copy.h"
+#include "utils/inverse.h"
 #include "utils/fill.h"
 
 #define TMP_VEC_SIZE 1024
@@ -168,10 +169,11 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
  * The function returns -1 if needed memory cannot be allocated, and
  * 0 otherwise.
 */
-int coop_cosine_sparse_coo(const int index, const int n, const int len,
+int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const int len,
   const double * const restrict a, const int *restrict rows, const int *restrict cols,
   double *restrict cos)
 {
+  int ret;
   int i, j, k, l;
   int info;
   int col;
@@ -275,6 +277,11 @@ int coop_cosine_sparse_coo(const int index, const int n, const int len,
   free(rows_colj);
   
   diag2one(n, cos);
+  if (inv)
+  {
+    ret = inv_sym_chol(n, cos);
+    CHECKRET(ret);
+  }
   symmetrize(n, cos);
   
   return 0;
