@@ -31,6 +31,7 @@
 
 #include "coop.h"
 #include "utils/fill.h"
+#include "utils/inverse.h"
 #include "utils/safeomp.h"
 
 
@@ -137,14 +138,21 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
 //  Interface
 // ---------------------------------------------
 
-int coop_pcor_mat_inplace(const int m, const int n, const double * const restrict x, double *restrict cor)
+int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor)
 {
   int check;
 
   check = co_mat_inplace(m, n, x, cor);
-  if (check) return check;
+  CHECKRET(check);
 
   cosim_fill(n, cor);
+  
+  if (inv)
+  {
+    check = inv_sym_chol(n, cor);
+    CHECKRET(check);
+  }
+  
   symmetrize(n, cor);
 
   return 0;
@@ -152,12 +160,18 @@ int coop_pcor_mat_inplace(const int m, const int n, const double * const restric
 
 
 
-int coop_covar_mat_inplace(const int m, const int n, const double * const restrict x, double *restrict cov)
+int coop_covar_mat_inplace(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
 {
   int check;
 
   check = co_mat_inplace(m, n, x, cov);
-  if (check) return check;
+  CHECKRET(check);
+
+  if (inv)
+  {
+    check = inv_sym_chol(n, cov);
+    CHECKRET(check);
+  }
 
   symmetrize(n, cov);
 

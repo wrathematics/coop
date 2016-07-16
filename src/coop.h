@@ -44,13 +44,13 @@ int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, c
 int coop_covar_vecvec(const int n, const double * const x, const double * const y, double *restrict cov);
 
 // dense - inplace
-int coop_covar_mat_inplace(const int m, const int n, const double *restrict x, double *restrict cov);
-int coop_pcor_mat_inplace(const int m, const int n, const double * const restrict x, double *restrict cor);
+int coop_covar_mat_inplace(const bool inv, const int m, const int n, const double *restrict x, double *restrict cov);
+int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor);
 
 // dense - pairwise complete observations (inplace)
-int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double * const restrict x, double *restrict cos);
-int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double * const restrict x, double *restrict cor);
-int coop_covar_mat_inplace_pairwise(const int m, const int n, const double * const restrict x, double *restrict cov);
+int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos);
+int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor);
+int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov);
 
 // scale
 int coop_scale(const bool centerx, const bool scalex, const int m, const int n, double *restrict x, double *restrict colmeans, double *restrict colvars);

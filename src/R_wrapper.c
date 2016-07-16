@@ -68,14 +68,14 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
   else if (type == CO_ORR)
   {
     if (inplace)
-      check = coop_pcor_mat_inplace(m, n, REAL(x), REAL(ret));
+      check = coop_pcor_mat_inplace(inv, m, n, REAL(x), REAL(ret));
     else
       check = coop_pcor_mat(trans, inv, m, n, REAL(x), REAL(ret));
   }
   else if (type == CO_VAR)
   {
     if (inplace)
-      check = coop_covar_mat_inplace(m, n, REAL(x), REAL(ret));
+      check = coop_covar_mat_inplace(inv, m, n, REAL(x), REAL(ret));
     else
       check = coop_covar_mat(trans, inv, m, n, REAL(x), REAL(ret));
   }
@@ -121,22 +121,23 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
 
 
 
-SEXP R_co_mat_pairwise(SEXP x, SEXP type_)
+SEXP R_co_mat_pairwise(SEXP x, SEXP type_, SEXP inv_)
 {
   SEXP ret;
   int check;
   const int type = INT(type_);
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
+  const int inv = INT(inv_);
   PROTECT(ret = allocMatrix(REALSXP, n, n));
   
   
   if (type == CO_SIM)
-    check = coop_cosine_mat_inplace_pairwise(m, n, REAL(x), REAL(ret));
+    check = coop_cosine_mat_inplace_pairwise(inv, m, n, REAL(x), REAL(ret));
   else if (type == CO_ORR)
-    check = coop_pcor_mat_inplace_pairwise(m, n, REAL(x), REAL(ret));
+    check = coop_pcor_mat_inplace_pairwise(inv, m, n, REAL(x), REAL(ret));
   else if (type == CO_VAR)
-    check = coop_covar_mat_inplace_pairwise(m, n, REAL(x), REAL(ret));
+    check = coop_covar_mat_inplace_pairwise(inv, m, n, REAL(x), REAL(ret));
   else
     BADTYPE();
   

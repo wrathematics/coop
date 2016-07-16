@@ -29,7 +29,7 @@ co_matrix <- function(x, y, type, use, inplace, trans=FALSE, inverse=FALSE)
     storage.mode(x) <- "double"
   
   if (use == "pairwise.complete.obs")
-    ret <- .Call(R_co_mat_pairwise, x, as.integer(type))
+    ret <- .Call(R_co_mat_pairwise, x, as.integer(type), as.integer(inverse))
   else
     ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace), as.integer(trans), as.integer(inverse))
   

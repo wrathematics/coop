@@ -31,6 +31,8 @@
 #include <math.h>
 
 #include "coop.h"
+#include "utils/fill.h"
+#include "utils/inverse.h"
 #include "utils/safeomp.h"
 #include "utils/special_vals.h"
 
@@ -57,8 +59,9 @@ static inline void compute_sums(const int m, const int mi, const double * const 
 
 
 
-int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double * const restrict x, double *restrict cos)
+int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos)
 {
+  int check;
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
   
@@ -98,21 +101,28 @@ int coop_cosine_mat_inplace_pairwise(const int m, const int n, const double * co
         continue;
       }
       
-      const double tmp = xy / sqrt(xx * yy);
-      cos[i + n*j] = tmp;
-      cos[j + n*i] = tmp;
+      cos[i + n*j] = xy / sqrt(xx * yy);
     }
   }
   
   free(vec);
+  
+  if (inv)
+  {
+    check = inv_sym_chol(n, cos);
+    CHECKRET(check);
+  }
+  
+  symmetrize(n, cos);
   
   return 0;
 }
 
 
 
-int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double * const restrict x, double *restrict cor)
+int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor)
 {
+  int check;
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
   
@@ -166,21 +176,28 @@ int coop_pcor_mat_inplace_pairwise(const int m, const int n, const double * cons
           mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
       }
       
-      const double tmp = mmcp / sdx / sdy / (dlen - 1.0);
-      cor[i + n*j] = tmp;
-      cor[j + n*i] = tmp;
+      cor[i + n*j] = mmcp / sdx / sdy / (dlen - 1.0);;
     }
   }
   
   free(vec);
+  
+  if (inv)
+  {
+    check = inv_sym_chol(n, cor);
+    CHECKRET(check);
+  }
+  
+  symmetrize(n, cor);
   
   return 0;
 }
 
 
 
-int coop_covar_mat_inplace_pairwise(const int m, const int n, const double * const restrict x, double *restrict cov)
+int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
 {
+  int check;
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
   
@@ -217,13 +234,19 @@ int coop_covar_mat_inplace_pairwise(const int m, const int n, const double * con
           mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
       }
       
-      const double tmp = mmcp * ((double) 1.0/(len-1));
-      cov[i + n*j] = tmp;
-      cov[j + n*i] = tmp;
+      cov[i + n*j] = mmcp * ((double) 1.0/(len-1));
     }
   }
   
   free(vec);
+  
+  if (inv)
+  {
+    check = inv_sym_chol(n, cov);
+    CHECKRET(check);
+  }
+  
+  symmetrize(n, cov);
   
   return 0;
 }

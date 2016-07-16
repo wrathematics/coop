@@ -11,7 +11,7 @@
 int main()
 {
   const int nreps = 100;
-  const int n = 2000;
+  const int n = 4000;
   double *x = malloc(n*n * sizeof(*x));
   
   
