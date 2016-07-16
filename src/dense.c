@@ -31,6 +31,7 @@
 
 #include "coop.h"
 #include "utils/fill.h"
+#include "utils/inverse.h"
 #include "utils/mmult.h"
 #include "utils/safeomp.h"
 #include "utils/sumstats.h"
@@ -59,20 +60,31 @@
  * @param cos
  * The output nxn matrix.
 */
-int coop_cosine_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cos)
+int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos)
 {
+  int nrows, ncols;
+  int ret;
+  
   if (trans)
   {
+    ncols = m;
     tcrossprod(m, n, 1.0, x, cos);
-    cosim_fill(m, cos);
-    symmetrize(m, cos);
   }
   else
   {
+    ncols = n;
     crossprod(m, n, 1.0, x, cos);
-    cosim_fill(n, cos);
-    symmetrize(n, cos);
   }
+  
+  cosim_fill(ncols, cos);
+  
+  if (inv)
+  {
+    ret = inv_sym_chol(ncols, cos);
+    CHECKRET(ret);
+  }
+  
+  symmetrize(ncols, cos);
   
   return 0;
 }
@@ -129,11 +141,12 @@ int coop_cosine_vecvec(const int n, const double * const restrict x, const doubl
  * @param cor
  * The output nxn matrix.
 */
-int coop_pcor_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cor)
+int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
   int nrows, ncols;
+  int ret;
   
   if (trans)
   {
@@ -150,10 +163,18 @@ int coop_pcor_mat(const bool trans, const int m, const int n, const double * con
   
   remove_colmeans(nrows, ncols, x_cp);
   crossprod(nrows, ncols, 1.0, x_cp, cor);
+  free(x_cp);
+  
   cosim_fill(ncols, cor);
+  
+  if (inv)
+  {
+    ret = inv_sym_chol(ncols, cor);
+    CHECKRET(ret);
+  }
+  
   symmetrize(ncols, cor);
   
-  free(x_cp);
   return 0;
 }
 
@@ -235,8 +256,9 @@ int coop_pcor_vecvec(const int n, const double * const  const restrict x, const 
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int coop_covar_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cov)
+int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
 {
+  int ret;
   int nrows, ncols;
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
@@ -259,9 +281,15 @@ int coop_covar_mat(const bool trans, const int m, const int n, const double * co
   
   remove_colmeans(nrows, ncols, x_cp);
   crossprod(nrows, ncols, alpha, x_cp, cov);
-  symmetrize(ncols, cov);
-  
   free(x_cp);
+  
+  if (inv)
+  {
+    ret = inv_sym_chol(ncols, cov);
+    CHECKRET(ret);
+  }
+  
+  symmetrize(ncols, cov);
   
   return 0;
 }

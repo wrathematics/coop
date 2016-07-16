@@ -31,15 +31,16 @@
 
 #define EPSILON 1e-10
 #define CHECKMALLOC(x) if(x==NULL) return -1
+#define CHECKRET(ret) if(ret != 0) return ret
 
 // dense
-int coop_cosine_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cos);
+int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos);
 int coop_cosine_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cos);
 
-int coop_pcor_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cor);
+int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor);
 int coop_pcor_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cor);
 
-int coop_covar_mat(const bool trans, const int m, const int n, const double * const restrict x, double *restrict cov);
+int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov);
 int coop_covar_vecvec(const int n, const double * const x, const double * const y, double *restrict cov);
 
 // dense - inplace
@@ -55,7 +56,7 @@ int coop_covar_mat_inplace_pairwise(const int m, const int n, const double * con
 int coop_scale(const bool centerx, const bool scalex, const int m, const int n, double *restrict x, double *restrict colmeans, double *restrict colvars);
 
 // sparse
-int coop_cosine_sparse_coo(const int index, const int n, const int len, const double * const restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
+int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const int len, const double * const restrict a, const int *restrict rows, const int *restrict cols, double *restrict cos);
 
 
 #endif

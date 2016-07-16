@@ -17,6 +17,8 @@
 #' The NA handler, as in R's \code{cov()} and \code{cor()}
 #' functions.  Options are "everything", "all.obs", and 
 #' "complete.obs".
+#' @param inverse
+#' Logical; should the inverse covariance matrix be returned?
 #' 
 #' @return
 #' The \eqn{n\times n} matrix of all pair-wise vector cosine
@@ -36,20 +38,20 @@ NULL
 
 #' @rdname cosine
 #' @export
-cosine <- function(x, y, use="everything") UseMethod("cosine")
+cosine <- function(x, y, use="everything", inverse=FALSE) UseMethod("cosine")
 
 
 
 #' @export
-cosine.matrix <- function(x, y, use="everything")
+cosine.matrix <- function(x, y, use="everything", inverse=FALSE)
 {
-  co_matrix(x, y, CO_SIM, use, inplace=FALSE)
+  co_matrix(x, y, CO_SIM, use, inplace=FALSE, inverse=inverse)
 }
 
 
 
 #' @export
-cosine.default <- function(x, y, use="everything")
+cosine.default <- function(x, y, use="everything", inverse=FALSE)
 {
   co_vecvec(x, y, CO_SIM, use)
 }
@@ -57,7 +59,7 @@ cosine.default <- function(x, y, use="everything")
 
 
 #' @export
-cosine.simple_triplet_matrix <- function(x, y, use="everything")
+cosine.simple_triplet_matrix <- function(x, y, use="everything", inverse=FALSE)
 {
   if (!missing(y))
     stop("argument 'y' can not be used with a matrix 'x'")
@@ -72,7 +74,7 @@ cosine.simple_triplet_matrix <- function(x, y, use="everything")
   if (length(a) != length(i) || length(i) != length(j))
     stop("Malformed simple_triplet_matrix: lengths of 'v', 'i', and 'j' do not agree")
   
-  ret <- co_sparse(n, a, i, j, index, type, use)
+  ret <- co_sparse(n, a, i, j, index, type, use, inverse)
   if (!is.null(colnames(x)))
   {
     rownames(ret) <- colnames(x)
@@ -85,7 +87,7 @@ cosine.simple_triplet_matrix <- function(x, y, use="everything")
 
 
 #' @export
-cosine.dgCMatrix <- function(x, y, use="everything")
+cosine.dgCMatrix <- function(x, y, use="everything", inverse=FALSE)
 {
   if (!missing(y))
     stop("argument 'y' can not be used with a matrix 'x'")
@@ -100,7 +102,7 @@ cosine.dgCMatrix <- function(x, y, use="everything")
   if (length(a) != length(i) || length(i) != length(j))
     stop("Malformed dgCMatrix: lengths of 'x', 'i', and 'p' do not agree")
   
-  ret <- co_sparse(n, a, i, j, index, type, use)
+  ret <- co_sparse(n, a, i, j, index, type, use, inverse)
   if (!is.null(colnames(x)))
   {
     rownames(ret) <- colnames(x)
@@ -116,12 +118,12 @@ cosine.dgCMatrix <- function(x, y, use="everything")
 
 #' @rdname cosine
 #' @export
-tcosine <- function(x, y, use="everything") UseMethod("tcosine")
+tcosine <- function(x, y, use="everything", inverse=FALSE) UseMethod("tcosine")
 
 
 
 #' @export
-tcosine.matrix <- function(x, y, use="everything")
+tcosine.matrix <- function(x, y, use="everything", inverse=FALSE)
 {
-  co_matrix(x, y, CO_SIM, use, inplace=FALSE, trans=TRUE)
+  co_matrix(x, y, CO_SIM, use, inplace=FALSE, trans=TRUE, inverse=inverse)
 }

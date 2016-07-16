@@ -1,6 +1,7 @@
-co_matrix <- function(x, y, type, use, inplace, trans=FALSE)
+co_matrix <- function(x, y, type, use, inplace, trans=FALSE, inverse=FALSE)
 {
   check.is.flag(inplace)
+  check.is.flag(inverse)
   if (type != CO_SIM && (inplace && trans))
     stop("Not yet implemented for inplace=TRUE, trans=TRUE, method != cosine()")
   
@@ -30,7 +31,7 @@ co_matrix <- function(x, y, type, use, inplace, trans=FALSE)
   if (use == "pairwise.complete.obs")
     ret <- .Call(R_co_mat_pairwise, x, as.integer(type))
   else
-    ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace), as.integer(trans))
+    ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace), as.integer(trans), as.integer(inverse))
   
   if (!is.null(colnames(x)))
   {

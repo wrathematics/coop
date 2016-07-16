@@ -18,6 +18,8 @@
 #' Logical; if \code{TRUE} then the method used is slower but
 #' uses less memory than if \code{FALSE}.  See \code{?coop-package}
 #' for details.
+#' @param inverse
+#' Logical; should the inverse covariance matrix be returned?
 #' 
 #' @return
 #' The covariance matrix.
@@ -36,20 +38,20 @@ NULL
 
 #' @rdname covar
 #' @export
-covar <- function(x, y, use="everything", inplace=FALSE) UseMethod("covar")
+covar <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE) UseMethod("covar")
 
 
 
 #' @export
-covar.matrix <- function(x, y, use="everything", inplace=FALSE)
+covar.matrix <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 {
-  co_matrix(x, y, CO_VAR, use, inplace, trans=FALSE)
+  co_matrix(x, y, CO_VAR, use, inplace, trans=FALSE, inverse=inverse)
 }
 
 
 
 #' @export
-covar.default <- function(x, y, use="everything", inplace=FALSE)
+covar.default <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 {
   co_vecvec(x, y, CO_VAR, use)
 }
@@ -60,12 +62,12 @@ covar.default <- function(x, y, use="everything", inplace=FALSE)
 
 #' @rdname covar
 #' @export
-tcovar <- function(x, y, use="everything", inplace=FALSE) UseMethod("tcovar")
+tcovar <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE) UseMethod("tcovar")
 
 
 
 #' @export
-tcovar.matrix <- function(x, y, use="everything", inplace=FALSE)
+tcovar.matrix <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 {
-  co_matrix(x, y, CO_VAR, use, inplace, trans=TRUE)
+  co_matrix(x, y, CO_VAR, use, inplace, trans=TRUE, inverse=inverse)
 }

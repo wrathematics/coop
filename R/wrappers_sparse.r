@@ -1,5 +1,7 @@
-co_sparse <- function(n, a, i, j, index, type, use)
+co_sparse <- function(n, a, i, j, index, type, use, inverse)
 {
+  check.is.flag(inverse)
+  
   if (!is.double(a))
     storage.mode(a) <- "double"
   if (!is.integer(i))
@@ -29,7 +31,7 @@ co_sparse <- function(n, a, i, j, index, type, use)
   else
     stop("unsupported 'use' method")
   
-  .Call(R_co_sparse, as.integer(n), a, i, j, as.integer(index), as.integer(type))
+  .Call(R_co_sparse, as.integer(n), a, i, j, as.integer(index), as.integer(type), as.integer(inverse))
 }
 
 

@@ -95,7 +95,7 @@ static inline void inv_diagsq(const int len, double *x)
 static inline int inv_sym_chol(const int n, double *x)
 {
   int info;
-  const char uplo = 'u';
+  const char uplo = 'l';
   
   // factor 
   dpotrf_(&uplo, &n, x, &n, &info);
@@ -103,7 +103,7 @@ static inline int inv_sym_chol(const int n, double *x)
     return info;
   
   // invert
-  dpotr_(&uplo, &n, x, &n, &info);
+  dpotri_(&uplo, &n, x, &n, &info);
   
   return info;
 }

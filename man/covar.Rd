@@ -5,9 +5,9 @@
 \alias{tcovar}
 \title{Covariance}
 \usage{
-covar(x, y, use = "everything", inplace = FALSE)
+covar(x, y, use = "everything", inplace = FALSE, inverse = FALSE)
 
-tcovar(x, y, use = "everything", inplace = FALSE)
+tcovar(x, y, use = "everything", inplace = FALSE, inverse = FALSE)
 }
 \arguments{
 \item{x}{A numeric matrix or vector.}
@@ -22,6 +22,8 @@ functions.  Options are "everything", "all.obs", and
 \item{inplace}{Logical; if \code{TRUE} then the method used is slower but
 uses less memory than if \code{FALSE}.  See \code{?coop-package}
 for details.}
+
+\item{inverse}{Logical; should the inverse covariance matrix be returned?}
 }
 \value{
 The covariance matrix.

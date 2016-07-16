@@ -35,6 +35,8 @@ stopifnot(all.equal(cov(tcpx), tcovar(tcpx)))
 check(y, cov, coop::covar)
 check(ty, cov, coop::covar)
 
+stopifnot(all.equal(solve(cov(x)), coop::covar(x, inverse=TRUE)))
+
 
 
 ### Pearson correlation
@@ -50,6 +52,8 @@ stopifnot(all.equal(cor(tcpx), tpcor(tcpx)))
 
 check(y, cor, coop::pcor)
 check(ty, cor, coop::pcor)
+
+stopifnot(all.equal(solve(cor(x)), coop::pcor(x, inverse=TRUE)))
 
 
 
@@ -74,3 +78,5 @@ stopifnot(all.equal(cosine(tcpx), tcosine(tcpx)))
 
 check(y, cosine, coop::cosine)
 check(ty, cosine, coop::cosine)
+
+stopifnot(all.equal(solve(cosine(x)), coop::cosine(x, inverse=TRUE)))

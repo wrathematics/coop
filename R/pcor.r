@@ -19,6 +19,8 @@
 #' Logical; if \code{TRUE} then the method used is slower but
 #' uses less memory than if \code{FALSE}.  See \code{?coop-package}
 #' for details.
+#' @param inverse
+#' Logical; should the inverse covariance matrix be returned?
 #' 
 #' @return
 #' The pearson correlation matrix.
@@ -37,20 +39,20 @@ NULL
 
 #' @rdname pcor
 #' @export
-pcor <- function(x, y, use="everything", inplace=FALSE) UseMethod("pcor")
+pcor <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE) UseMethod("pcor")
 
 
 
 #' @export
-pcor.matrix <- function(x, y, use="everything", inplace=FALSE)
+pcor.matrix <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 {
-  co_matrix(x, y, CO_ORR, use, inplace, trans=FALSE)
+  co_matrix(x, y, CO_ORR, use, inplace, trans=FALSE, inverse=inverse)
 }
 
 
 
 #' @export
-pcor.default <- function(x, y, use="everything", inplace=FALSE)
+pcor.default <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 {
   co_vecvec(x, y, CO_ORR, use)
 }
@@ -61,12 +63,12 @@ pcor.default <- function(x, y, use="everything", inplace=FALSE)
 
 #' @rdname pcor
 #' @export
-tpcor <- function(x, y, use="everything", inplace=FALSE) UseMethod("tpcor")
+tpcor <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE) UseMethod("tpcor")
 
 
 
 #' @export
-tpcor.matrix <- function(x, y, use="everything", inplace=FALSE)
+tpcor.matrix <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 {
-  co_matrix(x, y, CO_ORR, use, inplace, trans=TRUE)
+  co_matrix(x, y, CO_ORR, use, inplace, trans=TRUE, inverse=inverse)
 }
