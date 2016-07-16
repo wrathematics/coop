@@ -1,4 +1,7 @@
-Release 0.5-1 (//):
+Release 0.6-0 (//):
+  * Add inverse method.
+
+Release 0.5-1 (7/7/2016):
   * Add scaler() to center and/or scale efficiently.
   * Better safety in internal OpenMP statements.
   * Add tcosine(), tpcor(), tcovar().

@@ -1,7 +1,7 @@
 Package: coop
 Type: Package
 Title: Co-Operation: Fast Covariance, Correlation, and Cosine Similarity Operations
-Version: 0.5-1
+Version: 0.6-0
 Description: Fast implementations of the co-operations: covariance,
     correlation, and cosine similarity.  The implementations are
     fast and memory-efficient and their use is resolved
