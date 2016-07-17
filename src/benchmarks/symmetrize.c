@@ -4,8 +4,7 @@
 #include "timer.h"
 #include "../utils/safeomp.h"
 #include "../utils/fill.h"
-
-#include "../tests/naive.h"
+#include "../utils/naive/symmetrize.h"
 
 
 int main()

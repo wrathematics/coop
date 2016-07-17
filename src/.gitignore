@@ -1,4 +1,5 @@
 benchmarks/symmetrize
 benchmarks/xpose
 
+tests/symmetrize
 tests/xpose

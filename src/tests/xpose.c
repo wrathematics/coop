@@ -5,11 +5,13 @@
 #include "../utils/safeomp.h"
 #include "../utils/xpose.h"
 
-#include "../tests/naive.h"
+#include "../utils/naive/all_equal.h"
+#include "../utils/naive/xpose.h"
 
 
 int main()
 {
+  int ret;
   const int m = 10;
   const int n = 3;
   double *x = malloc(m*n * sizeof(*x));
@@ -26,21 +28,10 @@ int main()
   memset(tx, 0.0, m*n*sizeof(*tx));
   xpose(m, n, x, tx);
   
-  for (int i=0; i<m*n; i++)
-  {
-    if (truth[i] != tx[i])
-    {
-      printf("FAIL\n");
-      
-      matprinter(n, m, tx);
-      matprinter(n, m, truth);
-      return -1;
-    }
-  }
-  
-  printf("PASS\n");
+  ret = all_equal("Transpose", true, n, m, tx, truth);
   
   free(x);
   free(tx);
-  return 0;
+  free(truth);
+  return ret;
 }
