@@ -7,4 +7,5 @@ rm -rf ./src/*.dll
 
 rm -rf ./src/benchmarks/symmetrize
 rm -rf ./src/benchmarks/xpose
+rm -rf ./src/tests/symmetrize
 rm -rf ./src/tests/xpose
