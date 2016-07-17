@@ -29,9 +29,8 @@
 
 #include <stdbool.h>
 
-#define EPSILON 1e-10
-#define CHECKMALLOC(x) if(x==NULL) return -1
-#define CHECKRET(ret) if(ret != 0) return ret
+#include "utils/cdefs.h"
+
 
 // dense
 int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos);
