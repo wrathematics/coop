@@ -4,7 +4,8 @@
 #include "../utils/safeomp.h"
 #include "../utils/xpose.h"
 
-#include "../utils/naive/all_equal.h"
+#include "../utils/internal/all_equal.h"
+
 #include "../utils/naive/xpose.h"
 
 

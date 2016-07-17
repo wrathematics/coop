@@ -1,8 +1,10 @@
 #include <stdlib.h>
 
-#include "timer.h"
 #include "../utils/safeomp.h"
 #include "../utils/xpose.h"
+
+#include "../utils/internal/timer.h"
+
 #include "../utils/naive/xpose.h"
 
 
