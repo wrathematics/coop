@@ -1,9 +1,10 @@
 #!/bin/sh
 
-runtests(){
-    echo ""
-    ./symmetrize
-    ./xpose
+runTests(){
+  echo ""
+  for exe in `ls bin/`;do
+    ./bin/$exe
+  done
 }
 
-make && runtests
+make && runTests

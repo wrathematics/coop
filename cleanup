@@ -5,7 +5,5 @@ rm -rf ./src/*.o
 rm -rf ./src/*.d
 rm -rf ./src/*.dll
 
-rm -rf ./src/benchmarks/symmetrize
-rm -rf ./src/benchmarks/xpose
-rm -rf ./src/tests/symmetrize
-rm -rf ./src/tests/xpose
+rm -rf ./src/benchmarks/bin/*
+rm -rf ./src/tests/bin/*
