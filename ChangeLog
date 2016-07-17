@@ -2,11 +2,13 @@ Release 0.6-0 (//):
   * Add inverse method.
   * Add C99 configure test.
   * Add internal C lib tests and benchmarks.
+  * Minor C lib refactoring.
 
 Release 0.5-1 (7/7/2016):
   * Add scaler() to center and/or scale efficiently.
   * Better safety in internal OpenMP statements.
   * Add tcosine(), tpcor(), tcovar().
+  * Add blocked xpose and symmetrize.
 
 Release 0.5-0 (4/24/2016):
   * Implement inplace methods for correlation and covariance (correlation is
