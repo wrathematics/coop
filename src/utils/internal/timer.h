@@ -1,5 +1,5 @@
-#ifndef __COOP_BENCHMARKS_TIMER_H__
-#define __COOP_BENCHMARKS_TIMER_H__
+#ifndef __COOP_UTILS_INTERNAL_TIMER_H__
+#define __COOP_UTILS_INTERNAL_TIMER_H__
 
 #include <time.h>
 #include <stdio.h>

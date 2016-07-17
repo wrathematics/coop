@@ -1,5 +1,5 @@
-#ifndef __COOP_NAIVE_ALLEQUAL_H__
-#define __COOP_NAIVE_ALLEQUAL_H__
+#ifndef __COOP_UTILS_INTERNAL_ALLEQUAL_H__
+#define __COOP_UTILS_INTERNAL_ALLEQUAL_H__
 
 #include <stdbool.h>
 #include <math.h>

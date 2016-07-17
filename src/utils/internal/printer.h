@@ -1,5 +1,5 @@
-#ifndef __COOP_NAIVE_PRINTER_H__
-#define __COOP_NAIVE_PRINTER_H__
+#ifndef __COOP_UTILS_INTERNAL_PRINTER_H__
+#define __COOP_UTILS_INTERNAL_PRINTER_H__
 
 static inline void matprinter(const int m, const int n, const double *const restrict x)
 {
