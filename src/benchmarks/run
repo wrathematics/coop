@@ -1,0 +1,10 @@
+#!/bin/sh
+
+runtests(){
+    echo ""
+    ./symmetrize
+    echo ""
+    ./xpose
+}
+
+make && runtests
