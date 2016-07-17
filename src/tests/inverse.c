@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../utils/safeomp.h"
-#include "../utils/fill.h"
+#include "../utils/inverse.h"
 
 #include "../utils/naive/all_equal.h"
 #include "../utils/naive/symmetrize.h"

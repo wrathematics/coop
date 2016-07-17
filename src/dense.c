@@ -62,7 +62,7 @@
 */
 int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos)
 {
-  int nrows, ncols;
+  int ncols;
   int ret;
   
   if (trans)

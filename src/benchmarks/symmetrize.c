@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "timer.h"
 #include "../utils/safeomp.h"
