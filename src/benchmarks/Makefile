@@ -1,10 +1,12 @@
+CFLAGS = -fopenmp -O3 -std=c99
+
 all: symmetrize xpose
 
 symmetrize: clean
-	gcc -fopenmp -O3 symmetrize.c -o symmetrize
+	gcc $(CFLAGS) symmetrize.c -o symmetrize
 
 xpose: clean
-	gcc -fopenmp -O3 xpose.c -o xpose
+	gcc $(CFLAGS) xpose.c -o xpose
 
 
 clean:
