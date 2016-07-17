@@ -60,7 +60,7 @@ static inline void tcrossprod(const int m, const int n, const double alpha, cons
 
 
 // dgemm wrapper
-static inline void matmult(const bool transx, const bool transy, const int mx, const int nx, const double *restrict x, const int my, const int ny, const double *restrict y, double *restrict ret)
+static inline void matmult(const bool transx, const bool transy, const int mx, const int nx, const double *const restrict x, const int my, const int ny, const double *const restrict y, double *restrict ret)
 {
   // m = # rows of op(x)
   // n = # cols of op(y)
@@ -69,31 +69,21 @@ static inline void matmult(const bool transx, const bool transy, const int mx, c
   char ctransx, ctransy;
   static const double one = 1., zero = 0.;
   
-  if (transx) ctransx = 't';
-  else ctransx = 'n';
-  if (transy) ctransy = 't';
-  else ctransy = 'n';
+  ctransx = transx ? 't' : 'n';
+  ctransy = transy ? 't' : 'n';
   
   if (transx)
   {
     im = nx;
     ik = mx;
-    
-    if (transy == 't')
-      in = my;
-    else
-      in = ny;
   }
   else
   {
     im = mx;
     ik = nx;
-    
-    if (transy)
-      in = my;
-    else
-      in = ny;
   }
+  
+  in = transy ? my : ny;
   
   dgemm_(&ctransx, &ctransy, &im, &in, &ik, &one, x, &mx, y, &my, &zero, ret, &im);
 }

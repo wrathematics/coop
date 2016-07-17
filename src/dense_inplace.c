@@ -1,16 +1,16 @@
 /*  Copyright (c) 2016, Schmidt
     All rights reserved.
-
+    
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-
+    
     1. Redistributions of source code must retain the above copyright notice,
     this list of conditions and the following disclaimer.
-
+    
     2. Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
-
+    
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -43,26 +43,26 @@ static int coop_covar_vecvec_inplace(const int n, const double * const restrict 
   double meanx;
   double meany;       // :DDD
   double mmcp = 0.0;  // minus-mean-crossproduct
-
+  
   meanx = 0.0;
   meany = 0.0;
-
+  
   SAFE_FOR_SIMD
   for (i=0; i<n; i++)
   {
     meanx += x[i];
     meany += y[i];
   }
-
+  
   meanx *= denom;
   meany *= denom;
-
+  
   SAFE_FOR_SIMD
   for (i=0; i<n; i++)
     mmcp += (x[i] - meanx) * (y[i] - meany);
-
+    
   *cor = mmcp / ((double)(n-1));
-
+  
   return 0;
 }
 
@@ -81,8 +81,8 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
   }
   const double denom_mean = (double) 1./m;
   const double denom_cov = (double) 1./(m-1);
-
-
+  
+  
   // get column means
   #pragma omp parallel for default(none) shared(means) if (m*n > OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
@@ -96,8 +96,8 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
     
     means[j] *= denom_mean;
   }
-
-
+  
+  
   // co-operation
   for (int j=0; j<n; j++)
   {
@@ -141,10 +141,10 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
 int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor)
 {
   int check;
-
+  
   check = co_mat_inplace(m, n, x, cor);
   CHECKRET(check);
-
+  
   cosim_fill(n, cor);
   
   if (inv)
@@ -154,7 +154,7 @@ int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double
   }
   
   symmetrize(n, cor);
-
+  
   return 0;
 }
 
@@ -163,17 +163,17 @@ int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double
 int coop_covar_mat_inplace(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
 {
   int check;
-
+  
   check = co_mat_inplace(m, n, x, cov);
   CHECKRET(check);
-
+  
   if (inv)
   {
     check = inv_sym_chol(n, cov);
     CHECKRET(check);
   }
-
+  
   symmetrize(n, cov);
-
+  
   return 0;
 }
