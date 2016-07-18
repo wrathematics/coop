@@ -1,5 +1,9 @@
 ^\.travis\.yml$
+
 src/tautest
+src/benchmarks
+src/tests
+
 TODO
 
 vignettes/coop_cache
