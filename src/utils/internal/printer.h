@@ -8,7 +8,7 @@ static inline void matprinter(const int m, const int n, const double *const rest
   for (i=0; i<m; i++)
   {
     for (j=0; j<n; j++)
-      printf("%.0f ", x[i+m*j]);
+      printf("%.2f ", x[i+m*j]);
     
     putchar('\n');
   }

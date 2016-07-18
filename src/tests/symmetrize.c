@@ -1,10 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
-
 #include "../utils/safeomp.h"
 #include "../utils/fill.h"
 
 #include "../utils/internal/all_equal.h"
+#include "../utils/internal/gen.h"
 
 #include "../utils/naive/symmetrize.h"
 
@@ -12,21 +10,20 @@ int main()
 {
   int ret;
   const int n = 10;
-  double *x = malloc(n*n * sizeof(*x));
-  double *sym = malloc(n*n * sizeof(*sym));
-  double *truth = malloc(n*n * sizeof(*truth));
+  double *x, *sym, *truth;
   
-  for (int j=0; j<n; j++)
-    for (int i=0; i<n; i++)
-      x[i + n*j] = i + n*j + 1;
+  printf("# Symmetrize: ");
   
-  memcpy(truth, x, n*n*sizeof(*truth));
+  x = gen_boring2(n*n);
+  
+  truth = cpalloc2(n*n, x);
   symmetrize_naive(n, truth);
   
-  memcpy(sym, x, n*n*sizeof(*sym));
+  sym = cpalloc2(n*n, x);
   symmetrize(n, sym);
   
-  ret = all_equal("Symmetrize", true, n, n, sym, truth);
+  ret = all_equal(true, n, n, sym, truth);
+  
   
   free(x);
   free(sym);

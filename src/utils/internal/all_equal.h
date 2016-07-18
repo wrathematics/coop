@@ -10,10 +10,8 @@
 #define EPS 1e-10
 #define CMP(a,b) (fabs(a-b) < EPS)
 
-static inline int all_equal(const char *testname, const bool printonfail, const int m, const int n, const double *restrict const test, const double *restrict const truth)
+static inline int all_equal(const bool printonfail, const int m, const int n, const double *restrict const test, const double *restrict const truth)
 {
-  printf("### %s: ", testname);
-  
   for (int i=0; i<m*n; i++)
   {
     if (!CMP(truth[i], test[i]))
