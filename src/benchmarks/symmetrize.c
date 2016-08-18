@@ -10,7 +10,7 @@
 int main()
 {
   const int nreps = 100;
-  const int n = 4000;
+  const int n = 5000;
   double *x;
   
   x = gen_runif2(n*n);
