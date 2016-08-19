@@ -243,7 +243,7 @@ int cov_svd(const bool takeinv, const int m, const int n, double *restrict x, do
   
   mm_diXge(takeinv, m, n, s, vt);
   
-  matmult(false, true, min_mn, n, vt, min_mn, n, vt, cov);
+  matmult(false, true, 1.0, min_mn, n, vt, min_mn, n, vt, cov);
   
   cleanup:
   free(x_cp);
