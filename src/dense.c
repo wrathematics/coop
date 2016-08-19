@@ -216,7 +216,7 @@ int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, co
 int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cor)
 {
   int nrows, ncols;
-  int ret;
+  int ret = 0;
   double *x_cp = malloc(m*n * sizeof(*x));
   CHECKMALLOC(x_cp);
   double *y_cp = malloc(m*n * sizeof(*y));
@@ -277,7 +277,7 @@ int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n,
  * @return
  * The correlation between the two vectors.
 */
-int coop_pcor_vecvec(const int n, const double * const  const restrict x, const double * const  const restrict y, double *restrict cor)
+int coop_pcor_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cor)
 {
   double normx, normy;
   
@@ -379,7 +379,7 @@ int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, c
 // covar(x,y)
 int coop_covar_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cov)
 {
-  int ret;
+  int ret = 0;
   int nrows, ncols;
   double *x_cp = malloc(m*n * sizeof(*x));
   CHECKMALLOC(x_cp);

@@ -67,7 +67,7 @@ static inline void matmult(const bool transx, const bool transy, const double al
   // k = # cols of op(x)
   int im, in, ik;
   char ctransx, ctransy;
-  static const double one = 1., zero = 0.;
+  static const double zero = 0.;
   
   ctransx = transx ? 'T' : 'N';
   ctransy = transy ? 'T' : 'N';

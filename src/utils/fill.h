@@ -35,10 +35,8 @@
 // set diagonal of nxn matrix x to 1
 static inline void diag2one(const unsigned int n, double *restrict x)
 {
-  int i;
-  
   SAFE_FOR_SIMD
-  for (i=0; i<n; i++)
+  for (int i=0; i<n; i++)
     x[i + n*i] = 1.0;
 }
 

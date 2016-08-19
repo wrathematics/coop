@@ -68,7 +68,7 @@ static inline int inv_gen_lu(const int n, double *x)
 // invert triangular x in place
 static inline int inv_tri(const int lda, const int n, double *x)
 {
-  int info;
+  int info = 0; // initial to shut up static analyzer
   const char uplo = 'u';
   const char diag = 'n';
   

@@ -30,7 +30,7 @@
 #include "safeomp.h"
 
 // x[*, j] -= colmean(x[*, j])
-static void remove_colmeans(const int m, const int n, double *restrict x)
+static inline void remove_colmeans(const int m, const int n, double *restrict x)
 {
   if (m == 0 || n == 0)
     return;
@@ -59,7 +59,7 @@ static void remove_colmeans(const int m, const int n, double *restrict x)
 
 
 // same as above but return the means vector
-static void remove_colmeans_retmean(const int m, const int n, double *restrict x, double *restrict colmeans)
+static inline void remove_colmeans_retmean(const int m, const int n, double *restrict x, double *restrict colmeans)
 {
   if (m == 0 || n == 0)
     return;

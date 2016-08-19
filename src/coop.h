@@ -34,9 +34,11 @@
 
 // dense
 int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos);
+int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cos);
 int coop_cosine_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cos);
 
 int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor);
+int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cor);
 int coop_pcor_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cor);
 
 int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov);
