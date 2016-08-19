@@ -101,5 +101,4 @@ static inline double mean(const int n, const double * const restrict x)
 }
 
 
-
 #endif
