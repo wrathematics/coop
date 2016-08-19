@@ -49,7 +49,7 @@ static inline void symmetrize(const int n, double *restrict x)
 {
   const int blocksize = 8; // TODO check cache line explicitly
   
-  #pragma omp parallel for default(none) shared(x) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  // #pragma omp parallel for default(none) shared(x) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j+=blocksize)
   {
     for (int i=j+1; i<n; i+=blocksize)
@@ -71,13 +71,29 @@ static inline void cosim_fill(const unsigned int n, double *restrict cp)
   #pragma omp parallel for default(none) shared(cp) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
-    const double diagj = cp[j + n*j];
-    
     const int nj = n*j;
+    const double diagj = cp[j + nj];
+    
     cp[j + nj] = 1;
     
     SAFE_SIMD
     for (int i=j+1; i<n; i++)
+      cp[i + nj] /= sqrt(cp[i + n*i] * diagj);
+  }
+}
+
+
+
+static inline void cosim_fill_full(const unsigned int n, double *restrict cp)
+{
+  #pragma omp parallel for default(none) shared(cp) if(n>OMP_MIN_SIZE)
+  for (int j=0; j<n; j++)
+  {
+    const int nj = n*j;
+    const double diagj = cp[j + nj];
+    
+    SAFE_SIMD
+    for (int i=0; i<n; i++)
       cp[i + nj] /= sqrt(cp[i + n*i] * diagj);
   }
 }
