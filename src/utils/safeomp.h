@@ -43,9 +43,15 @@
 
 // Insert SIMD pragma if supported
 #ifdef OMP_VER_4
+  #ifdef _MSC_VER
+#define SAFE_SIMD _pragma(omp simd)
+#define SAFE_FOR_SIMD _pragma(omp for simd)
+#define SAFE_PARALLEL_FOR_SIMD _pragma(omp parallel for simd)
+  #else
 #define SAFE_SIMD _Pragma("omp simd")
 #define SAFE_FOR_SIMD _Pragma("omp for simd")
 #define SAFE_PARALLEL_FOR_SIMD _Pragma("omp parallel for simd")
+  #endif
 #else
 #define SAFE_SIMD 
 #define SAFE_FOR_SIMD
