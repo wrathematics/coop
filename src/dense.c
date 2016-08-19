@@ -34,6 +34,7 @@
 #include "utils/inverse.h"
 #include "utils/mmult.h"
 #include "utils/safeomp.h"
+#include "utils/scale.h"
 #include "utils/sumstats.h"
 #include "utils/xpose.h"
 
@@ -85,6 +86,37 @@ int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, 
   }
   
   symmetrize(ncols, cos);
+  
+  return 0;
+}
+
+
+
+int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cos)
+{
+  int nrows, ncols;
+  int ret;
+  
+  if (trans)
+  {
+    nrows = n;
+    ncols = m;
+  }
+  else
+  {
+    nrows = m;
+    ncols = n;
+  }
+  
+  matmult(!trans, trans, 1.0, nrows, ncols, x, nrows, ncols, y, cos);
+  
+  cosim_fill_full(ncols, cos);
+  
+  if (inv)
+  {
+    ret = inv_sym_chol(ncols, cos);
+    CHECKRET(ret);
+  }
   
   return 0;
 }
@@ -176,6 +208,54 @@ int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, co
   symmetrize(ncols, cor);
   
   return 0;
+}
+
+
+
+// pcor(x, y)
+int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cor)
+{
+  int nrows, ncols;
+  int ret;
+  double *x_cp = malloc(m*n * sizeof(*x));
+  CHECKMALLOC(x_cp);
+  double *y_cp = malloc(m*n * sizeof(*y));
+  if (y_cp == NULL)
+  {
+    free(x_cp);
+    return BADMALLOC;
+  }
+  
+  
+  if (trans)
+  {
+    xpose(m, n, x, x_cp);
+    xpose(m, n, y, y_cp);
+    nrows = n;
+    ncols = m;
+  }
+  else
+  {
+    memcpy(x_cp, x, m*n*sizeof(*x));
+    memcpy(y_cp, y, m*n*sizeof(*y));
+    nrows = m;
+    ncols = n;
+  }
+  
+  scale_nostore(true, true, nrows, ncols, x_cp);
+  scale_nostore(true, true, nrows, ncols, y_cp);
+  
+  const double alpha = 1. / ((double) (nrows-1));
+  
+  matmult(true, false, alpha, nrows, ncols, x_cp, nrows, ncols, y_cp, cor);
+  free(x_cp);
+  free(y_cp);
+  
+  
+  if (inv)
+    ret = inv_sym_chol(ncols, cor);
+  
+  return ret;
 }
 
 
@@ -292,6 +372,56 @@ int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, c
   symmetrize(ncols, cov);
   
   return 0;
+}
+
+
+
+// covar(x,y)
+int coop_covar_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cov)
+{
+  int ret;
+  int nrows, ncols;
+  double *x_cp = malloc(m*n * sizeof(*x));
+  CHECKMALLOC(x_cp);
+  double *y_cp = malloc(m*n * sizeof(*y));
+  if (y_cp == NULL)
+  {
+    free(x_cp);
+    return BADMALLOC;
+  }
+  
+  
+  if (trans)
+  {
+    xpose(m, n, x, x_cp);
+    xpose(m, n, y, y_cp);
+    nrows = n;
+    ncols = m;
+  }
+  else
+  {
+    memcpy(x_cp, x, m*n*sizeof(*x));
+    memcpy(y_cp, y, m*n*sizeof(*y));
+    nrows = m;
+    ncols = n;
+  }
+  
+  
+  const double alpha = 1. / ((double) (nrows-1));
+  
+  //TODO FIXME make tremove_colmeans and use the BLAS more efficiently...
+  remove_colmeans(nrows, ncols, x_cp);
+  remove_colmeans(nrows, ncols, y_cp);
+  
+  // matmult(!trans, trans, alpha, nrows, ncols, x_cp, nrows, ncols, y_cp, cov);
+  matmult(true, false, alpha, nrows, ncols, x_cp, nrows, ncols, y_cp, cov);
+  free(x_cp);
+  free(y_cp);
+  
+  if (inv)
+    ret = inv_sym_chol(ncols, cov);
+  
+  return ret;
 }
 
 

@@ -45,6 +45,7 @@
 //  Dense
 // ---------------------------------------------
 
+
 SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
 {
   SEXP ret;
@@ -78,6 +79,47 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
       check = coop_covar_mat_inplace(inv, m, n, REAL(x), REAL(ret));
     else
       check = coop_covar_mat(trans, inv, m, n, REAL(x), REAL(ret));
+  }
+  else
+    BADTYPE();
+  
+  UNPROTECT(1);
+  
+  if (check)
+    error("unable to allocate necessary memory");
+  
+  return ret;
+}
+
+
+
+SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
+{
+  SEXP ret;
+  int check;
+  const int type = INT(type_);
+  const unsigned int m = nrows(x);
+  const unsigned int n = ncols(x);
+  const int inplace = INT(inplace_);
+  const int trans = INT(trans_);
+  const int inv = INT(inv_);
+  
+  
+  if (trans)
+    PROTECT(ret = allocMatrix(REALSXP, m, m));
+  else
+    PROTECT(ret = allocMatrix(REALSXP, n, n));
+  
+  
+  if (type == CO_SIM)
+    check = coop_cosine_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+  else if (type == CO_ORR)
+  {
+    check = coop_pcor_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+  }
+  else if (type == CO_VAR)
+  {
+    check = coop_covar_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
   }
   else
     BADTYPE();
