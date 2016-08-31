@@ -258,7 +258,7 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
         }
       }
       
-      for (l=l; l<=vec2end; l++)
+      for (; l<=vec2end; l++)
       {
         tmp = a[l];
         yy += tmp*tmp;
