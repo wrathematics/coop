@@ -93,7 +93,7 @@ static inline double mean(const int n, const double * const restrict x)
   const double divbyn = 1. / ((double) n);
   double mean = 0.;
   
-  SAFE_FOR_SIMD
+  PLEASE_VECTORIZE
   for (int i=0; i<n; i++)
     mean += x[i];
   

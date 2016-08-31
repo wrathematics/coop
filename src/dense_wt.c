@@ -45,7 +45,7 @@ static inline int wtchecks(const int m, const double *wt)
 {
   double sum = 0;
   
-  SAFE_FOR_SIMD
+  PLEASE_VECTORIZE
   for (int i=0; i<m; i++)
   {
     if (wt[i] < 0)
@@ -68,7 +68,7 @@ static void wtcp(const int method, const int m, const int n, const double * cons
     else
     {
       alpha = 0.;
-      SAFE_FOR_SIMD
+      PLEASE_VECTORIZE
       for (int i=0; i<m; i++)
         alpha = wt[i]*wt[i];
       

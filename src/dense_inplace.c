@@ -47,7 +47,7 @@ static int coop_covar_vecvec_inplace(const int n, const double * const restrict 
   meanx = 0.0;
   meany = 0.0;
   
-  SAFE_FOR_SIMD
+  PLEASE_VECTORIZE
   for (i=0; i<n; i++)
   {
     meanx += x[i];
@@ -57,7 +57,7 @@ static int coop_covar_vecvec_inplace(const int n, const double * const restrict 
   meanx *= denom;
   meany *= denom;
   
-  SAFE_FOR_SIMD
+  PLEASE_VECTORIZE
   for (i=0; i<n; i++)
     mmcp += (x[i] - meanx) * (y[i] - meany);
     
@@ -106,7 +106,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
     memcpy(vec, x+mj, m*sizeof(*vec));
     
     const double meanx = means[j];
-    SAFE_FOR_SIMD
+    PLEASE_VECTORIZE
     for (int k=0; k<m; k++)
       vec[k] -= meanx;
     

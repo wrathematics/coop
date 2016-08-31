@@ -125,7 +125,7 @@ static int co_mat_minmax(const int type, const int m, const int n, const double 
     memcpy(vec, x+mj, m*sizeof(*vec));
     
     const double meanx = means[j];
-    SAFE_FOR_SIMD
+    PLEASE_VECTORIZE
     for (int k=0; k<m; k++)
       vec[k] -= meanx;
     

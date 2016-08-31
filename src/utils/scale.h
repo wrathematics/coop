@@ -37,7 +37,7 @@ static inline void centerscale(const int j, const int m, const int n, double *re
   *colmean = 0;
   *colvar = 0;
   
-  SAFE_SIMD
+  SAFE_FOR_SIMD
   for (int i=0; i<m; i++)
   {
     double dt = x[i + mj] - *colmean;
@@ -48,7 +48,7 @@ static inline void centerscale(const int j, const int m, const int n, double *re
   *colvar = sqrt(*colvar * tmp);
   
   // Remove mean and variance
-  SAFE_SIMD
+  SAFE_FOR_SIMD
   for (int i=0; i<m; i++)
     x[i + mj] = (x[i + mj] - *colmean) / *colvar;
 }
@@ -63,12 +63,12 @@ static inline double center(const int j, const int m, const int n, double *x)
   double colmean = 0;
   
   // Get column mean
-  SAFE_SIMD
+  SAFE_FOR_SIMD
   for (int i=0; i<m; i++)
     colmean += x[i + mj] * div;
   
   // Remove mean from column
-  SAFE_SIMD
+  SAFE_FOR_SIMD
   for (int i=0; i<m; i++)
     x[i + mj] -= colmean;
   
@@ -85,7 +85,7 @@ static inline double scale(const int j, const int m, const int n, double *x)
   double colvar = 0;
   
   // Get column variance
-  SAFE_SIMD
+  SAFE_FOR_SIMD
   for (int i=0; i<m; i++)
   {
     double tmp = x[i + mj];
@@ -95,7 +95,7 @@ static inline double scale(const int j, const int m, const int n, double *x)
   colvar = sqrt(colvar);
   
   // Remove variance from column
-  SAFE_SIMD
+  SAFE_FOR_SIMD
   for (int i=0; i<m; i++)
     x[i + mj] /= colvar;
   

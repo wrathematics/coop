@@ -28,6 +28,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+#include "utils/safeomp.h"
 
 // Check for NA, Inf, and NaN
 SEXP R_check_badvals(SEXP x_)
@@ -37,8 +38,7 @@ SEXP R_check_badvals(SEXP x_)
   double *x = REAL(x_);
   const int len = LENGTH(x_);
   
-  // FIXME
-  // SAFE_FOR_SIMD
+  PLEASE_VECTORIZE
   for (int i=0; i<len; i++)
   {
     if (!R_FINITE(x[i]))

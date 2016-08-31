@@ -45,7 +45,7 @@ static inline void compute_sums(const int m, const int mi, const double * const 
   *sumy = 0;
   *len = 0;
   
-  SAFE_SIMD
+  PLEASE_VECTORIZE
   for (k=0; k<m; k++)
   {
     if (!isnan(vec[k]) && !isnan(x[k + mi]))
