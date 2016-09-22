@@ -9,7 +9,6 @@ test <- function(dense, sparse)
   t2 <- coop::cosine(sparse)
   stopifnot(all.equal(t1, t2))
   
-  # FIXME these will fail; should they?
   # t1 <- coop::cosine(dense, inverse=TRUE)
   # t2 <- coop::cosine(sparse, inverse=TRUE)
   # stopifnot(all.equal(t1, t2))
