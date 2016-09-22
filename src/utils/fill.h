@@ -66,34 +66,48 @@ static inline void symmetrize(const int n, double *restrict x)
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
 static inline void cosim_fill(const unsigned int n, double *restrict cp)
 {
-  #pragma omp parallel for default(none) shared(cp) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  double *diag = malloc(n * sizeof(*diag));
+  SAFE_FOR_SIMD
+  for (int i=0; i<n; i++)
+    diag[i] = sqrt(cp[i + n*i]);
+  
+  #pragma omp parallel for default(none) shared(cp,diag) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int nj = n*j;
-    const double diagj = cp[j + nj];
+    const double diagj = sqrt(cp[j + nj]);
     
     cp[j + nj] = 1;
     
     SAFE_SIMD
     for (int i=j+1; i<n; i++)
-      cp[i + nj] /= sqrt(cp[i + n*i] * diagj);
+      cp[i + nj] /= diag[i] * diagj;
   }
+  
+  free(diag);
 }
 
 
 
 static inline void cosim_fill_full(const unsigned int n, double *restrict cp)
 {
-  #pragma omp parallel for default(none) shared(cp) if(n>OMP_MIN_SIZE)
+  double *diag = malloc(n * sizeof(*diag));
+  SAFE_FOR_SIMD
+  for (int i=0; i<n; i++)
+    diag[i] = sqrt(cp[i + n*i]);
+  
+  #pragma omp parallel for default(none) shared(cp,diag) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int nj = n*j;
-    const double diagj = cp[j + nj];
+    const double diagj = sqrt(cp[j + nj]);
     
     SAFE_SIMD
     for (int i=0; i<n; i++)
-      cp[i + nj] /= sqrt(cp[i + n*i] * diagj);
+      cp[i + nj] /= diag[i] * diagj;
   }
+  
+  free(diag);
 }
 
 
