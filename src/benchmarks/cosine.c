@@ -1,3 +1,4 @@
+#include "../coop.h"
 #include "../utils/internal/gen.h"
 #include "../utils/internal/timer.h"
 

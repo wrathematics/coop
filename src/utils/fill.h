@@ -29,6 +29,7 @@
 #define __COOP_LIB_FILL_H__
 
 #include <math.h>
+#include <stdlib.h>
 #include "safeomp.h"
 #include "cdefs.h"
 
