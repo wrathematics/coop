@@ -64,7 +64,6 @@
 int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos)
 {
   int ncols;
-  int ret;
   
   if (trans)
   {
@@ -81,7 +80,7 @@ int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, 
   
   if (inv)
   {
-    ret = inv_sym_chol(ncols, cos);
+    int ret = inv_sym_chol(ncols, cos);
     CHECKRET(ret);
   }
   
@@ -95,7 +94,6 @@ int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, 
 int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cos)
 {
   int nrows, ncols;
-  int ret;
   
   if (trans)
   {
@@ -114,7 +112,7 @@ int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int 
   
   if (inv)
   {
-    ret = inv_sym_chol(ncols, cos);
+    int ret = inv_sym_chol(ncols, cos);
     CHECKRET(ret);
   }
   
@@ -178,7 +176,6 @@ int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, co
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
   int nrows, ncols;
-  int ret;
   
   if (trans)
   {
@@ -201,7 +198,7 @@ int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, co
   
   if (inv)
   {
-    ret = inv_sym_chol(ncols, cor);
+    int ret = inv_sym_chol(ncols, cor);
     CHECKRET(ret);
   }
   
@@ -338,7 +335,6 @@ int coop_pcor_vecvec(const int n, const double * const restrict x, const double 
 */
 int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
 {
-  int ret;
   int nrows, ncols;
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
@@ -365,7 +361,7 @@ int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, c
   
   if (inv)
   {
-    ret = inv_sym_chol(ncols, cov);
+    int ret = inv_sym_chol(ncols, cov);
     CHECKRET(ret);
   }
   
