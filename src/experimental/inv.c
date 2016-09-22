@@ -93,7 +93,7 @@ int cov_qr(const bool takeinv, const int m, const int n, double *restrict x, dou
   // allocations: tau, work, x_cp
   tau = malloc(MAX(m, n) * sizeof(*tau));
   if (tau == NULL)
-    return BADMALLOC;
+    return COOP_BADMALLOC;
   
   lwork = -1;
   dgeqrf_(&m, &n, x, &m, tau, &tmp, &lwork, &info);
@@ -101,14 +101,14 @@ int cov_qr(const bool takeinv, const int m, const int n, double *restrict x, dou
   work = malloc(lwork * sizeof(*work));
   if (work == NULL)
   {
-    info = BADMALLOC;
+    info = COOP_BADMALLOC;
     goto allocfail_work;
   }
   
   x_cp = malloc(m*n*sizeof(*x));
   if (x_cp == NULL)
   {
-    info = BADMALLOC;
+    info = COOP_BADMALLOC;
     goto allocfail_xcp;
   }
   
@@ -118,7 +118,7 @@ int cov_qr(const bool takeinv, const int m, const int n, double *restrict x, dou
   
   // X = QR
   dgeqrf_(&m, &n, x, &m, tau, work, &lwork, &info);
-  if (info != OK)
+  if (info != COOP_OK)
     goto cleanup;
   
   
@@ -227,7 +227,7 @@ int cov_svd(const bool takeinv, const int m, const int n, double *restrict x, do
   x_cp = malloc(m*n*sizeof(*x));
   if (x_cp == NULL)
   {
-    info = BADMALLOC;
+    info = COOP_BADMALLOC;
     goto allocfail_xcp;
   }
   
@@ -238,7 +238,7 @@ int cov_svd(const bool takeinv, const int m, const int n, double *restrict x, do
   // take svd
   info = svd_nou(m, n, x_cp, s, vt);
   
-  if (info != OK)
+  if (info != COOP_OK)
     goto cleanup;
   
   mm_diXge(takeinv, m, n, s, vt);

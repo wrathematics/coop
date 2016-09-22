@@ -32,10 +32,10 @@
 #define MAX(a,b) (a<b?b:a)
 #define MIN(a,b) (a<b?a:b)
 
-#define BADMALLOC -1
-#define OK         0
+#define COOP_BADMALLOC -1
+#define COOP_OK         0
 
-#define CHECKMALLOC(x) if (x == NULL) return BADMALLOC
+#define CHECKMALLOC(x) if (x == NULL) return COOP_BADMALLOC
 #define CHECKRET(ret)  if (ret != 0)  return ret
 
 

@@ -18,5 +18,5 @@ int main()
   TIMER(symmetrize_naive(n, x), nreps);
   TIMER(symmetrize(n, x), nreps);
   
-  return 0;
+  return COOP_OK;
 }

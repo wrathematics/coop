@@ -115,7 +115,7 @@ int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, c
   
   symmetrize(n, cos);
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -190,7 +190,7 @@ int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, con
   
   symmetrize(n, cor);
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -248,5 +248,5 @@ int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, co
   
   symmetrize(n, cov);
   
-  return 0;
+  return COOP_OK;
 }

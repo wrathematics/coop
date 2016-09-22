@@ -128,5 +128,5 @@ int coop_covar_wt_mat(const int method, const int m, const int n, const double *
   
   symmetrize(n, cov);
   
-  return 0;
+  return COOP_OK;
 }

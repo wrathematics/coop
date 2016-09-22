@@ -150,5 +150,5 @@ static int co_mat_minmax(const int type, const int m, const int n, const double 
   free(vec);
   free(means);
   
-  return 0;
+  return COOP_OK;
 }

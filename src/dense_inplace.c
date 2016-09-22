@@ -64,7 +64,7 @@ static int coop_covar_vecvec_inplace(const int n, const double * const restrict 
     
   *cor = mmcp / ((double)(n-1));
   
-  return 0;
+  return COOP_OK;
 }
 */
 
@@ -131,7 +131,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
   free(vec);
   free(means);
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -157,7 +157,7 @@ int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double
   
   symmetrize(n, cor);
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -177,5 +177,5 @@ int coop_covar_mat_inplace(const bool inv, const int m, const int n, const doubl
   
   symmetrize(n, cov);
   
-  return 0;
+  return COOP_OK;
 }

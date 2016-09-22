@@ -36,7 +36,7 @@
 int coop_scale(const bool centerx, const bool scalex, const int m, const int n, double *restrict x, double *restrict colmeans, double *restrict colvars)
 {
   if (m == 0 || n == 0)
-    return 0;
+    return COOP_OK;
   
   // Doing both at once, if needed, is more performant
   if (centerx && scalex)
@@ -66,5 +66,5 @@ int coop_scale(const bool centerx, const bool scalex, const int m, const int n, 
       colvars[j] = scale(j, m, n, x);
   }
   
-  return 0;
+  return COOP_OK;
 }

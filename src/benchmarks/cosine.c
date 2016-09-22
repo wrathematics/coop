@@ -17,5 +17,5 @@ int main()
   
   free(x);
   free(co);
-  return 0;
+  return COOP_OK;
 }

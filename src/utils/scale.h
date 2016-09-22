@@ -107,7 +107,7 @@ static inline double scale(const int j, const int m, const int n, double *x)
 static inline int scale_nostore(const bool centerx, const bool scalex, const int m, const int n, double *restrict x)
 {
   if (m == 0 || n == 0)
-    return 0;
+    return COOP_OK;
   
   // Doing both at once, if needed, is more performant
   if (centerx && scalex)
@@ -132,7 +132,7 @@ static inline int scale_nostore(const bool centerx, const bool scalex, const int
       scale(j, m, n, x);
   }
   
-  return 0;
+  return COOP_OK;
 }
 
 

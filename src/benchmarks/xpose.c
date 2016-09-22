@@ -22,5 +22,5 @@ int main()
   
   free(x);
   free(tx);
-  return 0;
+  return COOP_OK;
 }

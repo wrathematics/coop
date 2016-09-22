@@ -87,7 +87,7 @@ int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, 
   
   symmetrize(ncols, cos);
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -118,7 +118,7 @@ int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int 
     CHECKRET(ret);
   }
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -149,7 +149,7 @@ int coop_cosine_vecvec(const int n, const double * const restrict x, const doubl
   crossprod(n, 1, 1.0, y, &normy);
   
   *cos = cp / sqrt(normx * normy);
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -207,7 +207,7 @@ int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, co
   
   symmetrize(ncols, cor);
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -223,7 +223,7 @@ int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n,
   if (y_cp == NULL)
   {
     free(x_cp);
-    return BADMALLOC;
+    return COOP_BADMALLOC;
   }
   
   
@@ -305,7 +305,7 @@ int coop_pcor_vecvec(const int n, const double * const restrict x, const double 
   free(y_minusmean);
   
   *cor = cp / sqrt(normx * normy);
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -370,7 +370,7 @@ int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, c
   
   symmetrize(ncols, cov);
   
-  return 0;
+  return COOP_OK;
 }
 
 
@@ -386,7 +386,7 @@ int coop_covar_matmat(const bool trans, const bool inv, const int m, const int n
   if (y_cp == NULL)
   {
     free(x_cp);
-    return BADMALLOC;
+    return COOP_BADMALLOC;
   }
   
   
@@ -461,5 +461,5 @@ int coop_covar_vecvec(const int n, const double * const restrict x, const double
   }
   
   *cov = (sum_xy - (sum_x*sum_y*((double) 1./n))) * recip_n;
-  return 0;
+  return COOP_OK;
 }

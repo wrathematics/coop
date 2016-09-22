@@ -7,7 +7,7 @@
 
 #include "../cdefs.h"
 
-#define EXITCHECK(check) if (check == BADMALLOC){fflush(stdout);fprintf(stderr, "--- ERROR: bad malloc\n");exit(BADMALLOC);}
+#define EXITCHECK(check) if (check == COOP_BADMALLOC){fflush(stdout);fprintf(stderr, "--- ERROR: bad malloc\n");exit(COOP_BADMALLOC);}
 
 
 static inline int zeromat(const int n, double **x)
@@ -17,7 +17,7 @@ static inline int zeromat(const int n, double **x)
   
   memset(*x, 0.0, n*sizeof(**x));
   
-  return 0;
+  return COOP_OK;
 }
 
 static inline double* zeromat2(const int n)
@@ -38,7 +38,7 @@ static inline int cpalloc(const int n, const double *const restrict src, double 
   
   memcpy(*dest, src, n*sizeof(**dest));
   
-  return 0;
+  return COOP_OK;
 }
 
 static inline double* cpalloc2(const int n, const double *const restrict src)
@@ -60,7 +60,7 @@ static inline int gen_boring(const int n, double **x)
   for (int i=0; i<n; i++)
     (*x)[i] = (double) i+1;
   
-  return 0;
+  return COOP_OK;
 }
 
 static inline double* gen_boring2(const int n)
@@ -82,7 +82,7 @@ static inline int gen_runif(const int n, double **x)
   for (int i=0; i<n; i++)
     (*x)[i] = (double) rand() / RAND_MAX;
   
-  return 0;
+  return COOP_OK;
 }
 
 static inline double* gen_runif2(const int n)
