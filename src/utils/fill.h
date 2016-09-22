@@ -30,6 +30,7 @@
 
 #include <math.h>
 #include "safeomp.h"
+#include "cdefs.h"
 
 
 // set diagonal of nxn matrix x to 1
@@ -64,9 +65,12 @@ static inline void symmetrize(const int n, double *restrict x)
 
 
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-static inline void cosim_fill(const unsigned int n, double *restrict cp)
+static inline int cosim_fill(const unsigned int n, double *restrict cp)
 {
   double *diag = malloc(n * sizeof(*diag));
+  if (diag == NULL)
+    return BADMALLOC;
+  
   SAFE_FOR_SIMD
   for (int i=0; i<n; i++)
     diag[i] = sqrt(cp[i + n*i]);
@@ -85,13 +89,17 @@ static inline void cosim_fill(const unsigned int n, double *restrict cp)
   }
   
   free(diag);
+  return 0;
 }
 
 
 
-static inline void cosim_fill_full(const unsigned int n, double *restrict cp)
+static inline int cosim_fill_full(const unsigned int n, double *restrict cp)
 {
   double *diag = malloc(n * sizeof(*diag));
+  if (diag == NULL)
+    return BADMALLOC;
+  
   SAFE_FOR_SIMD
   for (int i=0; i<n; i++)
     diag[i] = sqrt(cp[i + n*i]);
@@ -108,6 +116,7 @@ static inline void cosim_fill_full(const unsigned int n, double *restrict cp)
   }
   
   free(diag);
+  return 0;
 }
 
 

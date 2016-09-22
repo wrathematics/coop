@@ -76,11 +76,12 @@ int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, 
     crossprod(m, n, 1.0, x, cos);
   }
   
-  cosim_fill(ncols, cos);
+  int ret = cosim_fill(ncols, cos);
+  CHECKRET(ret);
   
   if (inv)
   {
-    int ret = inv_sym_chol(ncols, cos);
+    ret = inv_sym_chol(ncols, cos);
     CHECKRET(ret);
   }
   
@@ -108,11 +109,12 @@ int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int 
   
   matmult(!trans, trans, 1.0, nrows, ncols, x, nrows, ncols, y, cos);
   
-  cosim_fill_full(ncols, cos);
+  int ret = cosim_fill_full(ncols, cos);
+  CHECKRET(ret);
   
   if (inv)
   {
-    int ret = inv_sym_chol(ncols, cos);
+    ret = inv_sym_chol(ncols, cos);
     CHECKRET(ret);
   }
   
@@ -194,11 +196,12 @@ int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, co
   crossprod(nrows, ncols, 1.0, x_cp, cor);
   free(x_cp);
   
-  cosim_fill(ncols, cor);
+  int ret = cosim_fill(ncols, cor);
+  CHECKRET(ret);
   
   if (inv)
   {
-    int ret = inv_sym_chol(ncols, cor);
+    ret = inv_sym_chol(ncols, cor);
     CHECKRET(ret);
   }
   
