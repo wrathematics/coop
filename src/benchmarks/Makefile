@@ -1,12 +1,17 @@
+CC = gcc
 CFLAGS = -fopenmp -O3 -std=c99
+LDFLAGS = -llapack -lblas -lm
 
-all: symmetrize xpose
+all: cosine symmetrize xpose
+
+cosine: clean
+	$(CC) $(CFLAGS) ../dense.c cosine.c $(LDFLAGS) -o ./bin/cosine
 
 symmetrize: clean
-	gcc $(CFLAGS) symmetrize.c -o ./bin/symmetrize
+	$(CC) $(CFLAGS) symmetrize.c -o ./bin/symmetrize
 
 xpose: clean
-	gcc $(CFLAGS) xpose.c -o ./bin/xpose
+	$(CC) $(CFLAGS) xpose.c -o ./bin/xpose
 
 
 clean:
