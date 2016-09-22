@@ -1,5 +1,6 @@
 library(coop)
 naomit <- coop:::naomit
+check <- function(a, b) stopifnot(all.equal(a, b, check.attributes=FALSE))
 
 set.seed(1234)
 
@@ -9,13 +10,15 @@ len <- m*n
 
 x <- matrix(rnorm(m*n, sd=10000), m, n)
 
+check(na.omit(x), naomit(x))
+
 y <- x
 prop <- .01
 y[sample(len, size=len*prop)] <- NA
 # y[m,2] = NA
 
 if (any(dim(na.omit(y)) == 0)) stop("zeros")
-stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
+check(na.omit(y), naomit(y))
 
 storage.mode(y) <- "integer"
 stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
