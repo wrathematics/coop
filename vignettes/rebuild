@@ -14,3 +14,6 @@ buildVignette(){
 
 buildVignette coop.Rmd
 buildVignette algos.Rmd
+
+cp *.Rmd ../inst/doc/
+cp *.html ../inst/doc/
