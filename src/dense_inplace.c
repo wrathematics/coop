@@ -35,6 +35,7 @@
 #include "utils/safeomp.h"
 
 
+/*
 // O(1) storage
 static int coop_covar_vecvec_inplace(const int n, const double * const restrict x, const double * const restrict y, double *restrict cor)
 {
@@ -65,6 +66,7 @@ static int coop_covar_vecvec_inplace(const int n, const double * const restrict 
   
   return 0;
 }
+*/
 
 
 
