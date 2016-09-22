@@ -74,18 +74,13 @@
 // inside of an omp parallel block.
 #ifdef OMP_VER_4
   #ifdef _MSC_VER // Microsoft doing it's own non-standard bullshit? I DON'T BELIEVE IT
-    #define SAFE_SIMD _pragma(omp simd) \
-      PLEASE_VECTORIZE
-PLEASE_VECTORIZE
+    #define SAFE_SIMD _pragma(omp simd)
     #define SAFE_FOR_SIMD _pragma(omp for simd)
     #define SAFE_PARALLEL_FOR_SIMD _pragma(omp parallel for simd)
   #else
-    #define SAFE_SIMD _Pragma("omp simd") \
-      PLEASE_VECTORIZE
-    #define SAFE_FOR_SIMD _Pragma("omp for simd") \
-      PLEASE_VECTORIZE
-    #define SAFE_PARALLEL_FOR_SIMD _Pragma("omp parallel for simd") \
-      PLEASE_VECTORIZE
+    #define SAFE_SIMD _Pragma("omp simd")
+    #define SAFE_FOR_SIMD _Pragma("omp for simd")
+    #define SAFE_PARALLEL_FOR_SIMD _Pragma("omp parallel for simd")
   #endif
 #else
   #define SAFE_SIMD PLEASE_VECTORIZE
