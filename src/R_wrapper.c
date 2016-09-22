@@ -41,6 +41,17 @@
 
 #define INT(x) INTEGER(x)[0]
 
+static inline void checkret(const int check)
+{
+  if (check)
+  {
+    if (check == COOP_BADMALLOC)
+      error("unable to allocate necessary memory");
+    else
+      error("Unable to compute inverse");
+  }
+}
+
 // ---------------------------------------------
 //  Dense
 // ---------------------------------------------
@@ -85,8 +96,7 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
   
   UNPROTECT(1);
   
-  if (check)
-    error("unable to allocate necessary memory");
+  checkret(check);
   
   return ret;
 }
@@ -100,7 +110,7 @@ SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP in
   const int type = INT(type_);
   const unsigned int m = nrows(x);
   const unsigned int n = ncols(x);
-  const int inplace = INT(inplace_);
+  // const int inplace = INT(inplace_);
   const int trans = INT(trans_);
   const int inv = INT(inv_);
   
@@ -115,19 +125,24 @@ SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP in
     check = coop_cosine_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
   else if (type == CO_ORR)
   {
-    check = coop_pcor_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+    // if (inplace)
+    // 
+    // else
+      check = coop_pcor_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
   }
   else if (type == CO_VAR)
   {
-    check = coop_covar_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+    // if (inplace)
+    // 
+    // else
+      check = coop_covar_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
   }
   else
     BADTYPE();
   
   UNPROTECT(1);
   
-  if (check)
-    error("unable to allocate necessary memory");
+  checkret(check);
   
   return ret;
 }
@@ -155,8 +170,7 @@ SEXP R_co_vecvec(SEXP x, SEXP y, SEXP type_)
   REAL(ret)[0] = co;
   UNPROTECT(1);
   
-  if (check)
-    error("unable to allocate necessary memory");
+  checkret(check);
   
   return ret;
 }
@@ -185,8 +199,7 @@ SEXP R_co_mat_pairwise(SEXP x, SEXP type_, SEXP inv_)
   
   UNPROTECT(1);
   
-  if (check)
-    error("unable to allocate necessary memory");
+  checkret(check);
   
   return ret;
 }
@@ -214,7 +227,10 @@ SEXP R_scaler(SEXP centerx_, SEXP scalex_, SEXP x)
     ptct++;
   }
   else
+  {
+    cm = R_NilValue; // avoids a bogus compiler warning
     colmeans = NULL;
+  }
   
   if (scalex)
   {
@@ -223,7 +239,10 @@ SEXP R_scaler(SEXP centerx_, SEXP scalex_, SEXP x)
     ptct++;
   }
   else
+  {
+    cv = R_NilValue; // same
     colvars = NULL;
+  }
   
   coop_scale(centerx, scalex, m, n, REAL(ret), colmeans, colvars);
   
@@ -261,8 +280,7 @@ SEXP R_co_sparse(SEXP n_, SEXP a, SEXP i, SEXP j, SEXP index_, SEXP type_, SEXP 
   
   UNPROTECT(1);
   
-  if (check)
-    error("unable to allocate necessary memory");
+  checkret(check);
   
   return ret;
 }
