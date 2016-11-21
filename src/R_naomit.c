@@ -34,7 +34,7 @@
 
 #define COPYVEC(in,out,len,TYPE) \
   PROTECT(out = allocVector(TYPE##SXP, len)); \
-  memcpy(TYPE(out), TYPE(in), len*sizeof(TYPE(in)));
+  memcpy(TYPE(out), TYPE(in), len*sizeof(*TYPE(in))); 
 
 #define COPYMAT(in,out,m,n,TYPE) \
   PROTECT(out = allocMatrix(TYPE##SXP, m, n)); \
