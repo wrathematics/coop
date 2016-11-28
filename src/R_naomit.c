@@ -24,6 +24,10 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// NOTE valgrind reports "possibly lost" memory errors; this is GNU OMP's fault:
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36298
+
+
 #include <R.h>
 #include <Rinternals.h>
 #include <stdlib.h>
@@ -44,6 +48,7 @@
 #define THROW_MEMERR error("unable to allocate necessary memory")
 #define R_CHECKMALLOC(ptr) if (ptr == NULL) THROW_MEMERR
 
+
 // --------------------------------------------------------------
 // dense
 // --------------------------------------------------------------
@@ -58,6 +63,7 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, const double *cons
   int m_fin = m;
   int *na_vec_ind = (int*) calloc(len, sizeof(*na_vec_ind));
   R_CHECKMALLOC(na_vec_ind);
+  
   
   // get indices of NA's
   PLEASE_VECTORIZE
@@ -186,7 +192,6 @@ SEXP R_fast_naomit_dbl(SEXP x_)
 {
   const int m = nrows(x_);
   const int n = ncols(x_);
-  
   const double *x = REAL(x_);
   
   if (m*n < OMP_MIN_SIZE)

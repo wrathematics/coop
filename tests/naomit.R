@@ -32,6 +32,8 @@ len <- m*n
 
 x <- matrix(rnorm(m*n, sd=10000), m, n)
 
+check(na.omit(x), naomit(x))
+
 y <- x
 prop <- .01
 y[sample(len, size=len*prop)] <- NA
@@ -41,6 +43,8 @@ stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
 
 storage.mode(y) <- "integer"
 stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
+
+
 
 
 
