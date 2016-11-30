@@ -4,5 +4,3 @@ warnings_are_errors: true
 r_packages:
   - slam
   - memuse
-  - knitr
-  - rmarkdown
