@@ -1,68 +1,22 @@
 %\VignetteIndexEntry{Guide to the coop Package}
 \documentclass[]{article}
 
-\usepackage{parskip}
-\setlength{\parskip}{.3cm}
 
-\makeatletter
-\newcommand\code{\bgroup\@makeother\_\@makeother\~\@makeother\$\@codex}
-\def\@codex#1{{\normalfont\ttfamily\hyphenchar\font=-1 #1}\egroup}
-\makeatother
-%%\let\code=\texttt
-\let\proglang=\textsf
+\input{./include/settings}
 
 
-\usepackage[margin=.75in]{geometry}
-\usepackage{graphicx}
-\usepackage{listings}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{xspace}
-
-\definecolor{gray}{rgb}{.6,.6,.6}
-\definecolor{dkgray}{rgb}{.3,.3,.3}
-\definecolor{grayish}{rgb}{.9, .9, .9}
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-
-\hypersetup{
-    pdfnewwindow=true,
-    colorlinks=true,
-    linkcolor=blue,
-    linkbordercolor=blue,
-    citecolor=blue,
-    filecolor=magenta,
-    urlcolor=blue
+\mytitle{Guide to the coop Package}
+\mysubtitle{}
+\myversion{0.4-0}
+\myauthor{
+\centering
+Drew Schmidt \\
+University of Tennessee
 }
 
-\lstdefinelanguage{rr}{
-  language=R,
-  basicstyle=\ttfamily\color{black},
-  backgroundcolor=\color{grayish},
-  frame=single,
-  breaklines=true,
-  keywordstyle=\color{blue},
-  commentstyle=\color{dkgreen},
-  stringstyle=\color{mauve},
-  numbers=left,%none,
-  numberstyle=\tiny\color{dkgray},
-  stepnumber=1,
-  numbersep=8pt,
-  showspaces=false,
-  showstringspaces=false,
-  showtabs=false,
-  rulecolor=\color{gray},
-  tabsize=4,
-  captionpos=t,
-}
-
-
-
-\title{Guide to the coop Package}
-\author{Drew Schmidt}
 
 \begin{document}
-\maketitle
+\makefirstfew
 
 
 
