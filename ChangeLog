@@ -4,6 +4,7 @@ Release 0.6-0 (//):
   * Added internal C lib tests and benchmarks.
   * Minor C lib refactoring.
   * Fixed a few memory errors.
+  * Switch to LaTeX vignettes.
 
 Release 0.5-1 (7/7/2016):
   * Added scaler() to center and/or scale efficiently.
