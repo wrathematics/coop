@@ -15,10 +15,7 @@ Enhances:
     slam (>= 0.1.32),
     Matrix
 Suggests:
-    memuse,
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
+    memuse
 NeedsCompilation: yes
 ByteCompile: yes
 URL: https://github.com/wrathematics/coop

@@ -1,0 +1,376 @@
+%\VignetteIndexEntry{Algorithms and Benchmarks for the coop Package}
+\documentclass[]{article}
+
+\usepackage{parskip}
+\setlength{\parskip}{.3cm}
+
+\makeatletter
+\newcommand\code{\bgroup\@makeother\_\@makeother\~\@makeother\$\@codex}
+\def\@codex#1{{\normalfont\ttfamily\hyphenchar\font=-1 #1}\egroup}
+\makeatother
+%%\let\code=\texttt
+\let\proglang=\textsf
+
+
+\usepackage[margin=.75in]{geometry}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{xspace}
+
+\definecolor{gray}{rgb}{.6,.6,.6}
+\definecolor{dkgray}{rgb}{.3,.3,.3}
+\definecolor{grayish}{rgb}{.9, .9, .9}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\hypersetup{
+    pdfnewwindow=true,
+    colorlinks=true,
+    linkcolor=blue,
+    linkbordercolor=blue,
+    citecolor=blue,
+    filecolor=magenta,
+    urlcolor=blue
+}
+
+\lstdefinelanguage{rr}{
+  language=R,
+  basicstyle=\ttfamily\color{black},
+  backgroundcolor=\color{grayish},
+  frame=single,
+  breaklines=true,
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  numbers=left,%none,
+  numberstyle=\tiny\color{dkgray},
+  stepnumber=1,
+  numbersep=8pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  rulecolor=\color{gray},
+  tabsize=4,
+  captionpos=t,
+}
+
+
+
+\title{Algorithms and Benchmarks for the coop Package}
+\author{Drew Schmidt}
+
+\begin{document}
+\maketitle
+
+
+
+\section{Introduction}\label{introduction}
+
+In this document, we will introduce the algorithms underlying the
+\textbf{coop} package~\cite{coop}, and offer some benchmarks. In
+order to recreate the benchmarks here, one needs a compiler that
+supports \textbf{OpenMP}~\cite{openmp} and a high-performance
+\textbf{BLAS} library~\cite{lawson1979basic}. See the other
+\textbf{coop} package vignette \emph{Introducing coop: Fast Covariance,
+Correlation, and Cosine Operations}~\cite{coop2016guide} for
+details.
+
+We do not bother to go into details for the covariance and correlation
+algorithms, because they are obvious and uninteresting.
+
+\subsection{A Note on Sparse
+Operations}\label{a-note-on-sparse-operations}
+
+Of the three operations, only cosine similarity currently has a sparse
+implementation. The short reason why is that the other two operations
+require centering and/or scaling.
+
+To better understand the problem, consider the \(5\times 20\) matrix
+whose first row is a row of ones, and all other rows consist entirely of
+zeros:
+
+\begin{verbatim}
+x <- matrix(0, 20, 5)
+x[1, ] <- 1
+\end{verbatim}
+
+The original matrix is, obviously, 95\% sparse:
+
+\begin{verbatim}
+coop::sparsity(x)
+\end{verbatim}
+
+But if we center, the data, it becomes 100\% dense:
+
+\begin{verbatim}
+coop::sparsity(scale(x, T, F))
+\end{verbatim}
+
+\section{The Algorithms with Notes on
+Implementation}\label{the-algorithms-with-notes-on-implementation}
+
+For dense implementations, the performance should scale well, and the
+non-BLAS components will use multiple threads (if your compiler supports
+OpenMP) when the matrix has more than 1000 columns. Additionally, we try
+to use vector operations (using OpenMP's \texttt{simd} construct) for
+additional performance; but you need a compiler that supports a
+relatively modern OpenMP standard for this.
+
+\subsection{Dense Matrix Input}\label{dense-matrix-input}
+
+Given an \(m\times n\) matrix \(A\) (input) and an \(n\times n\) matrix
+\(C\) (preallocated output):
+
+\begin{enumerate}
+\item
+  Compute the upper triangle of the crossproduct
+  \texttt{C\ =\ t(A)\ \%*\%\ X} using a symmetric rank-k update (the
+  \texttt{\_syrk} BLAS function).
+\item
+  Iterate over the upper triangle of \(C\):
+
+  \begin{enumerate}
+  \item
+    Divide its off-diagonal values by the square root of the product of
+    its \(i\)'th and \(j\)'th diagonal entries.
+  \item
+    Replace its diagonal values with 1.
+  \end{enumerate}
+\item
+  Copy the upper triangle of \(C\) onto its lower triangle.
+\end{enumerate}
+
+The total number of floating point operations is:
+
+\begin{enumerate}
+\item
+  \(mn(n+1)\) for the symmetric rank-k update.
+\item
+  \(\frac{3n(n+1)}{2}\) for the rescaling operation.
+\end{enumerate}
+
+The algorithmic complexity is \(O(mn^2)\), and is dominated by the
+symmetric rank-k update. The storage complexity, ignoring the required
+allocation of outputs (namely the \(C\) matrix), is \(O(1)\).
+
+\subsection{Dense Vector-Vector Input}\label{dense-vector-vector-input}
+
+Given two \(n\)-length vectors \(x\) and \(y\) (inputs):
+
+\begin{enumerate}
+\item
+  Compute \texttt{crossprod\ =\ t(x)\ \%*\%\ y} (using the
+  \texttt{\_gemm} BLAS function).
+\item
+  Compute the square of the Euclidean norms of \(x\) and \(y\) (using
+  the \texttt{\_syrk} BLAS function).
+\item
+  Divide \texttt{crossprod} from 1 by the square root of the product of
+  the norms from 2.
+\end{enumerate}
+
+The total number of floating point operations is:
+
+\begin{enumerate}
+\item
+  \(2n-1\) for the crossproduct.
+\item
+  \(4*n-2\) for the two (square) norms.
+\item
+  \(3\) for the division and square root/product.
+\end{enumerate}
+
+The algorithmic complexity is \(O(n)\). The storage complexity is
+\(O(1)\).
+
+\subsection{Sparse Matrix Input}\label{sparse-matrix-input}
+
+Given an \(m\times n\) sparse matrix \(A\) stored as a COO with
+row/column indices \(i\) and \(j\) \textbf{where they are sorted by
+columns first, then rows}, and corresponding data vector \(a\) (inputs),
+and given a preallocated \(n\times n\) dense matrix \(C\) (output):
+
+\begin{enumerate}
+\item
+  Initialize \(C\) to 0.
+\item
+  For each non-zero column \(j\) of the conceptually dense matrix \(A\)
+  (call it \(x\)), find its first and final position in the COO storage.
+
+  \begin{enumerate}
+  \item
+    If \(x\) is missing (its entries are all 0), set the \(j\)'th row
+    and column of the lower triangle of \(C\) to \texttt{NaN} (for
+    compatibility with dense routines). Go to 2.
+  \item
+    Otherwise, for each column \texttt{i\textgreater{}j} of \texttt{a}
+    (call it \texttt{y}), find its first and final position in the COO
+    storage.
+  \item
+    Compute the dot product of \(x\) and \(y\), \(x\cdot y\).
+  \item
+    If \(x\dot y > \epsilon\) (\texttt{epsilon=1e-10} for us):
+
+    \begin{itemize}
+    \item
+      Compute the dot products of \(x\) with itself \(x\cdot x\) and
+      \(y\) with itself \(y\cdot y\).
+    \item
+      Set the \((i, j)\)'th entry of \(C\) to
+      \(\frac{x\cdot y}{\sqrt{x\cdot x}\sqrt{y\cdot y}}\).
+    \end{itemize}
+  \end{enumerate}
+\item
+  Copy the lower triangle to the upper and set the diagonal to 1.
+\end{enumerate}
+
+The worst case runtime complexity occurs when the matrix is dense but
+stored as a sparse matrix, and is \(O(mn^2)\), the same as in the dense
+case. However, this will cause serious cache thrashing, and the
+performance will be abysmal.
+
+The function stores the \(j\)'th column data and its row indices in
+temporary storage for better cache access patterns. Best case, this
+requires 12 KiB of additional storage, with 8 for the data and 4 for the
+indices. Worse case (an all-dense column), this balloons up to \(12m\).
+The storage complexity is best case \(O(1)\), and worst case \(O(m)\).
+
+\section{Benchmarks}\label{benchmarks}
+
+The source code for all benchmarks presented here can be found in the
+source tree of this package under \texttt{inst/benchmarks/}, or in the
+binary installation under \texttt{benchmarks/}.
+
+All benchmarks were performed using:
+
+\begin{itemize}
+\item
+  R 3.2.2
+\item
+  OpenBLAS
+\item
+  gcc 5.2.1
+\item
+  4 cores of a Core i5-2500K CPU @ 3.30GHz
+\end{itemize}
+
+Throughout the benchmarks, we will use the following packages and data:
+
+\begin{lstlisting}[language=rr]
+library(rbenchmark)
+reps <- 100
+cols <- c("test", "replications", "elapsed", "relative")
+\end{lstlisting}
+
+\subsection{Dense Matrix Input}\label{dense-matrix-input-1}
+
+Compared to the version in the lsa package (as of 27-Oct-2015), this
+implementation performs quite well:
+
+\begin{lstlisting}[language=rr]
+m <- 2000
+n <- 200
+x <- matrix(rnorm(m*n), m, n)
+
+benchmark(coop::cosine(x), lsa::cosine(x), columns=cols, replications=reps)
+##                test replications elapsed relative
+## 1 coop::cosine(x)          100   0.177    1.000
+## 2    lsa::cosine(x)          100 113.543  641.486
+\end{lstlisting}
+
+\subsection{Dense Vector-Vector
+Input}\label{dense-vector-vector-input-1}
+
+Here the two perform identically:
+
+\begin{lstlisting}[language=rr]
+n <- 1000000
+x <- rnorm(n)
+y <- rnorm(n)
+
+benchmark(coop::cosine(x, y), lsa::cosine(x, y), columns=cols, replications=reps)
+##                   test replications elapsed relative
+## 1 coop::cosine(x, y)          100   0.757    1.000
+## 2    lsa::cosine(x, y)          100   0.768    1.015
+\end{lstlisting}
+
+\subsection{Sparse Matrix Input}\label{sparse-matrix-input-1}
+
+Benchmarking sparse matrix methods can be more challenging than with
+dense for a variety of reasons, chief among them being that the level of
+sparsity can make an enormous impact in performance.
+
+We present two cases here of varying levels of sparsity. First, we will
+generate a 0.1\% dense / 99.9\% sparse matrix:
+
+\begin{lstlisting}[language=rr]
+m <- 6000
+n <- 250
+dense <- coop:::dense_stored_sparse_mat(m, n, .001)
+sparse <- slam::as.simple_triplet_matrix(dense)
+\end{lstlisting}
+
+This gives us a fairly dramatic difference in storage:
+
+\begin{lstlisting}[language=rr]
+memuse::memuse(dense)
+## 11.444 MiB
+memuse::memuse(sparse)
+## 24.445 KiB
+\end{lstlisting}
+
+So the dense matrix needs roughly 479 times as much storage for the
+exact same data. In such very sparse cases, the sparse implementation
+will perform quite nicely:
+
+\begin{lstlisting}[language=rr]
+benchmark(dense=coop::cosine(dense), coop::cosine(sparse), columns=cols, replications=reps)
+##     test replications elapsed relative
+## 1  dense          100   0.712    3.082
+## 2 sparse          100   0.231    1.000
+\end{lstlisting}
+
+Note that this is a 3-fold speedup over our already highly optimized
+implementation. This is quite nice, especially considering the sparse
+implementation uses only one thread and limited vectorization, while the
+dense one uses 4 threads and vectorization. However, as the matrix
+becomes more dense (and it doesn't take much), dense methods begin to
+perform better:
+
+\begin{lstlisting}[language=rr]
+dense <- coop:::dense_stored_sparse_mat(m, n, .01)
+sparse <- slam::as.simple_triplet_matrix(dense)
+
+memuse::memuse(dense)
+## 11.444 MiB
+memuse::memuse(sparse)
+## 235.383 KiB
+
+benchmark(coop::cosine(dense), coop::cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
+benchmark(cosine(dense), cosine(sparse), as.matrix(sparse), columns=cols, replications=reps)
+##     test replications elapsed relative
+## 1  dense          100   0.707    1.000
+## 2 sparse          100   2.076    2.936
+\end{lstlisting}
+
+While the sparse implementation performs significantly worse than the
+dense one for this level of sparsity and data size, note that the memory
+usage for the dense case is greater than that of the sparse by a factor
+of 50.
+
+It is hard to give perfect advice for when to use a dense or sparse
+method, but a general rule of thumb is that if you have more than 5\%
+non-zero data, definitely use dense methods. For 1-5\%, there is a
+memory/runtime tradeoff worth considering; if you can comfortably store
+the matrix densely, then by all means use dense methods. For data
+\textless{}1\% dense, sparse methods will generally have better runtime
+performance than dense methods.
+
+
+
+\bibliography{include/coop.bib}
+\bibliographystyle{IEEEtran}
+
+\end{document}

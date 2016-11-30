@@ -1,3 +1,0 @@
-#!/bin/sh
-
-rm -rf coop_cache coop_files *.html

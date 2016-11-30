@@ -1,10 +1,6 @@
 *~
 *.pdf
-*.html
 *.swp
-
-*_files
-*_cache
 
 src/*.o
 src/*.so
