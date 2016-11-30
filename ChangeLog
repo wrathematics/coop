@@ -1,55 +1,55 @@
 Release 0.6-0 (//):
-  * Add inverse methods.
-  * Add C99 configure test.
-  * Add internal C lib tests and benchmarks.
+  * Added inverse method.
+  * Added C99 configure test.
+  * Added internal C lib tests and benchmarks.
   * Minor C lib refactoring.
-  * Fix two memory errors.
+  * Fixed a few memory errors.
 
 Release 0.5-1 (7/7/2016):
-  * Add scaler() to center and/or scale efficiently.
-  * Better safety in internal OpenMP statements.
-  * Add tcosine(), tpcor(), tcovar().
-  * Add blocked xpose and symmetrize.
+  * Added scaler() to center and/or scale efficiently.
+  * Better safety in internal OpenMP statements (default(none)).
+  * Added tcosine(), tpcor(), tcovar().
+  * Added blocked xpose and symmetrize.
 
 Release 0.5-0 (4/24/2016):
-  * Implement inplace methods for correlation and covariance (correlation is
+  * Implemented inplace methods for correlation and covariance (correlation is
 	always doneinplance)
-  * Add 'inplace' argument.
-  * Implement use='pairwise.complete.obs' methods.
+  * Added 'inplace' argument.
+  * Implemented use='pairwise.complete.obs' methods.
   * Several small performance improvements.
 
 Release 0.4-0 (4/4/2016):
-  * Implement a fast naomit for dense internals.
-  * Add 'use' argument.
-  * Implement use with "everything", "all.obs", and "complete.obs".
-  * Add fix to coop_covar_vecvec for older compilers.
+  * Implemented a fast naomit for dense internals.
+  * Added 'use' argument.
+  * Implemented 'use' with "everything", "all.obs", and "complete.obs".
+  * Added fix to coop_covar_vecvec for older compilers.
 
 Release 0.3-1 (3/22/2016):
-  * Add support for dgCMatrix from Matrix.
-  * Lower cost (time/mem) to rebuild the vignette.
-  * Retain column names as row/col names in all co-operations.
+  * Added support for dgCMatrix from Matrix.
+  * Lowered cost (time/mem) to rebuild the vignette.
+  * Retained column names as row/col names in all co-operations.
 
 Release 0.3-0 (3/17/2016):
-  * Rename package to 'coop'.
+  * Renamed package to 'coop'.
   * 'Namespaced' the internal lib.
   * Improved vignettes, package description.
   * Use https in inst/CITATION.
-  * Release to CRAN.
+  * Released to CRAN.
 
 Release 0.2-2 (3/11/2016);
   * Split vignette into 2.
-  * Improve R help.
+  * Improved R help.
 
 Release 0.2-1 (3/9/2016):
   * Better memory allocation checking.
-  * Move sparsity functions from wrappers.c to sparse_utils.c.
+  * Moved sparsity functions from wrappers.c to sparse_utils.c.
 
 Release 0.2-0 (3/6/2016):
-  * Add covariance and pearson correlation.
-  * Rename package from fastcosim to fastco.
+  * Added covariance and pearson correlation.
+  * Renamed package from fastcosim to fastco.
   * Major re-organization of internals.
   * Better tests.
 
 Release 0.1-0 (12/9/2016):
-  * Add cosine() function.
-  * Add dense matrix, dense vector-vector, and sparse matrix methods.
+  * Added cosine() function.
+  * Added dense matrix, dense vector-vector, and sparse matrix methods.
