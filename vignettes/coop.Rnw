@@ -339,8 +339,8 @@ Benchmarks for the coop Package}.
 
 
 
-
+\addcontentsline{toc}{section}{References}
 \bibliography{./include/coop}
-\bibliographystyle{IEEEtran}
+\bibliographystyle{plain}
 
 \end{document}
