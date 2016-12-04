@@ -340,7 +340,7 @@ Benchmarks for the coop Package}.
 
 
 
-\bibliography{include/coop.bib}
+\bibliography{./include/coop}
 \bibliographystyle{IEEEtran}
 
 \end{document}

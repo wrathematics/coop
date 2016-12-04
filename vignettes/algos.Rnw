@@ -324,7 +324,7 @@ performance than dense methods.
 
 
 
-\bibliography{include/coop.bib}
+\bibliography{./include/coop}
 \bibliographystyle{IEEEtran}
 
 \end{document}
