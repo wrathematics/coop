@@ -1,17 +1,17 @@
-%\VignetteIndexEntry{Guide to the coop Package}
+%\VignetteIndexEntry{Introducing coop: Fast Covariance, Correlation, and Cosine Operations}
 \documentclass[]{article}
 
 
 \input{./include/settings}
 
 
-\mytitle{Guide to the coop Package}
+\mytitle{Introducing coop: Fast Covariance, Correlation, and Cosine Operations}
 \mysubtitle{}
 \myversion{0.6-0}
 \myauthor{
 \centering
-Drew Schmidt \\
-University of Tennessee
+Drew Schmidt \\ 
+\texttt{wrathematics@gmail.com} 
 }
 
 

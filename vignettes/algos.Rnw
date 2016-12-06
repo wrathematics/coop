@@ -9,8 +9,8 @@
 \myversion{0.6-0}
 \myauthor{
 \centering
-Drew Schmidt \\
-University of Tennessee
+Drew Schmidt \\ 
+\texttt{wrathematics@gmail.com} 
 }
 
 
@@ -45,22 +45,22 @@ To better understand the problem, consider the \(5\times 20\) matrix
 whose first row is a row of ones, and all other rows consist entirely of
 zeros:
 
-\begin{verbatim}
+\begin{lstlisting}[language=rr]
 x <- matrix(0, 20, 5)
 x[1, ] <- 1
-\end{verbatim}
+\end{lstlisting}
 
 The original matrix is, obviously, 95\% sparse:
 
-\begin{verbatim}
+\begin{lstlisting}[language=rr]
 coop::sparsity(x)
-\end{verbatim}
+\end{lstlisting}
 
 But if we center, the data, it becomes 100\% dense:
 
-\begin{verbatim}
+\begin{lstlisting}[language=rr]
 coop::sparsity(scale(x, T, F))
-\end{verbatim}
+\end{lstlisting}
 
 \section{The Algorithms with Notes on
 Implementation}\label{the-algorithms-with-notes-on-implementation}
