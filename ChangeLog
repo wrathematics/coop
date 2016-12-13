@@ -1,4 +1,7 @@
-Release 0.6-0 (//):
+Release 0.6-1 (//):
+  * 
+
+Release 0.6-0 (12/12/2016):
   * Added inverse method.
   * Added C99 configure test.
   * Added internal C lib tests and benchmarks.
