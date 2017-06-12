@@ -1,4 +1,4 @@
-/*  Copyright (c) 2015-2016, Schmidt
+/*  Copyright (c) 2015-2017 Drew Schmidt
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 
 
 // set diagonal of nxn matrix x to 1
-static inline void diag2one(const unsigned int n, double *restrict x)
+static inline void diag2one(const int n, double *restrict x)
 {
   SAFE_FOR_SIMD
   for (int i=0; i<n; i++)
@@ -66,7 +66,7 @@ static inline void symmetrize(const int n, double *restrict x)
 
 
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-static inline int cosim_fill(const unsigned int n, double *restrict cp)
+static inline int cosim_fill(const int n, double *restrict cp)
 {
   double *diag = malloc(n * sizeof(*diag));
   CHECKMALLOC(diag);
@@ -94,7 +94,7 @@ static inline int cosim_fill(const unsigned int n, double *restrict cp)
 
 
 
-static inline int cosim_fill_full(const unsigned int n, double *restrict cp)
+static inline int cosim_fill_full(const int n, double *restrict cp)
 {
   double *diag = malloc(n * sizeof(*diag));
   CHECKMALLOC(diag);

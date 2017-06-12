@@ -1,4 +1,4 @@
-/*  Copyright (c) 2015-2016, Schmidt
+/*  Copyright (c) 2015-2016 Drew Schmidt
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ static inline void set2nan(const int j, const int n, double *restrict cos)
 
 
 
-static inline double sparsedot_self(const int vecstart, const int vecend, const int *rows, const double * const a)
+static inline double sparsedot_self(const int vecstart, const int vecend, const double * const a)
 {
   int i;
   double dot = 0.0;
@@ -215,7 +215,7 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
     info = get_array(&len_colj, &current_tmp_size, vec1start, vec1end, a_colj, rows_colj, a, rows);
     if (info) return info;
     
-    xx = sparsedot_self(0, len_colj, rows_colj, a_colj);
+    xx = sparsedot_self(0, len_colj, a_colj);
     xx = 1. / sqrt(xx);
     
     // i'th column, etc.
