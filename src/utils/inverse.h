@@ -1,4 +1,4 @@
-/*  Copyright (c) 2016, Schmidt
+/*  Copyright (c) 2016-2017 Drew Schmidt
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,7 @@ static inline void inv_diagsq(const int len, double *x)
   SAFE_FOR_SIMD
   for (int i=0; i<len; i++)
   {
-    const register double tmp = x[i];
+    const double tmp = x[i];
     x[i] = 1.0 / (tmp * tmp);
   }
 }
