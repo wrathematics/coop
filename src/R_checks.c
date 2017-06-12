@@ -1,4 +1,4 @@
-/*  Copyright (c) 2016, Schmidt
+/*  Copyright (c) 2016-2017 Drew Schmidt
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,7 @@ SEXP R_check_badvals(SEXP x_)
   wrapup:
   PROTECT(ret = allocVector(LGLSXP, 1));
   INTEGER(ret)[0] = check;
+  UNPROTECT(1);
   
   return ret;
 }

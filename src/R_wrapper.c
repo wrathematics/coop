@@ -1,4 +1,4 @@
-/*  Copyright (c) 2015-2016, Schmidt
+/*  Copyright (c) 2015-2016 Drew Schmidt
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
@@ -125,6 +125,7 @@ SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP in
     check = coop_cosine_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
   else if (type == CO_ORR)
   {
+    // TODO FIXME
     // if (inplace)
     // 
     // else
