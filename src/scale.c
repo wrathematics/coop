@@ -1,4 +1,4 @@
-/*  Copyright (c) 2015-2016, Schmidt
+/*  Copyright (c) 2015-2016 Drew Schmidt
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ int coop_scale(const bool centerx, const bool scalex, const int m, const int n, 
     #pragma omp parallel for shared(x) if (m*n > OMP_MIN_SIZE)
     for (int j=0; j<n; j++)
     {
-      centerscale(j, m, n, x, &colmean, &colvar);
+      centerscalevec(j, m, x, &colmean, &colvar);
       
       colmeans[j] = colmean;
       colvars[j] = colvar;
@@ -57,13 +57,13 @@ int coop_scale(const bool centerx, const bool scalex, const int m, const int n, 
   {
     #pragma omp parallel for shared(x) if (m*n > OMP_MIN_SIZE)
     for (int j=0; j<n; j++)
-      colmeans[j] = center(j, m, n, x);
+      colmeans[j] = centervec(j, m, x);
   }
   else if (scalex) // RMSE
   {
     #pragma omp parallel for shared(x) if (m*n > OMP_MIN_SIZE)
     for (int j=0; j<n; j++)
-      colvars[j] = scale(j, m, n, x);
+      colvars[j] = scalevec(j, m, x);
   }
   
   return COOP_OK;

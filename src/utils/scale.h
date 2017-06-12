@@ -1,4 +1,4 @@
-/*  Copyright (c) 2016, Schmidt
+/*  Copyright (c) 2016 Drew Schmidt
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 #define __COOP_LIB_SCALE_H__
 
 
-static inline void centerscale(const int j, const int m, const int n, double *restrict x, double *restrict colmean, double *restrict colvar)
+static inline void centerscalevec(const int j, const int m, double *restrict x, double *restrict colmean, double *restrict colvar)
 {
   const double tmp = 1. / ((double) m-1);
   
@@ -55,7 +55,7 @@ static inline void centerscale(const int j, const int m, const int n, double *re
 
 
 
-static inline double center(const int j, const int m, const int n, double *x)
+static inline double centervec(const int j, const int m, double *x)
 {
   const double div = 1. / ((double) m);
   
@@ -77,7 +77,7 @@ static inline double center(const int j, const int m, const int n, double *x)
 
 
 
-static inline double scale(const int j, const int m, const int n, double *x)
+static inline double scalevec(const int j, const int m, double *x)
 {
   const double div = 1./((double) m-1);
   
@@ -116,20 +116,20 @@ static inline int scale_nostore(const bool centerx, const bool scalex, const int
     double colvar;
     #pragma omp parallel for shared(x) if (m*n > OMP_MIN_SIZE)
     for (int j=0; j<n; j++)
-      centerscale(j, m, n, x, &colmean, &colvar);
+      centerscalevec(j, m, x, &colmean, &colvar);
     
   }
   else if (centerx)
   {
     #pragma omp parallel for shared(x) if (m*n > OMP_MIN_SIZE)
     for (int j=0; j<n; j++)
-      center(j, m, n, x);
+      centervec(j, m, x);
   }
   else if (scalex) // RMSE
   {
     #pragma omp parallel for shared(x) if (m*n > OMP_MIN_SIZE)
     for (int j=0; j<n; j++)
-      scale(j, m, n, x);
+      scalevec(j, m, x);
   }
   
   return COOP_OK;
