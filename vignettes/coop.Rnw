@@ -7,7 +7,7 @@
 
 \mytitle{Introducing coop: Fast Covariance, Correlation, and Cosine Operations}
 \mysubtitle{}
-\myversion{0.6-0}
+\myversion{0.6-1}
 \myauthor{
 \centering
 Drew Schmidt \\ 
