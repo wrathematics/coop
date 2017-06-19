@@ -19,7 +19,7 @@ For more information, including algorithmic details, see the package vignette.
 To install the R package, run:
 
 ```r
-install.package("coop")
+install.packages("coop")
 ```
 
 The development version is maintained on GitHub, and can easily be installed by any of the packages that offer installations from GitHub:
