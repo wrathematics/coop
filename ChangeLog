@@ -1,4 +1,5 @@
 Release 0.6-1 (//):
+  * Add data.frame methods.
   * Register native routines.
   * Fix rchk errors.
   * Fix many -Wextra compiler warnings.

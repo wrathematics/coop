@@ -6,7 +6,7 @@
 #' See \code{?coop-package} for implementation details.
 #' 
 #' @param x
-#' A numeric matrix or vector.
+#' A numeric dataframe/matrix or vector.
 #' @param y
 #' A vector (when \code{x} is a vector) or missing (blank) when 
 #' \code{x} is a matrix.
@@ -48,6 +48,16 @@ covar.matrix <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
   co_matrix(x, y, CO_VAR, use, inplace, trans=FALSE, inverse=inverse)
 }
 
+#' @export
+covar.data.frame <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
+{
+  x_mat = as.matrix(x)
+  if (!missing(y) && is.data.frame(y))
+    y = as.matrix(y)
+  
+  covar.matrix(x_mat, y, use=use, inplace=inplace, inverse=inverse)
+}
+
 
 
 #' @export
@@ -58,7 +68,7 @@ covar.default <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 
 
 
-# tcovar
+### tcovar
 
 #' @rdname covar
 #' @export
@@ -70,4 +80,14 @@ tcovar <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE) UseMeth
 tcovar.matrix <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
 {
   co_matrix(x, y, CO_VAR, use, inplace, trans=TRUE, inverse=inverse)
+}
+
+#' @export
+tcovar.data.frame <- function(x, y, use="everything", inplace=FALSE, inverse=FALSE)
+{
+  x_mat = as.matrix(x)
+  if (!missing(y) && is.data.frame(y))
+    y = as.matrix(y)
+  
+  tcovar.matrix(x_mat, y, use=use, inplace=inplace, inverse=inverse)
 }

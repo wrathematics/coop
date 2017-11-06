@@ -33,10 +33,21 @@ co_matrix <- function(x, y, type, use, inplace, trans=FALSE, inverse=FALSE)
   else
     ret <- .Call(R_co_mat, x, as.integer(type), as.integer(inplace), as.integer(trans), as.integer(inverse))
   
-  if (!is.null(colnames(x)))
+  if (!isTRUE(trans))
   {
-    rownames(ret) <- colnames(x)
-    colnames(ret) <- colnames(x)
+    if (!is.null(colnames(x)))
+    {
+      rownames(ret) <- colnames(x)
+      colnames(ret) <- colnames(x)
+    }
+  }
+  else
+  {
+    if (!is.null(rownames(x)))
+    {
+      rownames(ret) <- rownames(x)
+      colnames(ret) <- rownames(x)
+    }
   }
   
   ret

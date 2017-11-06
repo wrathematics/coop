@@ -10,7 +10,7 @@ covar(x, y, use = "everything", inplace = FALSE, inverse = FALSE)
 tcovar(x, y, use = "everything", inplace = FALSE, inverse = FALSE)
 }
 \arguments{
-\item{x}{A numeric matrix or vector.}
+\item{x}{A numeric dataframe/matrix or vector.}
 
 \item{y}{A vector (when \code{x} is a vector) or missing (blank) when 
 \code{x} is a matrix.}

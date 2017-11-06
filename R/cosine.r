@@ -9,7 +9,7 @@
 #' See \code{?coop-package} for implementation details.
 #' 
 #' @param x
-#' A numeric matrix or vector.
+#' A numeric dataframe/matrix or vector.
 #' @param y
 #' A vector (when \code{x} is a vector) or missing (blank) when 
 #' \code{x} is a matrix.
@@ -46,6 +46,16 @@ cosine <- function(x, y, use="everything", inverse=FALSE) UseMethod("cosine")
 cosine.matrix <- function(x, y, use="everything", inverse=FALSE)
 {
   co_matrix(x, y, CO_SIM, use, inplace=FALSE, inverse=inverse)
+}
+
+#' @export
+cosine.data.frame <- function(x, y, use="everything", inverse=FALSE)
+{
+  x_mat = as.matrix(x)
+  if (!missing(y) && is.data.frame(y))
+    y = as.matrix(y)
+  
+  cosine.matrix(x_mat, y, use=use, inverse=inverse)
 }
 
 
@@ -114,7 +124,7 @@ cosine.dgCMatrix <- function(x, y, use="everything", inverse=FALSE)
 
 
 
-# tcosine
+### tcosine
 
 #' @rdname cosine
 #' @export
@@ -126,4 +136,14 @@ tcosine <- function(x, y, use="everything", inverse=FALSE) UseMethod("tcosine")
 tcosine.matrix <- function(x, y, use="everything", inverse=FALSE)
 {
   co_matrix(x, y, CO_SIM, use, inplace=FALSE, trans=TRUE, inverse=inverse)
+}
+
+#' @export
+tcosine.data.frame <- function(x, y, use="everything", inverse=FALSE)
+{
+  x_mat = as.matrix(x)
+  if (!missing(y) && is.data.frame(y))
+    y = as.matrix(y)
+  
+  tcosine.matrix(x_mat, y, use=use, inverse=inverse)
 }
