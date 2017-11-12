@@ -2,7 +2,7 @@
 
 * **Version:** 0.6-1
 * **Status:** [![Build Status](https://travis-ci.org/wrathematics/coop.png)](https://travis-ci.org/wrathematics/coop)
-* **License:** [![License](http://img.shields.io/badge/license-BSD%202--Clause-orange.svg?style=flat)](http://opensource.org/licenses/BSD-2-Clause)
+* **License:** [BSD 2-Clause](http://opensource.org/licenses/BSD-2-Clause)
 * **Author:** Drew Schmidt
 
 
@@ -10,7 +10,7 @@ The **coop** package does co-operations: covariance, correlation, and cosine sim
 
 The package is optimized for high performance, and has different implementations for dense matrix inputs, dense vector-vector inputs, and sparse matrix inputs.  Note that to get good performance with this package (as seen in these benchmarks), you will need to use a good BLAS library.  See the package vignette for details.
 
-For more information, including algorithmic details, see the package vignette.
+For more information, including algorithmic details, see the package vignettes.
 
 
 
@@ -39,6 +39,8 @@ The C internals are completely separated from the R wrapper code.  So if you pre
 
 ## Package Use
 
+The package has functions for covariance and pearson correlation with interfaces that mimic base R's, with the addition of a `cosine()` function.  At this time, the basic interface looks like this:
+
 ```r
 ### matrix input
 covar(x)     # like cov(x)
@@ -50,6 +52,10 @@ covar(x, y)  # like cov(x, y)
 pcor(x, y)   # like cor(x, y)
 cosine(x, y) # like lsa::cosine(x, y)
 ```
+
+There are also `t` versions of the functions which operate on the transposed data (without producing a copy).  So `tcovar(x)` will do the same computation as as `cov(t(x))` (but much more efficiently).
+
+The functions also have an additional argument `inverse`, which will return the matrix inverse of the specified operation.  So `covar(x, inverse=TRUE)` will return the inverted covariance matrix.
 
 For more details, see the package vignette.
 
