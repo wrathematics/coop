@@ -1,50 +1,29 @@
 library(coop)
-naomit <- coop:::naomit
-check <- function(a, b) stopifnot(all.equal(a, b, check.attributes=FALSE))
-
 set.seed(1234)
 
-m <- 1000
-n <- 20
-len <- m*n
+naomit = coop:::naomit
+check = function(a, b) stopifnot(all.equal(a, b, check.attributes=FALSE))
 
-x <- matrix(rnorm(m*n, sd=10000), m, n)
+test = function(m, n, prop=.01)
+{
+  x = matrix(rnorm(m*n, sd=10000), m, n)
+  
+  check(na.omit(x), naomit(x))
+  
+  x[sample(m*n, size=m*n*prop)] = NA
+  
+  truth = na.omit(x)
+  if (any(dim(truth) == 0))
+    stop("zero rows - bad test seed/prop values")
+  
+  check(truth, naomit(x))
+  
+  storage.mode(x) = "integer"
+  check(na.omit(x), naomit(x))
+}
 
-check(na.omit(x), naomit(x))
-
-y <- x
-prop <- .01
-y[sample(len, size=len*prop)] <- NA
-# y[m,2] = NA
-
-if (any(dim(na.omit(y)) == 0)) stop("zeros")
-check(na.omit(y), naomit(y))
-
-storage.mode(y) <- "integer"
-stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
-
-
-
-
-m <- 10
-n <- 2
-len <- m*n
-
-x <- matrix(rnorm(m*n, sd=10000), m, n)
-
-check(na.omit(x), naomit(x))
-
-y <- x
-prop <- .01
-y[sample(len, size=len*prop)] <- NA
-
-if (any(dim(na.omit(y)) == 0)) stop("zeros")
-stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
-
-storage.mode(y) <- "integer"
-stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
-
-
+test(100, 20)
+test(10, 2)
 
 
 
@@ -52,7 +31,7 @@ stopifnot(all.equal(na.omit(y), naomit(y), check.attributes=FALSE))
 # if (require(slam))
 # {
 #   library(slam)
-#   csc <- as.simple_triplet_matrix(y)
-#   z <- as.matrix(coop:::naomit_coo(as.double(csc$v), csc$i, csc$j))
+#   csc = as.simple_triplet_matrix(y)
+#   z = as.matrix(coop:::naomit_coo(as.double(csc$v), csc$i, csc$j))
 #   stopifnot(all.equal(na.omit(y), z, check.attributes=FALSE))
 # }
