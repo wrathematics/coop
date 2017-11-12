@@ -3,5 +3,8 @@
 src/tautest
 src/benchmarks
 src/tests
+src/experimental
 
 TODO
+
+LICENSE.md
