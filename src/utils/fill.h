@@ -49,7 +49,6 @@ static inline void symmetrize(const int n, double *restrict x)
 {
   const int blocksize = 8; // TODO check cache line explicitly
   
-  // #pragma omp parallel for default(none) shared(x) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j+=blocksize)
   {
     for (int i=j+1; i<n; i+=blocksize)
@@ -66,7 +65,7 @@ static inline void symmetrize(const int n, double *restrict x)
 
 
 // replaces upper triangle of the crossproduct of a matrix with its cosine similarity
-static inline int cosim_fill(const int n, double *restrict cp)
+static inline int cosim_fill(const int n, double *const restrict cp)
 {
   double *diag = malloc(n * sizeof(*diag));
   CHECKMALLOC(diag);
@@ -75,7 +74,7 @@ static inline int cosim_fill(const int n, double *restrict cp)
   for (int i=0; i<n; i++)
     diag[i] = sqrt(cp[i + n*i]);
   
-  #pragma omp parallel for default(none) shared(cp,diag) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  #pragma omp parallel for default(none) shared(diag) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int nj = n*j;
@@ -94,7 +93,7 @@ static inline int cosim_fill(const int n, double *restrict cp)
 
 
 
-static inline int cosim_fill_full(const int n, double *restrict cp)
+static inline int cosim_fill_full(const int n, double *const restrict cp)
 {
   double *diag = malloc(n * sizeof(*diag));
   CHECKMALLOC(diag);
@@ -103,7 +102,7 @@ static inline int cosim_fill_full(const int n, double *restrict cp)
   for (int i=0; i<n; i++)
     diag[i] = sqrt(cp[i + n*i]);
   
-  #pragma omp parallel for default(none) shared(cp,diag) if(n>OMP_MIN_SIZE)
+  #pragma omp parallel for default(none) shared(diag) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int nj = n*j;

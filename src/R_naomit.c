@@ -61,7 +61,7 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, const double *cons
   SEXP ret;
   const int len = m*n;
   int m_fin = m;
-  int *na_vec_ind = (int*) calloc(len, sizeof(*na_vec_ind));
+  int *na_vec_ind = calloc(len, sizeof(*na_vec_ind));
   R_CHECKMALLOC(na_vec_ind);
   
   
@@ -87,7 +87,6 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, const double *cons
   }
   
   // get number of rows of output
-  PLEASE_VECTORIZE
   for (int i=0; i<m; i++)
     m_fin -= na_vec_ind[i];
   
@@ -103,7 +102,6 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, const double *cons
   PROTECT(ret = allocMatrix(REALSXP, m_fin, n));
   double *retptr = REAL(ret);
   
-  PLEASE_VECTORIZE
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
@@ -130,7 +128,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
 {
   SEXP ret;
   int m_fin = m;
-  int *rows = (int*) calloc(m, sizeof(*rows));
+  int *rows = calloc(m, sizeof(*rows));
   R_CHECKMALLOC(rows);
   
   // get indices of NA's
@@ -139,7 +137,6 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
   {
     const int mj = m*j;
     
-    SAFE_SIMD
     for (int i=0; i<m; i++)
     {
       if (ISNAN(x[i + mj])) // ISNAN for doubles will return true for NA and NaN
@@ -148,7 +145,6 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
   }
   
   // get number of rows of output
-  PLEASE_VECTORIZE
   for (int i=0; i<m; i++)
     m_fin -= rows[i];
   
@@ -170,7 +166,6 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
     const int mj = m*j;
     int row = 0;
     
-    SAFE_SIMD
     for (int i=0; i<m; i++)
     {
       if (!rows[i])
@@ -207,7 +202,7 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, const int *const x
   SEXP ret;
   const int len = m*n;
   int m_fin = m;
-  int *na_vec_ind = (int*) calloc(len, sizeof(*na_vec_ind));
+  int *na_vec_ind = calloc(len, sizeof(*na_vec_ind));
   R_CHECKMALLOC(na_vec_ind);
   
   // get indices of NA's
@@ -231,7 +226,6 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, const int *const x
   }
   
   // get number of rows of output
-  PLEASE_VECTORIZE
   for (int i=0; i<m; i++)
     m_fin -= na_vec_ind[i];
   
@@ -247,7 +241,6 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, const int *const x
   PROTECT(ret = allocMatrix(INTSXP, m_fin, n));
   int *retptr = INTEGER(ret);
   
-  PLEASE_VECTORIZE
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
@@ -274,7 +267,7 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
 {
   SEXP ret;
   int m_fin = m;
-  int *rows = (int*) calloc(m, sizeof(*rows));
+  int *rows = calloc(m, sizeof(*rows));
   R_CHECKMALLOC(rows);
   
   #pragma omp parallel for default(none) shared(rows, NA_INTEGER)
@@ -282,7 +275,6 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
   {
     const int mj = m*j;
     
-    SAFE_SIMD
     for (int i=0; i<m; i++)
     {
       if (x[i + mj] == NA_INTEGER)
@@ -290,7 +282,6 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
     }
   }
   
-  PLEASE_VECTORIZE
   for (int i=0; i<m; i++)
     m_fin -= rows[i];
   
@@ -310,7 +301,6 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
     const int mj = m*j;
     int row = 0;
     
-    SAFE_SIMD
     for (int i=0; i<m; i++)
     {
       if (!rows[i])
@@ -393,8 +383,8 @@ SEXP R_naomit_vecvec(SEXP x_, SEXP y_)
       x[i] = y[i];
   }
   
-  x_ret = R_fast_naomit_dbl_small(n, 1, x);
-  y_ret = R_fast_naomit_dbl_small(n, 1, y);
+  PROTECT(x_ret = R_fast_naomit_dbl_small(n, 1, x));
+  PROTECT(y_ret = R_fast_naomit_dbl_small(n, 1, y));
   
   free(x);
   free(y);
@@ -403,7 +393,7 @@ SEXP R_naomit_vecvec(SEXP x_, SEXP y_)
   SET_VECTOR_ELT(ret, 0, x_ret);
   SET_VECTOR_ELT(ret, 1, y_ret);
   
-  UNPROTECT(1);
+  UNPROTECT(3);
   return ret;
 }
 
