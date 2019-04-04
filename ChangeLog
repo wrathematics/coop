@@ -1,4 +1,8 @@
 Release 0.6-1:
+  * Fixed numerical error in coop_cosine_sparse_coo().
+  * Fixed memory allocation bug in coop_cosine_sparse_coo().
+
+Release 0.6-1:
   * Added data.frame methods.
   * Registered native routines.
   * Fixed rchk errors.
