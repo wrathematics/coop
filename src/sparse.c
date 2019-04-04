@@ -264,8 +264,8 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
       }
       
       
-      if (xy > EPSILON && yy > EPSILON)
-        cos[i + n*j] = xy * xx / sqrt(yy);
+      if (fabs(xy) > EPSILON && yy > EPSILON)
+        cos[i + n*j] = xy / xx / sqrt(yy);
     }
     
     vec1end++;
