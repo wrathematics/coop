@@ -29,6 +29,8 @@
 
 #define EPSILON 1e-10
 
+#define FREE(x) if(x!=NULL)free(x)
+
 #define MAX(a,b) (a<b?b:a)
 #define MIN(a,b) (a<b?a:b)
 

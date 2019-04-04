@@ -24,8 +24,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <stdbool.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "coop.h"
 #include "utils/safeomp.h"

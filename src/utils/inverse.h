@@ -28,6 +28,8 @@
 #define __COOP_LIB_INVERSE_H__
 
 
+#include <stdlib.h>
+
 #include "lapack.h"
 #include "safeomp.h"
 
@@ -35,24 +37,20 @@
 static inline int inv_gen_lu(const int n, double *x)
 {
   int info = 0;
-  int *ipiv;
-  int lwork;
-  double tmp;
-  double *work;
-  
   
   // Factor x = LU
-  ipiv = malloc(n * sizeof(*ipiv));
+  int *ipiv = malloc(n * sizeof(*ipiv));
   dgetrf_(&n, &n, x, &n, ipiv, &info);
   if (info != 0) goto cleanup;
   
   // Invert
-  lwork = -1;
-  dgetri_(&n, x, &n, ipiv, &tmp, &lwork, &info);
+  int lwork = -1;
+  double lwork_dbl;
+  dgetri_(&n, x, &n, ipiv, &lwork_dbl, &lwork, &info);
   if (info != 0) goto cleanup;
   
-  lwork = (int) tmp;
-  work = malloc(lwork * sizeof(*work));
+  lwork = (int) lwork_dbl;
+  double *work = malloc(lwork * sizeof(*work));
   dgetri_(&n, x, &n, ipiv, work, &lwork, &info);
   
   

@@ -27,8 +27,8 @@
 // Functions for computing cosine similarity on sparse data inputs
 // TODO: covariance and (pearson) correlation
 
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "coop.h"
 #include "utils/copy.h"
@@ -42,18 +42,13 @@
 //  Static utils
 // ---------------------------------------------
 
-
-
-
 // NaN-out a row/column of cos matrix for numerical compatibility with dense methods
 static inline void set2nan(const int j, const int n, double *restrict cos)
 {
-  int i;
-  
-  for (i=j; i<n; i++)
+  for (int i=j; i<n; i++)
     cos[i + n*j] = NAN;
     
-  for (i=0; i<j; i++)
+  for (int i=0; i<j; i++)
     cos[j + n*i] = NAN;
 }
 
@@ -61,10 +56,8 @@ static inline void set2nan(const int j, const int n, double *restrict cos)
 
 static inline double sparsedot_self(const int vecstart, const int vecend, const double * const a)
 {
-  int i;
   double dot = 0.0;
-  
-  for (i=vecstart; i<=vecend; i++)
+  for (int i=vecstart; i<=vecend; i++)
     dot += a[i]*a[i];
     
   return dot;
@@ -130,8 +123,6 @@ static inline int get_array(int *tmplen, int *current_tmp_size,
 
 
 
-
-
 // ---------------------------------------------
 //  Cosine
 // ---------------------------------------------
@@ -172,34 +163,26 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
   const double * const restrict a, const int *restrict rows, const int *restrict cols,
   double *restrict cos)
 {
-  int ret;
-  int i, j, k, l;
-  int info;
-  int col;
-  double xy, xx, yy;
-  double tmp;
-  
-  int vec1start, vec1end;
-  int vec2start, vec2end;
-  vec1end = 0;
-  
   int len_colj;
+  int vec1start, vec2start, vec2end;
+  int vec1end = 0;
+  
   int current_tmp_size = TMP_VEC_SIZE;
   double *a_colj = malloc(current_tmp_size * sizeof(*a_colj));
-  CHECKMALLOC(a_colj);
   int *rows_colj = malloc(current_tmp_size * sizeof(*rows_colj));
-  if (rows_colj == NULL)
+  if (a_colj == NULL || rows_colj == NULL)
   {
-    free(a_colj);
+    FREE(a_colj);
+    FREE(rows_colj);
     return -1;
   }
   
   
   set2zero(n*n, cos);
   
-  for (j=0; j<n; j++)
+  for (int j=0; j<n; j++)
   {
-    col = vec1end;
+    int col = vec1end;
     get_startend(len, j+index, &col, &vec1start, &vec1end, cols);
     
     // NaN-out row and column if col is 0
@@ -214,20 +197,18 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
     int info = get_array(&len_colj, &current_tmp_size, vec1start, vec1end, &a_colj, &rows_colj, a, rows);
     if (info) return info;
     
-    xx = sparsedot_self(0, len_colj, a_colj);
-    xx = 1. / sqrt(xx);
+    double xx = sparsedot_self(0, len_colj, a_colj);
+    xx /= sqrt(xx);
     
     // i'th column, etc.
-    for (i=j+1; i<n; i++)
+    for (int i=j+1; i<n; i++)
     {
       get_startend(len, i+index, &col, &vec2start, &vec2end, cols);
       
-      
-      k = 0;
-      l = vec2start;
-      xy = 0.;
-      yy = 0.;
-      
+      int k = 0;
+      int l = vec2start;
+      double xy = 0.0;
+      double yy = 0.0;
       
       while (k <= len_colj && l <= vec2end)
       {
@@ -238,7 +219,7 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
         // dot products
         while (k <= len_colj && l <= vec2end && rows_colj[k] == rows[l])
         {
-          tmp = a[l];
+          double tmp = a[l];
           xy += a_colj[k] * tmp;
           yy += tmp*tmp;
           k++;
@@ -250,7 +231,7 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
         {
           while (l <= vec2end && rows_colj[k] > rows[l])
           {
-            tmp = a[l];
+            double tmp = a[l];
             yy += tmp*tmp;
             l++;
           }
@@ -259,7 +240,7 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
       
       for (; l<=vec2end; l++)
       {
-        tmp = a[l];
+        double tmp = a[l];
         yy += tmp*tmp;
       }
       
@@ -278,7 +259,7 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
   diag2one(n, cos);
   if (inv)
   {
-    ret = inv_sym_chol(n, cos);
+    int ret = inv_sym_chol(n, cos);
     CHECKRET(ret);
   }
   symmetrize(n, cos);

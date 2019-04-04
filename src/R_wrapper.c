@@ -24,9 +24,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <math.h>
 #include <R.h>
 #include <Rinternals.h>
-#include <math.h>
 
 #include "coop.h"
 #include "utils/inverse.h"

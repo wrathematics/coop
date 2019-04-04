@@ -28,9 +28,9 @@
 #define __COOP_LIB_SPECIAL_VALS_H__
 
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include <stdbool.h>
 
 static const int64_t R_NA_real = 0x7FF00000000007A2LL;
 static const int64_t R_NaN_real = 0x7FF0000000000000LL;

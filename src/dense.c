@@ -25,9 +25,9 @@
 */
 
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 #include "coop.h"
 #include "utils/fill.h"

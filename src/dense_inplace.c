@@ -142,9 +142,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
 
 int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor)
 {
-  int check;
-  
-  check = co_mat_inplace(m, n, x, cor);
+  int check = co_mat_inplace(m, n, x, cor);
   CHECKRET(check);
   
   cosim_fill(n, cor);
@@ -164,9 +162,7 @@ int coop_pcor_mat_inplace(const bool inv, const int m, const int n, const double
 
 int coop_covar_mat_inplace(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
 {
-  int check;
-  
-  check = co_mat_inplace(m, n, x, cov);
+  int check = co_mat_inplace(m, n, x, cov);
   CHECKRET(check);
   
   if (inv)
