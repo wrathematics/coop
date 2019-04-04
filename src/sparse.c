@@ -87,43 +87,42 @@ static inline void get_startend(const int len, const int ind, int *col, int *vec
 
 static inline int get_array(int *tmplen, int *current_tmp_size,
   const int vecstart, const int vecend,
-  double *restrict b, int *restrict brows,
-  const double * const restrict a, const int *restrict rows)
+  double **restrict b, int **restrict brows,
+  const double *const restrict a, const int *restrict rows)
 {
-  int k;
   void *realloc_ptr;
   
   *tmplen = vecend - vecstart;
   
   if (*tmplen > *current_tmp_size)
   {
-    *current_tmp_size = *tmplen;
+    *current_tmp_size = *tmplen + 1;
     
-    realloc_ptr = realloc(b, ((*current_tmp_size)+1) * sizeof(*b));
+    realloc_ptr = realloc(*b, (*current_tmp_size)*sizeof(**b));
     if (realloc_ptr == NULL)
     {
-      free(b);
-      free(brows);
+      free(*b);
+      free(*brows);
       return -1;
     }
     else
-      b = realloc_ptr;
+      *b = realloc_ptr;
       
-    realloc_ptr = realloc(brows, ((*current_tmp_size)+1) * sizeof(*brows));
+    realloc_ptr = realloc(*brows, (*current_tmp_size)*sizeof(**brows));
     if (realloc_ptr == NULL)
     {
-      free(b);
-      free(brows);
+      free(*b);
+      free(*brows);
       return -1;
     }
     else
-      brows = realloc_ptr;
+      *brows = realloc_ptr;
   }
   
-  for (k=0; k<=*tmplen; k++)
+  for (int k=0; k<=*tmplen; k++)
   {
-    b[k] = a[k + vecstart];
-    brows[k] = rows[k + vecstart];
+    (*b)[k] = a[k + vecstart];
+    (*brows)[k] = rows[k + vecstart];
   }
   
   return 0;
@@ -212,7 +211,7 @@ int coop_cosine_sparse_coo(const bool inv, const int index, const int n, const i
     }
     
     // store j't column of data/rows for better cache access
-    info = get_array(&len_colj, &current_tmp_size, vec1start, vec1end, a_colj, rows_colj, a, rows);
+    int info = get_array(&len_colj, &current_tmp_size, vec1start, vec1end, &a_colj, &rows_colj, a, rows);
     if (info) return info;
     
     xx = sparsedot_self(0, len_colj, a_colj);
