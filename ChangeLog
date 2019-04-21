@@ -1,6 +1,7 @@
 Release 0.6-1:
   * Fixed numerical error in coop_cosine_sparse_coo().
   * Fixed memory allocation bug in coop_cosine_sparse_coo().
+  * Fixed OpenMP errors in gcc-9.
 
 Release 0.6-1:
   * Added data.frame methods.
