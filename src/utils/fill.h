@@ -75,7 +75,7 @@ static inline int cosim_fill(const int n, double *const restrict cp)
   for (int i=0; i<n; i++)
     diag[i] = sqrt(cp[i + n*i]);
   
-  #pragma omp parallel for default(none) shared(diag) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  #pragma omp parallel for shared(diag) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int nj = n*j;
@@ -103,7 +103,7 @@ static inline int cosim_fill_full(const int n, double *const restrict cp)
   for (int i=0; i<n; i++)
     diag[i] = sqrt(cp[i + n*i]);
   
-  #pragma omp parallel for default(none) shared(diag) if(n>OMP_MIN_SIZE)
+  #pragma omp parallel for shared(diag) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int nj = n*j;

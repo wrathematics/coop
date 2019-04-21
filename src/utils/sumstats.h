@@ -37,7 +37,7 @@ static inline void remove_colmeans(const int m, const int n, double *restrict x)
     
   const double div = 1. / ((double) m);
   
-  #pragma omp parallel for default(none) shared(x) if(m*n > OMP_MIN_SIZE)
+  #pragma omp parallel for shared(x) if(m*n > OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     double colmean = 0;
@@ -66,7 +66,7 @@ static inline void remove_colmeans_retmean(const int m, const int n, double *res
     
   const double div = 1. / ((double) m);
   
-  #pragma omp parallel for default(none) shared(x, colmeans) if(m*n > OMP_MIN_SIZE)
+  #pragma omp parallel for shared(x, colmeans) if(m*n > OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     colmeans[j] = 0;

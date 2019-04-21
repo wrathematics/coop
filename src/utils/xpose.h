@@ -32,7 +32,7 @@ static inline void xpose(const int m, const int n, const double *const restrict 
 {
   const int blocksize = 8; // TODO check cache line explicitly
   
-  #pragma omp parallel for default(none) shared(tx) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
+  #pragma omp parallel for shared(tx) schedule(dynamic, 1) if(n>OMP_MIN_SIZE)
   for (int j=0; j<n; j+=blocksize)
   {
     for (int i=0; i<m; i+=blocksize)

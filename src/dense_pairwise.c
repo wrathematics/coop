@@ -71,7 +71,7 @@ int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, c
     const int mj = m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
     
-    #pragma omp parallel for default(none) shared(j, vec, cos) if(m*n > OMP_MIN_SIZE)
+    #pragma omp parallel for shared(j, vec, cos) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
       const int mi = m*i;
@@ -132,7 +132,7 @@ int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, con
     const int mj = m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
     
-    #pragma omp parallel for default(none) shared(j, vec, cor) if(m*n > OMP_MIN_SIZE)
+    #pragma omp parallel for shared(j, vec, cor) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
       const int mi = m*i;
@@ -207,7 +207,7 @@ int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, co
     const int mj = m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
     
-    #pragma omp parallel for default(none) shared(j, vec, cov) if(m*n > OMP_MIN_SIZE)
+    #pragma omp parallel for shared(j, vec, cov) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
       const int mi = m*i;

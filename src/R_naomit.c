@@ -132,7 +132,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
   R_CHECKMALLOC(rows);
   
   // get indices of NA's
-  #pragma omp parallel for default(none) shared(rows)
+  #pragma omp parallel for shared(rows)
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
@@ -160,7 +160,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
   double *retptr = REAL(ret);
   
   // build reduced matrix
-  #pragma omp parallel for default(none) shared(rows, retptr, m_fin)
+  #pragma omp parallel for shared(rows, retptr, m_fin)
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
@@ -270,7 +270,7 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
   int *rows = calloc(m, sizeof(*rows));
   R_CHECKMALLOC(rows);
   
-  #pragma omp parallel for default(none) shared(rows, NA_INTEGER)
+  #pragma omp parallel for shared(rows, NA_INTEGER)
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
@@ -295,7 +295,7 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
   PROTECT(ret = allocMatrix(INTSXP, m_fin, n));
   int *retptr = INTEGER(ret);
   
-  #pragma omp parallel for default(none) shared(rows, retptr, m_fin)
+  #pragma omp parallel for shared(rows, retptr, m_fin)
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;

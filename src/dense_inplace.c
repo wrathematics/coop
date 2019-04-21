@@ -86,7 +86,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
   
   
   // get column means
-  #pragma omp parallel for default(none) shared(means) if (m*n > OMP_MIN_SIZE)
+  #pragma omp parallel for shared(means) if (m*n > OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
@@ -112,7 +112,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
     for (int k=0; k<m; k++)
       vec[k] -= meanx;
     
-    #pragma omp parallel for default(none) shared(j, means, vec, cov) if(m*n > OMP_MIN_SIZE)
+    #pragma omp parallel for shared(j, means, vec, cov) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
       const int mi = m*i;
