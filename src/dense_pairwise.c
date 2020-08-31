@@ -37,7 +37,7 @@
 #include "utils/special_vals.h"
 
 
-static inline void compute_sums(const int m, const int mi, const double * const restrict vec, const double * const restrict x, double *restrict sumx, double *restrict sumy, int *restrict len)
+static inline void compute_sums(const int m, const size_t mi, const double * const restrict vec, const double * const restrict x, double *restrict sumx, double *restrict sumy, int *restrict len)
 {
   int k;
   
@@ -68,13 +68,15 @@ int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, c
   
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = (size_t)m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
+    
+    const size_t nj = (size_t)n*j;
     
     #pragma omp parallel for shared(j, vec, cos) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
-      const int mi = m*i;
+      const size_t mi = (size_t)m*i;
       
       double xx, xy, yy;
       xx = xy = yy = 0.0;
@@ -97,11 +99,11 @@ int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, c
       
       if (len == 0)
       {
-        set_na_real(cos + (i + n*j));
+        set_na_real(cos + (i + nj));
         continue;
       }
       
-      cos[i + n*j] = xy / sqrt(xx * yy);
+      cos[i + nj] = xy / sqrt(xx * yy);
     }
   }
   
@@ -129,13 +131,15 @@ int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, con
   
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = (size_t)m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
+    
+    const size_t nj = (size_t)n*j;
     
     #pragma omp parallel for shared(j, vec, cor) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
-      const int mi = m*i;
+      const size_t mi = (size_t)m*i;
       
       int len;
       double meanx, meany;
@@ -143,8 +147,8 @@ int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, con
       
       if (len == 0 || len == 1)
       {
-        set_na_real(cor + (i + n*j));
-        set_na_real(cor + (j + n*i));
+        set_na_real(cor + (i + nj));
+        set_na_real(cor + (j + (size_t)n*i));
         continue;
       }
       
@@ -176,7 +180,7 @@ int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, con
           mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
       }
       
-      cor[i + n*j] = mmcp / sdx / sdy / (dlen - 1.0);;
+      cor[i + nj] = mmcp / sdx / sdy / (dlen - 1.0);;
     }
   }
   
@@ -204,13 +208,15 @@ int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, co
   
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = (size_t)m*j;
     memcpy(vec, x+mj, m*sizeof(*vec));
+    
+    const size_t nj = (size_t)n*j;
     
     #pragma omp parallel for shared(j, vec, cov) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
-      const int mi = m*i;
+      const size_t mi = (size_t)m*i;
       
       int len;
       double meanx, meany;
@@ -218,8 +224,8 @@ int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, co
       
       if (len == 0)
       {
-        set_na_real(cov + (i + n*j));
-        set_na_real(cov + (j + n*i));
+        set_na_real(cov + (i + nj));
+        set_na_real(cov + (j + (size_t)n*i));
         continue;
       }
       
@@ -234,7 +240,7 @@ int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, co
           mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
       }
       
-      cov[i + n*j] = mmcp * ((double) 1.0/(len-1));
+      cov[i + nj] = mmcp * ((double) 1.0/(len-1));
     }
   }
   
