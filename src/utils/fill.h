@@ -46,22 +46,6 @@ static inline void diag2one(const int n, double *restrict x)
 
 
 // Copy lower triangle to upper
-// static inline void symmetrize(const int n, double *restrict x)
-// {
-//   const int blocksize = 8; // TODO check cache line explicitly
-  
-//   for (int j=0; j<n; j+=blocksize)
-//   {
-//     for (int i=j+1; i<n; i+=blocksize)
-//     {
-//       for (int col=j; col<j+blocksize && col<n; ++col)
-//       {
-//         for (int row=i; row<i+blocksize && row<n; ++row)
-//           x[col + n*row] = x[row + n*col];
-//       }
-//     }
-//   }
-// }
 static inline void symmetrize(const int n, double *restrict x)
 {
   const int blocksize = 8; // TODO check cache line explicitly
