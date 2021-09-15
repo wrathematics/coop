@@ -1,0 +1,12 @@
+top k:
+
+4 columns
+compound name,nearest neighbor,score,number of comparisons (lots of missing data)
+
+Hmisc - p-value
+
+
+email the ~/.R/Makears
+
+
+document hpc compiler stuff

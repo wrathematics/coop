@@ -28,11 +28,12 @@
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36298
 
 
+#include "utils/safeomp.h"
+
 #include <R.h>
 #include <Rinternals.h>
 #include <stdlib.h>
 
-#include "utils/safeomp.h"
 
 #define INT(x) INTEGER(x)
 

@@ -27,8 +27,9 @@
 #include <math.h>
 #include <stdbool.h>
 
-#include "coop.h"
 #include "utils/safeomp.h"
+
+#include "coop.h"
 #include "utils/scale.h"
 
 

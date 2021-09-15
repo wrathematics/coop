@@ -25,10 +25,11 @@
 */
 
 
+#include "utils/safeomp.h"
+
 #include <R.h>
 #include <Rinternals.h>
 
-#include "utils/safeomp.h"
 
 // Check for NA, Inf, and NaN
 SEXP R_check_badvals(SEXP x_)

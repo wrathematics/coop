@@ -1,4 +1,4 @@
-/*  Copyright (c) 2016, Schmidt
+/*  Copyright (c) 2016-2017 Drew Schmidt
     All rights reserved.
     
     Redistribution and use in source and binary forms, with or without
@@ -29,43 +29,55 @@
 #include <string.h>
 
 #include "coop.h"
+#include "utils/fill.h"
+#include "utils/inverse.h"
 #include "utils/safeomp.h"
+#include "utils/special_vals.h"
 
 #define TYPE_MIN    1
 #define TYPE_MAX    2
 #define TYPE_ABSMIN 3
 #define TYPE_ABSMAX 4
 
+typedef struct
+{
+  int K;                // Number of comparisons to retain
+  double *restrict co;  // co-variance, sine, ...
+  int *restrict I;      // i
+  int *restrict J;      // j
+  int *restrict L;      // length of run (number of comparisons)
+} maxco_t;
 
 // almost sorted sort
 // x has some number in the first slot, and is sorted increasing otherwise
 // sort x low to high, bring y and z along for the ride
-static inline void assort(const register int k, register double *restrict A, register int *restrict I, register int *restrict J)
+static inline void assort(const register int K, double *restrict A, int *restrict I, int *restrict J, int *restrict L)
 {
   int ind;
   const register double atmp = A[0];
   const register int itmp = I[0];
   const register int jtmp = J[0];
+  const register int ltmp = L[0];
   
-  for (ind=1; ind<k && A[ind] < atmp; ind++)
+  for (ind=1; ind<K && A[ind] < atmp; ind++)
   {
     A[ind] = A[ind + 1];
     I[ind] = I[ind + 1];
     J[ind] = J[ind + 1];
+    L[ind] = L[ind + 1];
   }
   
   A[ind] = atmp;
   I[ind] = itmp;
   J[ind] = jtmp;
+  L[ind] = ltmp;
 }
 
 
 
 // A sorted least to greatest
-static inline void rename_me(const int type, const double mmcp, const double denom_cov, const int k, double *restrict A, int *restrict I, int *restrict J)
+static inline void rename_me(const int type, const double cmp, const int K, maxco_t *mx)
 {
-  const double tmp = mmcp * denom_cov;
-  
   if (type == TYPE_MIN)
   {
     // TODO
@@ -76,8 +88,8 @@ static inline void rename_me(const int type, const double mmcp, const double den
   }
   else if (type == TYPE_MAX)
   {
-    if (tmp > A[0])
-      assort(k, A, I, J);
+    if (cmp > mx->co[0])
+      assort(mx->K, mx->co, mx->I, mx->J);
   }
   else if (type == TYPE_ABSMAX)
   {
@@ -87,68 +99,106 @@ static inline void rename_me(const int type, const double mmcp, const double den
 
 
 
-// O(m+n) storage
-static int co_mat_minmax(const int type, const int m, const int n, const double * const restrict x, const int k, double *restrict A, int *restrict I, int *restrict J)
+
+static inline void compute_sums(const int m, const int mi, const double * const restrict vec, const double * const restrict x, double *restrict sumx, double *restrict sumy, int *restrict len)
 {
+  int k;
+  
+  *sumx = 0;
+  *sumy = 0;
+  *len = 0;
+  
+  PLEASE_VECTORIZE
+  for (k=0; k<m; k++)
+  {
+    if (!isnan(vec[k]) && !isnan(x[k + mi]))
+    {
+      *sumx += vec[k];
+      *sumy += x[k + mi];
+      (*len)++;
+    }
+  }
+}
+
+
+
+// cor - vals, I/J - their indices, L - length of the run
+int coop_maxpcor_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, maxco_t *mx)
+{
+  int check;
+  int ind = 0;
   double *vec = malloc(m * sizeof(*vec));
   CHECKMALLOC(vec);
-  double *means = malloc(n * sizeof(*means));
-  if (means==NULL)
-  {
-    free(vec);
-    return -1;
-  }
-  const double denom_mean = (double) 1./m;
-  const double denom_cov = (double) 1./(m-1);
   
   
-  // get column means
-  #pragma omp parallel for default(none) shared(means) if (m*n > OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
     const int mj = m*j;
-    
-    means[j] = 0.0;
-    SAFE_SIMD
-    for (int i=0; i<m; i++)
-      means[j] += x[i + mj];
-    
-    means[j] *= denom_mean;
-  }
-  
-  
-  // co-operation
-  for (int j=0; j<n; j++)
-  {
-    const int mj = m*j;
-    
     memcpy(vec, x+mj, m*sizeof(*vec));
     
-    const double meanx = means[j];
-    PLEASE_VECTORIZE
-    for (int k=0; k<m; k++)
-      vec[k] -= meanx;
-    
-    #pragma omp parallel for default(none) shared(j, means, vec, A, I, J) if(m*n > OMP_MIN_SIZE)
+    // #pragma omp parallel for default(none) shared(j, vec) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
       const int mi = m*i;
       
-      const double meany = means[i];
+      int len;
+      double meanx, meany;
+      compute_sums(m, mi, vec, x, &meanx, &meany, &len);
+      
+      if (len == 0 || len == 1)
+      {
+        set_na_real(mx->cor + (i + n*j));
+        set_na_real(mx->cor + (j + n*i));
+        
+        mx->I[ind] = i;
+        mx->J[ind] = j;
+        mx->L[ind] = len;
+        ind++;
+        
+        continue;
+      }
+      
+      const double dlen = (double) len;
+      meanx /= dlen;
+      meany /= dlen;
+      
+      double sdx = 0.;
+      double sdy = 0.;
+      
+      SAFE_SIMD
+      for (int k=0; k<m; k++)
+      {
+        if (!isnan(vec[k]) && !isnan(x[k + mi]))
+        {
+          sdx += (vec[k] - meanx)*(vec[k] - meanx);
+          sdy += (x[k + mi] - meany)*(x[k + mi] - meany);
+        }
+      }
+      
+      sdx = sqrt(sdx/(dlen-1.));
+      sdy = sqrt(sdy/(dlen-1.));
       
       double mmcp = 0.0;
       SAFE_SIMD
-      for (int l=0; l<m; l++)
-        mmcp += vec[l] * (x[l + mi] - meany);
+      for (int k=0; k<m; k++)
+      {
+        if (!isnan(vec[k]) && !isnan(x[k + mi]))
+          mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
+      }
       
-      
-      // pick top K
-      rename_me(type, mmcp, denom_cov, k, A, I, J);
+      rename_me(TYPE_MAX, mmcp*dlen, mx);
+      // cor[i + n*j] = mmcp / sdx / sdy / (dlen - 1.0);;
     }
   }
   
   free(vec);
-  free(means);
+  
+  if (inv)
+  {
+    check = inv_sym_chol(n, cor);
+    CHECKRET(check);
+  }
+  
   
   return COOP_OK;
 }

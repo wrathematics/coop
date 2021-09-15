@@ -1,0 +1,11 @@
+* support co(X, Y) (matrices/vectors)
+
+* matrix-matrix method wrappers
+    - finish matrix-matrix methods
+* inplace=TRUE, trans=TRUE, method != cosine()"
+* cor with inplace method should set diagonals to 1...
+* should probably just go in a separate methoda
+* finish/integrate inplace method for vecvec
+
+
+grep for TODO and FIXME. it's a mess...

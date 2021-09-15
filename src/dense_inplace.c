@@ -29,10 +29,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "utils/safeomp.h"
+
 #include "coop.h"
 #include "utils/fill.h"
 #include "utils/inverse.h"
-#include "utils/safeomp.h"
+
 
 
 /*

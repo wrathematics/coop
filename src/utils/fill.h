@@ -31,8 +31,9 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "cdefs.h"
 #include "safeomp.h"
+
+#include "cdefs.h"
 
 
 // set diagonal of nxn matrix x to 1

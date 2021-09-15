@@ -1,8 +1,8 @@
 # coop
 
-* **Version:** 0.6-2
+* **Version:** 0.6-3
 * **Status:** [![Build Status](https://travis-ci.org/wrathematics/coop.png)](https://travis-ci.org/wrathematics/coop)
-* **License:** [BSD 2-Clause](http://opensource.org/licenses/BSD-2-Clause)
+* **License:** [BSD 2-Clause](https://opensource.org/licenses/BSD-2-Clause)
 * **Author:** Drew Schmidt
 
 

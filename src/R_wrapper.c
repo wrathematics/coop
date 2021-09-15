@@ -25,13 +25,14 @@
 */
 
 #include <math.h>
+
+#include "utils/inverse.h"
+#include "utils/sparsity.h"
+
 #include <R.h>
 #include <Rinternals.h>
 
 #include "coop.h"
-#include "utils/inverse.h"
-#include "utils/sparsity.h"
-
 
 #define CO_SIM 1
 #define CO_ORR 2
