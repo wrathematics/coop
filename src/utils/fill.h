@@ -58,7 +58,7 @@ static inline void symmetrize(const int n, double *restrict x)
       for (int col=j; col<j+blocksize && col<n; ++col)
       {
         for (int row=i; row<i+blocksize && row<n; ++row)
-          x[col + n*row] = x[row + n*col];
+          x[col + (size_t)n*row] = x[row + (size_t)n*col];
       }
     }
   }

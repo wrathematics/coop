@@ -106,6 +106,8 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
 
 SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
 {
+  (void) inplace_;
+  
   SEXP ret;
   int check;
   const int type = INT(type_);
