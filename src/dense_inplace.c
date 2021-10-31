@@ -91,7 +91,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
   #pragma omp parallel for shared(means) if (m*n > OMP_MIN_SIZE)
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     
     means[j] = 0.0;
     SAFE_SIMD
@@ -105,7 +105,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
   // co-operation
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     
     memcpy(vec, x+mj, m*sizeof(*vec));
     
@@ -117,8 +117,7 @@ static int co_mat_inplace(const int m, const int n, const double * const restric
     #pragma omp parallel for shared(j, means, vec, cov) if(m*n > OMP_MIN_SIZE)
     for (int i=j; i<n; i++)
     {
-      const int mi = m*i;
-      
+      const size_t mi = m*i;
       const double meany = means[i];
       
       double mmcp = 0.0;

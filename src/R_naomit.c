@@ -78,7 +78,7 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, const double *cons
   // to track which rows should go
   for (int j=1; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     
     for (int i=0; i<m; i++)
     {
@@ -105,7 +105,7 @@ static SEXP R_fast_naomit_dbl_small(const int m, const int n, const double *cons
   
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     int row = 0;
     
     for (int i=0; i<m; i++)
@@ -136,7 +136,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
   #pragma omp parallel for shared(rows)
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     
     for (int i=0; i<m; i++)
     {
@@ -164,7 +164,7 @@ static SEXP R_fast_naomit_dbl_big(const int m, const int n, const double *const 
   #pragma omp parallel for shared(rows, retptr, m_fin)
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     int row = 0;
     
     for (int i=0; i<m; i++)
@@ -217,7 +217,7 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, const int *const x
   // adjust col index
   for (int j=1; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     
     for (int i=0; i<m; i++)
     {
@@ -244,7 +244,7 @@ static SEXP R_fast_naomit_int_small(const int m, const int n, const int *const x
   
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     int row = 0;
     
     for (int i=0; i<m; i++)
@@ -274,7 +274,7 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
   #pragma omp parallel for shared(rows, NA_INTEGER)
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     
     for (int i=0; i<m; i++)
     {
@@ -299,7 +299,7 @@ static SEXP R_fast_naomit_int_big(const int m, const int n, const int *const x)
   #pragma omp parallel for shared(rows, retptr, m_fin)
   for (int j=0; j<n; j++)
   {
-    const int mj = m*j;
+    const size_t mj = m*j;
     int row = 0;
     
     for (int i=0; i<m; i++)
