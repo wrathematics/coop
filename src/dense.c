@@ -1,4 +1,4 @@
-/*  Copyright (c) 2015-2016 Drew Schmidt
+/*  Copyright (c) 2015-2016, 2021 Drew Schmidt
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,8 @@
  * @param cos
  * The output nxn matrix.
 */
-int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos)
+int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n,
+  const double * const restrict x, double *restrict cos)
 {
   int ncols;
   
@@ -93,7 +94,9 @@ int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n, 
 
 
 
-int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cos)
+int coop_cosine_matmat(const bool trans, const bool inv, const int m,
+  const int n, const double * const restrict x, const double *const restrict y,
+  double *restrict cos)
 {
   int nrows, ncols;
   
@@ -141,7 +144,8 @@ int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int 
  * @return
  * The cosine similarity between the two vectors.
 */
-int coop_cosine_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *cos)
+int coop_cosine_vecvec(const int n, const double *const restrict x,
+  const double *const restrict y, double *cos)
 {
   double normx, normy;
   const double cp = ddot(n, x, y);
@@ -174,7 +178,8 @@ int coop_cosine_vecvec(const int n, const double * const restrict x, const doubl
  * @param cor
  * The output nxn matrix.
 */
-int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor)
+int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
@@ -214,7 +219,9 @@ int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n, co
 
 
 // pcor(x, y)
-int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cor)
+int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n,
+  const double *const restrict x, const double *const restrict y,
+  double *restrict cor)
 {
   int nrows, ncols;
   int ret = 0;
@@ -278,7 +285,8 @@ int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n,
  * @return
  * The correlation between the two vectors.
 */
-int coop_pcor_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cor)
+int coop_pcor_vecvec(const int n, const double *const restrict x,
+  const double *const restrict y, double *restrict cor)
 {
   double normx, normy;
   
@@ -337,7 +345,8 @@ int coop_pcor_vecvec(const int n, const double * const restrict x, const double 
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
+int coop_covar_mat(const bool trans, const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cov)
 {
   int nrows, ncols;
   double *x_cp = malloc(m*n*sizeof(*x));
@@ -377,7 +386,9 @@ int coop_covar_mat(const bool trans, const bool inv, const int m, const int n, c
 
 
 // covar(x,y)
-int coop_covar_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cov)
+int coop_covar_matmat(const bool trans, const bool inv, const int m,
+  const int nx, const double *const restrict x, const int ny,
+  const double *const restrict y, double *restrict cov)
 {
   int ret = 0;
   int nrows, ncols;
@@ -393,8 +404,8 @@ int coop_covar_matmat(const bool trans, const bool inv, const int m, const int n
   
   if (trans)
   {
-    xpose(m, n, x, x_cp);
-    xpose(m, n, y, y_cp);
+    xpose(m, nx, x, x_cp);
+    xpose(m, ny, y, y_cp);
     nrows = n;
     ncols = m;
   }
@@ -443,7 +454,8 @@ int coop_covar_matmat(const bool trans, const bool inv, const int m, const int n
  * @return
  * The variance of the vectors.
 */
-int coop_covar_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cov)
+int coop_covar_vecvec(const int n, const double *const restrict x,
+  const double *const restrict y, double *restrict cov)
 {
   const double recip_n = (double) 1. / (n-1);
   double sum_xy = 0., sum_x = 0., sum_y = 0.;

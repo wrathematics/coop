@@ -1,4 +1,4 @@
-/*  Copyright (c) 2016 Drew Schmidt
+/*  Copyright (c) 2016, 2021 Drew Schmidt
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,9 @@
 #include "utils/special_vals.h"
 
 
-static inline void compute_sums(const int m, const size_t mi, const double * const restrict vec, const double * const restrict x, double *restrict sumx, double *restrict sumy, int *restrict len)
+static inline void compute_sums(const int m, const size_t mi,
+  const double *const restrict vec, const double *const restrict x,
+  double *restrict sumx, double *restrict sumy, int *restrict len)
 {
   int k;
   
@@ -60,7 +62,11 @@ static inline void compute_sums(const int m, const size_t mi, const double * con
 
 
 
-int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cos)
+// -----------------------------------------------------------------------------
+// cosine
+// -----------------------------------------------------------------------------
+int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cos)
 {
   int check;
   double *vec = malloc(m * sizeof(*vec));
@@ -123,6 +129,9 @@ int coop_cosine_mat_inplace_pairwise(const bool inv, const int m, const int n, c
 
 
 
+// -----------------------------------------------------------------------------
+// correlation
+// -----------------------------------------------------------------------------
 int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cor)
 {
   int check;
@@ -200,7 +209,11 @@ int coop_pcor_mat_inplace_pairwise(const bool inv, const int m, const int n, con
 
 
 
-int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, const double * const restrict x, double *restrict cov)
+// -----------------------------------------------------------------------------
+// covariance
+// -----------------------------------------------------------------------------
+int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cov)
 {
   int check;
   double *vec = malloc(m * sizeof(*vec));
@@ -254,6 +267,65 @@ int coop_covar_mat_inplace_pairwise(const bool inv, const int m, const int n, co
   }
   
   symmetrize(n, cov);
+  
+  return COOP_OK;
+}
+
+
+
+int coop_covar_matmat_inplace_pairwise(const bool inv, const int m, const int nx,
+  const double *const restrict x, const int ny, const double *const restrict y,
+  double *restrict cov)
+{
+  int check;
+  double *vec = malloc(m * sizeof(*vec));
+  CHECKMALLOC(vec);
+  
+  
+  for (int j=0; j<ny; j++)
+  {
+    const size_t mj = (size_t)m*j;
+    memcpy(vec, y+mj, m*sizeof(*vec));
+    
+    
+    #pragma omp parallel for shared(j, vec, cov) if(m*nx > OMP_MIN_SIZE)
+    for (int i=0; i<nx; i++)
+    {
+      const size_t mi = (size_t)m*i;
+      
+      int len;
+      double meanx, meany;
+      compute_sums(m, mi, vec, x, &meanx, &meany, &len);
+      
+      if (len == 0)
+      {
+        set_na_real(cov + (i + nx*j));
+        set_na_real(cov + (j + nx*i));
+        continue;
+      }
+      
+      meanx /= (double) len;
+      meany /= (double) len;
+      
+      double mmcp = 0.0;
+      SAFE_SIMD
+      for (int k=0; k<m; k++)
+      {
+        if (!isnan(vec[k]) && !isnan(x[k + mi]))
+          mmcp += (vec[k] - meanx) * (x[k + mi] - meany);
+      }
+      
+      cov[i + nx*j] = mmcp * ((double) 1.0/(len-1));
+    }
+  }
+  
+  free(vec);
+  
+  if (nx == ny && inv)
+  {
+    check = inv_gen_lu(nx, cov);
+    CHECKRET(check);
+  }
   
   return COOP_OK;
 }
