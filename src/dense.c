@@ -429,7 +429,7 @@ int coop_covar_mat(const bool trans, const bool inv, const int m, const int n,
 
 // covar(x,y)
 int coop_covar_matmat(const bool trans, const bool inv, const int m,
-  const int nx, const double *const restrict x, const int ny,
+  const int n, const double *const restrict x, 
   const double *const restrict y, double *restrict cov)
 {
   int ret = 0;
@@ -446,8 +446,8 @@ int coop_covar_matmat(const bool trans, const bool inv, const int m,
   
   if (trans)
   {
-    xpose(m, nx, x, x_cp);
-    xpose(m, ny, y, y_cp);
+    xpose(m, n, x, x_cp);
+    xpose(m, n, y, y_cp);
     nrows = n;
     ncols = m;
   }
