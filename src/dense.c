@@ -163,6 +163,53 @@ int coop_cosine_vecvec(const int n, const double *const restrict x,
 //  Correlation
 // ---------------------------------------------
 
+static inline int coop_pcor_mat_work(const bool inv, const int m, const int n,
+  double *const restrict x, double *restrict cor)
+{
+  remove_colmeans(m, n, x);
+  crossprod(m, n, 1.0, x, cor);
+  free(x);
+  
+  int ret = cosim_fill(n, cor);
+  CHECKRET(ret);
+  
+  if (inv)
+  {
+    ret = inv_sym_chol(n, cor);
+    CHECKRET(ret);
+  }
+  
+  symmetrize(n, cor);
+  
+  return COOP_OK;
+}
+
+static inline int coop_pcor_mat_wrapper(const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cor)
+{
+  double *x_cp = malloc(m*n*sizeof(*x));
+  CHECKMALLOC(x_cp);
+  
+  memcpy(x_cp, x, m*n*sizeof(*x));
+  
+  coop_pcor_mat_work(inv, m, n, x_cp, cor);
+  
+  return COOP_OK;
+}
+
+static inline int coop_tpcor_mat_wrapper(const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cor)
+{
+  double *x_cp = malloc(m*n*sizeof(*x));
+  CHECKMALLOC(x_cp);
+  
+  xpose(m, n, x, x_cp);
+  
+  coop_pcor_mat_work(inv, n, m, x_cp, cor);
+  
+  return COOP_OK;
+}
+
 /**
  * @brief
  * Compute the pearson correlation matrix.
@@ -171,54 +218,49 @@ int coop_cosine_vecvec(const int n, const double *const restrict x,
  * The implementation is dominated by a symmetric rank-k update
  * via the BLAS function dsyrk().
  *
+ * @param trans
+ * Transpose before computing?
+ * @param inv
+ * Invert after computing?
  * @param m,n
  * The number of rows/columns of the input matrix x.
  * @param x
  * The input mxn matrix.
  * @param cor
- * The output nxn matrix.
+ * The output correlation matrix.
 */
 int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n,
-  const double *const restrict x, double *restrict cor)
+  const double * const restrict x, double *restrict cor)
 {
-  double *x_cp = malloc(m*n*sizeof(*x));
-  CHECKMALLOC(x_cp);
-  int nrows, ncols;
-  
-  if (trans)
-  {
-    xpose(m, n, x, x_cp);
-    nrows = n;
-    ncols = m;
-  }
+  if (!trans)
+    return coop_pcor_mat_wrapper(inv, m, n, x, cor);
   else
-  {
-    memcpy(x_cp, x, m*n*sizeof(*x));
-    nrows = m;
-    ncols = n;
-  }
-  
-  remove_colmeans(nrows, ncols, x_cp);
-  crossprod(nrows, ncols, 1.0, x_cp, cor);
-  free(x_cp);
-  
-  int ret = cosim_fill(ncols, cor);
-  CHECKRET(ret);
-  
-  if (inv)
-  {
-    ret = inv_sym_chol(ncols, cor);
-    CHECKRET(ret);
-  }
-  
-  symmetrize(ncols, cor);
-  
-  return COOP_OK;
+    return coop_tpcor_mat_wrapper(inv, m, n, x, cor);
 }
 
 
 
-// pcor(x, y)
+/**
+ * pcor(x, y)
+ * 
+ * @brief
+ * Compute the pearson correlation matrix.
+ *
+ * @details
+ * The implementation is dominated by a symmetric rank-k update
+ * via the BLAS function dsyrk().
+ *
+ * @param trans
+ * Transpose before computing?
+ * @param inv
+ * Invert after computing?
+ * @param m,n
+ * The number of rows/columns of the input matrix x.
+ * @param x,y
+ * The input matrices.
+ * @param cor
+ * The output correlation matrix.
+*/
 int coop_pcor_matmat(const bool trans, const bool inv, const int m, const int n,
   const double *const restrict x, const double *const restrict y,
   double *restrict cor)
