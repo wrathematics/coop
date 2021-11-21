@@ -62,21 +62,35 @@
  * @param cos
  * The output nxn matrix.
 */
-int coop_cosine_mat(const bool trans, const bool inv, const int m, const int n,
-  const double * const restrict x, double *restrict cos)
+int coop_cosine_mat(const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cos)
 {
   int ncols;
   
-  if (trans)
+  ncols = n;
+  crossprod(m, n, 1.0, x, cos);
+  
+  int ret = cosim_fill(ncols, cos);
+  CHECKRET(ret);
+  
+  if (inv)
   {
-    ncols = m;
-    tcrossprod(m, n, 1.0, x, cos);
+    ret = inv_sym_chol(ncols, cos);
+    CHECKRET(ret);
   }
-  else
-  {
-    ncols = n;
-    crossprod(m, n, 1.0, x, cos);
-  }
+  
+  symmetrize(ncols, cos);
+  
+  return COOP_OK;
+}
+
+int coop_tcosine_mat(const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cos)
+{
+  int ncols;
+  
+  ncols = m;
+  tcrossprod(m, n, 1.0, x, cos);
   
   int ret = cosim_fill(ncols, cos);
   CHECKRET(ret);
@@ -160,7 +174,7 @@ int coop_cosine_vecvec(const int n, const double *const restrict x,
 
 
 // ---------------------------------------------
-//  Correlation
+// Pearson Correlation
 // ---------------------------------------------
 
 static inline int coop_pcor_mat_work(const bool inv, const int m, const int n,
@@ -184,8 +198,25 @@ static inline int coop_pcor_mat_work(const bool inv, const int m, const int n,
   return COOP_OK;
 }
 
-static inline int coop_pcor_mat_wrapper(const bool inv, const int m, const int n,
-  const double *const restrict x, double *restrict cor)
+/**
+ * @brief
+ * Compute the pearson correlation matrix.
+ *
+ * @details
+ * The implementation is dominated by a symmetric rank-k update
+ * via the BLAS function dsyrk().
+ *
+ * @param inv
+ * Invert after computing?
+ * @param m,n
+ * The number of rows/columns of the input matrix x.
+ * @param x
+ * The input mxn matrix.
+ * @param cor
+ * The output correlation matrix.
+*/
+int coop_pcor_mat(const bool inv, const int m, const int n,
+  const double * const restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
@@ -197,8 +228,8 @@ static inline int coop_pcor_mat_wrapper(const bool inv, const int m, const int n
   return COOP_OK;
 }
 
-static inline int coop_tpcor_mat_wrapper(const bool inv, const int m, const int n,
-  const double *const restrict x, double *restrict cor)
+int coop_tpcor_mat(const bool inv, const int m, const int n,
+  const double * const restrict x, double *restrict cor)
 {
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
@@ -208,34 +239,6 @@ static inline int coop_tpcor_mat_wrapper(const bool inv, const int m, const int 
   coop_pcor_mat_work(inv, n, m, x_cp, cor);
   
   return COOP_OK;
-}
-
-/**
- * @brief
- * Compute the pearson correlation matrix.
- *
- * @details
- * The implementation is dominated by a symmetric rank-k update
- * via the BLAS function dsyrk().
- *
- * @param trans
- * Transpose before computing?
- * @param inv
- * Invert after computing?
- * @param m,n
- * The number of rows/columns of the input matrix x.
- * @param x
- * The input mxn matrix.
- * @param cor
- * The output correlation matrix.
-*/
-int coop_pcor_mat(const bool trans, const bool inv, const int m, const int n,
-  const double * const restrict x, double *restrict cor)
-{
-  if (!trans)
-    return coop_pcor_mat_wrapper(inv, m, n, x, cor);
-  else
-    return coop_tpcor_mat_wrapper(inv, m, n, x, cor);
 }
 
 
@@ -365,6 +368,25 @@ int coop_pcor_vecvec(const int n, const double *const restrict x,
 //  Covariance
 // ---------------------------------------------
 
+static inline int coop_covar_mat_work(const bool inv, const int m, const int n,
+  double *const restrict x, double *restrict cov)
+{
+  const double alpha = 1. / ((double) (m-1));
+  
+  remove_colmeans(m, n, x);
+  crossprod(m, n, alpha, x, cov);
+  free(x);
+  
+  if (inv)
+  {
+    int ret = inv_sym_chol(n, cov);
+    CHECKRET(ret);
+  }
+  
+  symmetrize(n, cov);
+  
+  return COOP_OK;
+}
 
 /**
  * @file
@@ -387,42 +409,26 @@ int coop_pcor_vecvec(const int n, const double *const restrict x,
  * The return value indicates that status of the function.  Non-zero values
  * are errors.
 */
-int coop_covar_mat(const bool trans, const bool inv, const int m, const int n,
+int coop_covar_mat(const bool inv, const int m, const int n,
   const double *const restrict x, double *restrict cov)
 {
-  int nrows, ncols;
   double *x_cp = malloc(m*n*sizeof(*x));
   CHECKMALLOC(x_cp);
   
-  if (trans)
-  {
-    xpose(m, n, x, x_cp);
-    nrows = n;
-    ncols = m;
-  }
-  else
-  {
-    memcpy(x_cp, x, m*n*sizeof(*x));
-    nrows = m;
-    ncols = n;
-  }
+  memcpy(x_cp, x, m*n*sizeof(*x));
   
+  return coop_covar_mat_work(inv, m, n, x_cp, cov);
+}
+
+int coop_tcovar_mat(const bool inv, const int m, const int n,
+  const double *const restrict x, double *restrict cov)
+{
+  double *x_cp = malloc(m*n*sizeof(*x));
+  CHECKMALLOC(x_cp);
   
-  const double alpha = 1. / ((double) (nrows-1));
+  xpose(m, n, x, x_cp);
   
-  remove_colmeans(nrows, ncols, x_cp);
-  crossprod(nrows, ncols, alpha, x_cp, cov);
-  free(x_cp);
-  
-  if (inv)
-  {
-    int ret = inv_sym_chol(ncols, cov);
-    CHECKRET(ret);
-  }
-  
-  symmetrize(ncols, cov);
-  
-  return COOP_OK;
+  return coop_covar_mat_work(inv, n, m, x_cp, cov);
 }
 
 

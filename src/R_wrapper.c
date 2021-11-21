@@ -77,28 +77,41 @@ SEXP R_co_mat(SEXP x, SEXP type_, SEXP inplace_, SEXP trans_, SEXP inv_)
   
   
   if (type == CO_SIM)
-    check = coop_cosine_mat(trans, inv, m, n, REAL(x), REAL(ret));
+  {
+    if (!trans)
+      check = coop_cosine_mat(inv, m, n, REAL(x), REAL(ret));
+    else
+      check = coop_tcosine_mat(inv, m, n, REAL(x), REAL(ret));
+  }
   else if (type == CO_ORR)
   {
     if (inplace)
       check = coop_pcor_mat_inplace(inv, m, n, REAL(x), REAL(ret));
     else
-      check = coop_pcor_mat(trans, inv, m, n, REAL(x), REAL(ret));
+    {
+      if (!trans)
+        check = coop_pcor_mat(inv, m, n, REAL(x), REAL(ret));
+      else
+        check = coop_tpcor_mat(inv, m, n, REAL(x), REAL(ret));
+    }
   }
   else if (type == CO_VAR)
   {
     if (inplace)
       check = coop_covar_mat_inplace(inv, m, n, REAL(x), REAL(ret));
     else
-      check = coop_covar_mat(trans, inv, m, n, REAL(x), REAL(ret));
+    {
+      if (!trans)
+        check = coop_covar_mat(inv, m, n, REAL(x), REAL(ret));
+      else
+        check = coop_tcovar_mat(inv, m, n, REAL(x), REAL(ret));
+    }
   }
   else
     BADTYPE();
   
   UNPROTECT(1);
-  
   checkret(check);
-  
   return ret;
 }
 
