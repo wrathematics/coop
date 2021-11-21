@@ -17,6 +17,7 @@
 #' @return
 #' The centered/scaled data, with attributes as in R's \code{scale()}.
 #' 
+#' @useDynLib coop R_scaler
 #' @export
 scaler <- function(x, center=TRUE, scale=TRUE)
 {

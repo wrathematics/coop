@@ -42,10 +42,9 @@ coop::pcor(x)
 coop::pcor(x[, 1], x[, 2])
 
 }
-\author{
-Drew Schmidt
-}
 \seealso{
 \code{\link{cosine}}
 }
-
+\author{
+Drew Schmidt
+}

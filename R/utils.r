@@ -28,6 +28,7 @@ check.is.flag <- function(x)
 
 
 
+#' @useDynLib coop R_check_badvals
 check_badvals <- function(x)
 {
   .Call(R_check_badvals, x)

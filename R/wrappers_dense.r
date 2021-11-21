@@ -1,3 +1,6 @@
+#' @useDynLib coop R_co_mat
+#' @useDynLib coop R_co_matmat
+#' @useDynLib coop R_co_mat_pairwise
 co_matrix <- function(x, y, type, use, inplace, trans=FALSE, inverse=FALSE)
 {
   check.is.flag(inplace)
@@ -55,6 +58,8 @@ co_matrix <- function(x, y, type, use, inplace, trans=FALSE, inverse=FALSE)
 
 
 
+#' @useDynLib coop R_naomit_vecvec
+#' @useDynLib coop R_co_vecvec
 co_vecvec <- function(x, y, type, use)
 {
   if (!is.numeric(x))

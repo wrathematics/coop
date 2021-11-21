@@ -1,3 +1,4 @@
+#' @useDynLib coop R_co_sparse
 co_sparse <- function(n, a, i, j, index, type, use, inverse)
 {
   check.is.flag(inverse)
@@ -36,6 +37,7 @@ co_sparse <- function(n, a, i, j, index, type, use, inverse)
 
 
 
+#' @useDynLib coop R_csc_to_coo
 csc_to_coo <- function(row_ind, col_ptr)
 {
   .Call(R_csc_to_coo, row_ind, col_ptr)

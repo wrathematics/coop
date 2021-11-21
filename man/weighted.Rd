@@ -22,10 +22,9 @@ x <- matrix(rnorm(10*3), 10, 3)
 cov.wt(x)
 
 }
-\author{
-Drew Schmidt
-}
 \seealso{
 \code{\link{cosine}}, \code{\link{pcor}}, and \code{\link{covar}}
 }
-
+\author{
+Drew Schmidt
+}

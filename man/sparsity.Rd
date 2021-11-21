@@ -29,7 +29,7 @@ sparse triplet matrices, the count is trivial.
 x <- matrix(0, 10, 10)
 coop::sparsity(x)
 
-## 15\\\% density / 85\\\% sparsity
+## 15\\% density / 85\\% sparsity
 x[sample(length(x), size=15)] <- 1
 coop::sparsity(x)
 
@@ -37,4 +37,3 @@ coop::sparsity(x)
 \author{
 Drew Schmidt
 }
-

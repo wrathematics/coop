@@ -1,3 +1,4 @@
+#' @useDynLib coop R_fast_naomit
 naomit_mat <- function(x)
 {
   .Call(R_fast_naomit, x)

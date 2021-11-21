@@ -61,8 +61,8 @@ product \code{t(x) \%*\% y} performed by the BLAS subroutine
 \code{dgemm} and the normalizing products \code{t(y) \%*\% y},
 each computed via the BLAS function \code{dsyrk}.
 }
+
 \author{
 Drew Schmidt
 }
 \keyword{package}
-

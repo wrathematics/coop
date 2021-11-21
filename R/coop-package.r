@@ -52,11 +52,6 @@
 #' \code{dgemm} and the normalizing products \code{t(y) \%*\% y},
 #' each computed via the BLAS function \code{dsyrk}.
 #' 
-#' @useDynLib coop, R_co_mat, R_co_mat_pairwise, R_co_vecvec,
-#'   R_co_sparse, R_sparsity_int, R_sparsity_dbl,
-#'   R_csc_to_coo, R_fast_naomit, R_naomit_vecvec,
-#'   R_scaler, R_check_badvals
-#' 
 #' @docType package
 #' @name coop-package
 #' @author Drew Schmidt

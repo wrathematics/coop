@@ -32,6 +32,8 @@ sparsity <- function(x, proportion=TRUE) UseMethod("sparsity")
 
 
 
+#' @useDynLib coop R_sparsity_int
+#' @useDynLib coop R_sparsity_dbl
 #' @export
 sparsity.matrix <- function(x, proportion=TRUE)
 {

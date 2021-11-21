@@ -24,4 +24,3 @@ Unlike its R counterpart \code{scale()}, the arguments
 \code{center} and \code{scale} can only be logical values
 (and not vectors).
 }
-

@@ -41,10 +41,9 @@ coop::cosine(x)
 coop::cosine(x[, 1], x[, 2])
 
 }
-\author{
-Drew Schmidt
-}
 \seealso{
 \code{\link{sparsity}}
 }
-
+\author{
+Drew Schmidt
+}
