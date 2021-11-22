@@ -94,30 +94,4 @@ static inline int cosim_fill(const int n, double *const restrict cp)
 }
 
 
-
-static inline int cosim_fill_full(const int n, double *const restrict cp)
-{
-  double *diag = malloc(n * sizeof(*diag));
-  CHECKMALLOC(diag);
-  
-  SAFE_FOR_SIMD
-  for (int i=0; i<n; i++)
-    diag[i] = sqrt(cp[i + n*i]);
-  
-  #pragma omp parallel for shared(diag) if(n>OMP_MIN_SIZE)
-  for (int j=0; j<n; j++)
-  {
-    const int nj = n*j;
-    const double diagj = sqrt(cp[j + nj]);
-    
-    SAFE_SIMD
-    for (int i=0; i<n; i++)
-      cp[i + nj] /= diag[i] * diagj;
-  }
-  
-  free(diag);
-  return COOP_OK;
-}
-
-
 #endif
