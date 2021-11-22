@@ -108,31 +108,73 @@ int coop_tcosine_mat(const bool inv, const int m, const int n,
 
 
 
-int coop_cosine_matmat(const bool trans, const bool inv, const int m,
-  const int n, const double * const restrict x, const double *const restrict y,
+int coop_cosine_matmat(const bool inv, const int m, const int nx,
+  const double *const restrict x, const int ny, const double *const restrict y,
   double *restrict cos)
 {
-  int nrows, ncols;
+  matmult(true, false, 1.0, m, nx, x, m, ny, y, cos);
   
-  if (trans)
+  double *diagx = malloc(nx * sizeof(*diagx));
+  double *diagy = malloc(ny * sizeof(*diagy));
+  CHECKMALLOC(diagx);
+  CHECKMALLOC(diagy);
+  
+  SAFE_FOR_SIMD
+  for (int i=0; i<nx; i++)
+    crossprod(m, 1, 1.0, x+m*i, m, diagx+i);
+  SAFE_FOR_SIMD
+  for (int i=0; i<ny; i++)
+    crossprod(m, 1, 1.0, y+m*i, m, diagy+i);
+  
+  for (int j=0; j<ny; j++)
   {
-    nrows = n;
-    ncols = m;
+    for (int i=0; i<nx; i++)
+      cos[i + nx*j] /= sqrt(diagx[i] * diagy[j]);
   }
-  else
+  
+  free(diagx);
+  free(diagy);
+  
+  if (inv && nx == ny)
   {
-    nrows = m;
-    ncols = n;
+    int ret = inv_gen_lu(nx, cos);
+    CHECKRET(ret);
   }
   
-  matmult(!trans, trans, 1.0, nrows, ncols, x, nrows, ncols, y, cos);
+  return COOP_OK;
+}
+
+
+int coop_tcosine_matmat(const bool inv, const int mx, const int n,
+  const double *const restrict x, const int my, const double *const restrict y,
+  double *restrict cos)
+{
+  matmult(false, true, 1.0, mx, n, x, my, n, y, cos);
   
-  int ret = cosim_fill_full(ncols, cos);
-  CHECKRET(ret);
+  double *diagx = malloc(mx * sizeof(*diagx));
+  double *diagy = malloc(my * sizeof(*diagy));
+  CHECKMALLOC(diagx);
+  CHECKMALLOC(diagy);
   
-  if (inv)
+  SAFE_FOR_SIMD
+  for (int i=0; i<mx; i++)
+    tcrossprod(1, n, 1.0, x+i, mx, diagx+i);
+  SAFE_FOR_SIMD
+  for (int i=0; i<my; i++)
+    tcrossprod(1, n, 1.0, y+i, my, diagy+i);
+  
+  for (int j=0; j<my; j++)
   {
-    ret = inv_sym_chol(ncols, cos);
+    for (int i=0; i<mx; i++)
+      cos[i + mx*j] /= sqrt(diagx[i] * diagy[j]);
+  }
+  
+  free(diagx);
+  free(diagy);
+  
+  if (inv && mx == my)
+  {
+    int ret = inv_gen_lu(mx, cos);
     CHECKRET(ret);
   }
   

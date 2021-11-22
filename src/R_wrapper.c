@@ -124,35 +124,43 @@ SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP in
   SEXP ret;
   int check;
   const int type = INT(type_);
-  const unsigned int m = nrows(x);
-  const unsigned int n = ncols(x);
+  const unsigned int mx = nrows(x);
+  const unsigned int nx = ncols(x);
+  const unsigned int my = nrows(y);
+  const unsigned int ny = ncols(y);
+  
   // const int inplace = INT(inplace_);
   const int trans = INT(trans_);
   const int inv = INT(inv_);
   
   
   if (trans)
-    PROTECT(ret = allocMatrix(REALSXP, m, m));
+    PROTECT(ret = allocMatrix(REALSXP, mx, my));
   else
-    PROTECT(ret = allocMatrix(REALSXP, n, n));
+    PROTECT(ret = allocMatrix(REALSXP, nx, ny));
   
   
   if (type == CO_SIM)
-    check = coop_cosine_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+  {
+    if (!trans)
+      check = coop_cosine_matmat(inv, mx, nx, REAL(x), ny, REAL(y), REAL(ret));
+    else
+      check = coop_tcosine_matmat(inv, mx, nx, REAL(x), my, REAL(y), REAL(ret));
+  }
   else if (type == CO_ORR)
   {
     // TODO FIXME
     // if (inplace)
     // 
     // else
-      check = coop_pcor_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+      // check = coop_pcor_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
   }
   else if (type == CO_VAR)
   {
     // if (inplace)
     // 
     // else
-      check = coop_covar_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+      // check = coop_covar_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
   }
   else
     BADTYPE();

@@ -37,8 +37,14 @@ int coop_cosine_mat(const bool inv, const int m, const int n,
   const double *const restrict x, double *restrict cos);
 int coop_tcosine_mat(const bool inv, const int m, const int n,
   const double *const restrict x, double *restrict cos);
-int coop_cosine_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cos);
-int coop_cosine_vecvec(const int n, const double * const restrict x, const double * const restrict y, double *restrict cos);
+int coop_cosine_matmat(const bool inv, const int m, const int nx,
+  const double *const restrict x, const int ny, const double *const restrict y,
+  double *restrict cos);
+int coop_tcosine_matmat(const bool inv, const int mx, const int n,
+  const double *const restrict x, const int my, const double *const restrict y,
+  double *restrict cos);
+int coop_cosine_vecvec(const int n, const double *const restrict x,
+  const double *const restrict y, double *restrict cos);
 
 int coop_pcor_mat(const bool inv, const int m, const int n,
   const double * const restrict x, double *restrict cor);
