@@ -80,7 +80,7 @@ static inline int cosim_fill(const int n, double *const restrict cp)
   for (int j=0; j<n; j++)
   {
     const int nj = n*j;
-    const double diagj = sqrt(cp[j + nj]);
+    const double diagj = diag[j];
     
     cp[j + nj] = 1;
     
