@@ -34,7 +34,8 @@
 
 
 // C ddot replica using dgemm
-static inline double ddot(const int n, const double * const restrict x, const double * const restrict y)
+static inline double ddot(const int n, const double * const restrict x,
+  const double * const restrict y)
 {
   const int one = 1;
   double dot;
@@ -48,20 +49,25 @@ static inline double ddot(const int n, const double * const restrict x, const do
 
 
 // upper triangle of t(x) %*% x
-static inline void crossprod(const int m, const int n, const double alpha, const double * const restrict x, double *restrict c)
+static inline void crossprod(const int m, const int n, const double alpha,
+  const double * const restrict x, const int ldx, double *restrict c)
 {
-  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x, &m, &(double){0.0}, c, &n);
+  dsyrk_(&(char){'l'}, &(char){'t'}, &n, &m, &alpha, x, &ldx, &(double){0.0}, c, &n);
 }
 
-static inline void tcrossprod(const int m, const int n, const double alpha, const double * const restrict x, double *restrict c)
+static inline void tcrossprod(const int m, const int n, const double alpha,
+  const double * const restrict x, const int ldx, double *restrict c)
 {
-  dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &alpha, x, &m, &(double){0.0}, c, &m);
+  dsyrk_(&(char){'l'}, &(char){'n'}, &m, &n, &alpha, x, &ldx, &(double){0.0}, c, &m);
 }
 
 
 
 // dgemm wrapper
-static inline void matmult(const bool transx, const bool transy, const double alpha, const int mx, const int nx, const double *const restrict x, const int my, const int ny, const double *const restrict y, double *restrict ret)
+static inline void matmult(const bool transx, const bool transy,
+  const double alpha, const int mx, const int nx,
+  const double *const restrict x, const int my, const int ny,
+  const double *const restrict y, double *restrict ret)
 {
   // m = # rows of op(x)
   // n = # cols of op(y)
