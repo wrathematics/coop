@@ -151,9 +151,10 @@ SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP in
   {
     // TODO FIXME
     // if (inplace)
-    // 
-    // else
-      // check = coop_pcor_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+    if (!trans)
+      check = coop_pcor_matmat(inv, mx, nx, REAL(x), ny, REAL(y), REAL(ret));
+    else
+      check = coop_tpcor_matmat(inv, mx, nx, REAL(x), my, REAL(y), REAL(ret));
   }
   else if (type == CO_VAR)
   {
