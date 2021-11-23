@@ -295,8 +295,6 @@ int coop_tpcor_mat(const bool inv, const int m, const int n,
  * The implementation is dominated by a symmetric rank-k update
  * via the BLAS function dsyrk().
  *
- * @param trans
- * Transpose before computing?
  * @param inv
  * Invert after computing?
  * @param m,n
