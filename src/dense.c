@@ -491,52 +491,66 @@ int coop_tcovar_mat(const bool inv, const int m, const int n,
 
 
 
-// covar(x,y)
-int coop_covar_matmat(const bool trans, const bool inv, const int m,
-  const int n, const double *const restrict x, 
-  const double *const restrict y, double *restrict cov)
+int coop_covar_matmat(const bool inv, const int m, const int nx,
+  const double *const restrict x, const int ny, const double *const restrict y,
+  double *restrict cov)
 {
   int ret = 0;
-  int nrows, ncols;
-  double *x_cp = malloc(m*n * sizeof(*x));
+  double *x_cp = malloc(m*nx * sizeof(*x));
+  double *y_cp = malloc(m*ny * sizeof(*y));
   CHECKMALLOC(x_cp);
-  double *y_cp = malloc(m*n * sizeof(*y));
-  if (y_cp == NULL)
-  {
-    free(x_cp);
-    return COOP_BADMALLOC;
-  }
+  CHECKMALLOC(y_cp);
   
+  memcpy(x_cp, x, m*nx*sizeof(*x));
+  memcpy(y_cp, y, m*ny*sizeof(*y));
   
-  if (trans)
-  {
-    xpose(m, n, x, x_cp);
-    xpose(m, n, y, y_cp);
-    nrows = n;
-    ncols = m;
-  }
-  else
-  {
-    memcpy(x_cp, x, m*n*sizeof(*x));
-    memcpy(y_cp, y, m*n*sizeof(*y));
-    nrows = m;
-    ncols = n;
-  }
-  
-  
-  const double alpha = 1. / ((double) (nrows-1));
+  const double alpha = 1. / ((double) (m-1));
   
   //TODO FIXME make tremove_colmeans and use the BLAS more efficiently...
-  remove_colmeans(nrows, ncols, x_cp);
-  remove_colmeans(nrows, ncols, y_cp);
+  remove_colmeans(m, nx, x_cp);
+  remove_colmeans(m, ny, y_cp);
   
-  // matmult(!trans, trans, alpha, nrows, ncols, x_cp, nrows, ncols, y_cp, cov);
-  matmult(true, false, alpha, nrows, ncols, x_cp, nrows, ncols, y_cp, cov);
+  matmult(true, false, alpha, m, nx, x_cp, m, ny, y_cp, cov);
   free(x_cp);
   free(y_cp);
   
-  if (inv)
-    ret = inv_sym_chol(ncols, cov);
+  if (inv && nx == ny)
+  {
+    int ret = inv_gen_lu(nx, cov);
+    CHECKRET(ret);
+  }
+  
+  return ret;
+}
+
+int coop_tcovar_matmat(const bool inv, const int mx, const int n,
+  const double *const restrict x, const int my, const double *const restrict y,
+  double *restrict cov)
+{
+  int ret = 0;
+  double *x_cp = malloc(mx*n * sizeof(*x));
+  double *y_cp = malloc(mx*n * sizeof(*y));
+  CHECKMALLOC(x_cp);
+  CHECKMALLOC(y_cp);
+  
+  xpose(mx, n, x, x_cp);
+  xpose(my, n, y, y_cp);
+  
+  const double alpha = 1. / ((double) (n-1));
+  
+  //TODO FIXME make tremove_colmeans and use the BLAS more efficiently...
+  remove_colmeans(n, mx, x_cp);
+  remove_colmeans(n, my, y_cp);
+  
+  matmult(true, false, alpha, n, mx, x_cp, n, my, y_cp, cov);
+  free(x_cp);
+  free(y_cp);
+  
+  if (inv && mx == my)
+  {
+    int ret = inv_gen_lu(mx, cov);
+    CHECKRET(ret);
+  }
   
   return ret;
 }

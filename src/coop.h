@@ -62,7 +62,12 @@ int coop_covar_mat(const bool inv, const int m, const int n,
   const double *const restrict x, double *restrict cov);
 int coop_tcovar_mat(const bool inv, const int m, const int n,
   const double *const restrict x, double *restrict cov);
-int coop_covar_matmat(const bool trans, const bool inv, const int m, const int n, const double * const restrict x, const double * const restrict y, double *restrict cov);
+int coop_covar_matmat(const bool inv, const int m, const int nx,
+  const double *const restrict x, const int ny, const double *const restrict y,
+  double *restrict cov);
+int coop_tcovar_matmat(const bool inv, const int mx, const int n,
+  const double *const restrict x, const int my, const double *const restrict y,
+  double *restrict cov);
 int coop_covar_vecvec(const int n, const double * const x, const double * const y, double *restrict cov);
 
 // dense - inplace

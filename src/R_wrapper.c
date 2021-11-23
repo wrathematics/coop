@@ -158,10 +158,10 @@ SEXP R_co_matmat(SEXP x, SEXP y, SEXP type_, SEXP inplace_, SEXP trans_, SEXP in
   }
   else if (type == CO_VAR)
   {
-    // if (inplace)
-    // 
-    // else
-      // check = coop_covar_matmat(trans, inv, m, n, REAL(x), REAL(y), REAL(ret));
+    if (!trans)
+      check = coop_covar_matmat(inv, mx, nx, REAL(x), ny, REAL(y), REAL(ret));
+    else
+      check = coop_tcovar_matmat(inv, mx, nx, REAL(x), my, REAL(y), REAL(ret));
   }
   else
     BADTYPE();
