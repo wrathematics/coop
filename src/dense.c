@@ -108,6 +108,7 @@ int coop_tcosine_mat(const bool inv, const int m, const int n,
 
 
 
+// cos - nx x ny
 int coop_cosine_matmat(const bool inv, const int m, const int nx,
   const double *const restrict x, const int ny, const double *const restrict y,
   double *restrict cos)
@@ -144,7 +145,7 @@ int coop_cosine_matmat(const bool inv, const int m, const int nx,
   return COOP_OK;
 }
 
-
+// cos - mx x my
 int coop_tcosine_matmat(const bool inv, const int mx, const int n,
   const double *const restrict x, const int my, const double *const restrict y,
   double *restrict cos)
@@ -304,6 +305,7 @@ int coop_tpcor_mat(const bool inv, const int m, const int n,
  * @param cor
  * The output correlation matrix.
 */
+// cos - nx x ny
 int coop_pcor_matmat(const bool inv, const int m, const int nx,
   const double *const restrict x, const int ny, const double *const restrict y,
   double *restrict cor)
@@ -326,14 +328,16 @@ int coop_pcor_matmat(const bool inv, const int m, const int nx,
   free(x_cp);
   free(y_cp);
   
-  if (inv)
-    ret = inv_sym_chol(m, cor);
+  if (inv && nx == ny)
+  {
+    int ret = inv_gen_lu(nx, cor);
+    CHECKRET(ret);
+  }
   
   return ret;
 }
 
-
-
+// cos - mx x my
 int coop_tpcor_matmat(const bool inv, const int mx, const int n,
   const double *const restrict x, const int my, const double *const restrict y,
   double *restrict cor)
@@ -356,8 +360,11 @@ int coop_tpcor_matmat(const bool inv, const int mx, const int n,
   free(x_cp);
   free(y_cp);
   
-  if (inv)
-    ret = inv_sym_chol(n, cor);
+  if (inv && mx == my)
+  {
+    int ret = inv_gen_lu(mx, cor);
+    CHECKRET(ret);
+  }
   
   return ret;
 }
